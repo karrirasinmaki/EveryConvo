@@ -15,6 +15,10 @@
       <servlet-name>Install</servlet-name>
       <servlet-class>fi.raka.everyconvo.api.servelets.InstallServelet</servlet-class>
   </servlet>
+  <servlet>
+      <servlet-name>User</servlet-name>
+      <servlet-class>fi.raka.everyconvo.api.servelets.UserServelet</servlet-class>
+  </servlet>
   
   <!-- SERVELETS MAPPING -->
   <servlet-mapping>
@@ -24,6 +28,10 @@
   <servlet-mapping>
       <servlet-name>Install</servlet-name>
       <url-pattern>/install</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>User</servlet-name>
+      <url-pattern>/*</url-pattern>
   </servlet-mapping>
   
 </web-app>

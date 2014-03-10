@@ -3,8 +3,11 @@ package fi.raka.everyconvo.api.sql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class SQLUtils {
 	
@@ -61,6 +64,40 @@ public class SQLUtils {
 	public static void createTable(Connection conn, String name, String creationClause) throws SQLException {
 		PreparedStatement stmt;
 		stmt = conn.prepareStatement("CREATE TABLE " + name + " (" + creationClause + ");");
+		stmt.executeUpdate();
+	}
+	
+	/**
+	 * Execute SELECT query
+	 * @param conn Connection
+	 * @param tableName name of table
+	 * @param projection which columns to get
+	 * @param whereArgs where conditions. eq. columnName='value'
+	 * @return ResultSet containing selected rows
+	 * @throws SQLException
+	 */
+	public static ResultSet selectFrom(Connection conn, String tableName, String[] projection, String[] whereArgs) throws SQLException {
+		PreparedStatement stmt;
+		stmt = conn.prepareStatement(
+					"SELECT " + StringUtils.join(projection, ", ") + 
+					" FROM " + tableName + 
+					" WHERE " + StringUtils.join(projection, " AND ")
+				);
+		return stmt.executeQuery();
+	}
+	
+	public static void insertInto(Connection conn, String tableName, String[] columns, String[] values) throws SQLException {
+		if(columns.length != values.length) throw new IllegalArgumentException("columns and values should be same length");
+		
+		PreparedStatement stmt;
+		stmt = conn.prepareStatement(
+					"INSERT INTO " + tableName + 
+					" (" + StringUtils.join(columns, ",") + ")" +
+					" VALUES ('" + StringUtils.join(values, "','") + "')"
+				);
+		System.out.println("INSERT INTO " + tableName + 
+					" (" + StringUtils.join(columns, ",") + ")" +
+					" VALUES ('" + StringUtils.join(values, "','") + "')");
 		stmt.executeUpdate();
 	}
 	

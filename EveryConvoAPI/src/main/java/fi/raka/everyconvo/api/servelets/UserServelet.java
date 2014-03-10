@@ -1,12 +1,8 @@
 package fi.raka.everyconvo.api.servelets;
 
-import static fi.raka.everyconvo.api.sql.SQLUtils.getConnection;
-
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,26 +10,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static fi.raka.everyconvo.api.sql.SQLUtils.*;
+import static fi.raka.everyconvo.api.json.JSONUtils.*;
 
-public class TestServelet extends HttpServlet {
-	
-	private static final long serialVersionUID = -4124657385679911710L;
+public class UserServelet extends HttpServlet {
+
+	private static final long serialVersionUID = 1898885274959360003L;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		PrintWriter out = resp.getWriter();
-		
-		out.print("Hellow!");
+		String[] urlPathParts = req.getPathInfo().substring(1).split("/");
+		String requestUserName = urlPathParts[0];
 		
 		try {
-
+			
 			Connection conn = getConnection();
-			
-			insertInto(conn, "users", new String[] {"username"}, new String[] {"Moro"});
-			
-			conn.close();
+			selectFrom(conn, "users", 
+				new String[] {"userid", "username", "description", "websiteurl", "location", "visibility"},
+				new String[] {"username='" + requestUserName + "'"}
+			);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -45,7 +41,8 @@ public class TestServelet extends HttpServlet {
 			e.printStackTrace();
 		}
 		
-		out.close();
+		writeJSONResponse(resp, "{username: '" + requestUserName + "'}");
+		
 	}
 
 }
