@@ -29,6 +29,8 @@ public class InstallServelet extends HttpServlet {
 			conn.close();
 			
 			conn = getConnection();
+			
+			// users table
 			createTable( conn, "users", 
 			    "userid INT NOT NULL AUTO_INCREMENT, " +
 			    "username VARCHAR(20), " +
@@ -36,8 +38,46 @@ public class InstallServelet extends HttpServlet {
 			    "websiteurl TEXT, " +
 			    "location VARCHAR(255), " +
 			    "visibility INT(1), " +
-			    "PRIMARY KEY ( userid ) "
+			    "PRIMARY KEY ( userid )"
 			);
+			// persons table
+			createTable( conn, "persons", 
+				"userid INT NOT NULL, " +
+			    "firstname VARCHAR(60), " +
+			    "lastname VARCHAR(60), " +
+			    "FOREIGN KEY ( userid )  " +
+			        "REFERENCES users( userid ) "
+			);
+			// groups table
+			createTable( conn, "groups",
+				"userid INT NOT NULL, " +
+			    "FOREIGN KEY ( userid )  " +
+			        "REFERENCES users( userid ) "
+			);
+			// groupsusers table
+			createTable( conn, "groupsusers",
+				"groupid INT NOT NULL, " +
+			    "userid INT NOT NULL, " +
+			    "FOREIGN KEY ( groupid )  " +
+			        "REFERENCES groups( userid ), " +
+			    "FOREIGN KEY ( userid )  " +
+			        "REFERENCES users( userid ) "
+			);
+			// messages table
+			createTable( conn, "messages", 
+			    "messageid INT NOT NULL AUTO_INCREMENT, " +
+			    "fromid INT NOT NULL, " +
+			    //-- if toid == null, message to everyone, "wall post"
+			    "toid INT, " +
+			    "message TEXT NOT NULL, " +
+			    "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+			    "PRIMARY KEY ( messageid ), " +
+			    "FOREIGN KEY ( fromid )  " +
+			        "REFERENCES users( userid ), " +
+			    "FOREIGN KEY ( toid )  " +
+			        "REFERENCES users( userid ) "
+			);
+			
 			conn.close();
 			
 		} catch (SQLException e) {

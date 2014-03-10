@@ -60,7 +60,7 @@ public class SQLUtils {
 	 */
 	public static void createTable(Connection conn, String name, String creationClause) throws SQLException {
 		PreparedStatement stmt;
-		stmt = conn.prepareStatement("CREATE TABLE " + creationClause);
+		stmt = conn.prepareStatement("CREATE TABLE " + name + " (" + creationClause + ");");
 		stmt.executeUpdate();
 	}
 	
