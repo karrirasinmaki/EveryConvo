@@ -110,6 +110,15 @@ public class SQLUtils {
 		return stmt.getGeneratedKeys();
 	}
 	
+	public static void dropTable(Connection conn, String tableName) throws SQLException {
+		String query = "DROP TABLE " + tableName;
+		System.out.println("SQL QUERY:\n" + query);
+
+		PreparedStatement stmt;
+		stmt = conn.prepareStatement( query );
+		stmt.executeUpdate();
+	}
+	
 	public class Values {
 		public static final String 
 		DATABASE_BASE_URL = "jdbc:mysql://localhost/",

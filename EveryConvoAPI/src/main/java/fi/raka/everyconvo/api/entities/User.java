@@ -16,19 +16,97 @@ import fi.raka.everyconvo.api.entities.StatusMessage;
 
 public class User {
 	
+	private String userName;
+	private int userId;	
+	
+	public User() {
+	}
+
+	public String login(String userName, String password) {
+		
+		this.userName = userName;
+		
+		String out = "false";
+		Connection conn = null;
+		ResultSet rs = null;
+		ResultSet lrs = null;
+		
+		try {
+			
+			conn = getConnection();
+			rs = getUserInfoResultSet(conn);
+			
+			if( rs.first() ) {
+			
+				this.userId = rs.getInt( COL_USERID );
+				
+				lrs = selectFrom(conn, TABLE_LOGIN, 
+						new String[] { COL_USERID, COL_PASSHASH },
+						new String[] { COL_USERID + "='" + userId + "'" }
+					);
+				
+				lrs.first();
+				String passhash = lrs.getString( COL_PASSHASH );
+				
+				try {
+					out = PasswordHash.validatePassword( password, passhash ) ? "true" : "false";
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+				} catch (InvalidKeySpecException e) {
+					e.printStackTrace();
+				}
+	
+				lrs.close();
+			}
+
+		} catch (InstantiationException e1) {
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			e1.printStackTrace();
+		} catch (ClassNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		finally {
+			if( conn != null ) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if( rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if( lrs != null) {
+				try {
+					lrs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return out;
+	}
+	
 	public ResultSet getUserInfo(String userName) 
 			throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+
+		this.userName = userName;
 		
 		Connection conn = getConnection();
-		ResultSet rs = selectFrom(conn, "users", 
-			new String[] {"userid", "username", "description", "websiteurl", "location", "visibility"},
-			new String[] {"username='" + userName + "'"}
-		);
+		ResultSet rs = getUserInfoResultSet(conn);
 		
 		return rs;
 	}
 	
-	public StatusMessage createUser(String userName, String description, String websiteUrl, String location, String visibility, String password) {
+	public static StatusMessage createUser(String userName, String description, String websiteUrl, String location, String visibility, String password) {
 		
 		StatusMessage statusMessage = null;
 		Connection conn = null;
@@ -88,6 +166,13 @@ public class User {
 		}
 		
 		return statusMessage; 
+	}
+	
+	private ResultSet getUserInfoResultSet(Connection conn) throws SQLException {
+		return selectFrom(conn, TABLE_USERS, 
+				new String[] { COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY },
+				new String[] { COL_USERNAME + "='" + userName + "'" }
+			);
 	}
 
 }

@@ -1,8 +1,6 @@
 package fi.raka.everyconvo.api.servelets;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -12,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import fi.raka.everyconvo.api.entities.StatusMessage;
 import fi.raka.everyconvo.api.entities.User;
-import static fi.raka.everyconvo.api.sql.SQLUtils.*;
+import fi.raka.everyconvo.api.utils.Utils;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 import static fi.raka.everyconvo.api.json.JSONUtils.*;
 
@@ -24,7 +22,7 @@ public class UserServelet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		String[] urlPathParts = req.getPathInfo().substring(1).split("/");
+		String[] urlPathParts = Utils.getPathParts( req.getPathInfo() );
 		String requestUserName = urlPathParts[0];
 		User user = new User();
 		
@@ -47,6 +45,30 @@ public class UserServelet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+
+		String[] urlPathParts = Utils.getPathParts( req.getPathInfo() );
+		
+		switch( urlPathParts[0] ) {
+		case "login":
+			login(req, resp);
+			break;
+		case "create-user":
+			createUser(req, resp);
+			break;
+		}
+		
+	}
+
+	private void login(HttpServletRequest req, HttpServletResponse resp) {
+		String
+		userName = req.getParameter( COL_USERNAME ),
+		password = req.getParameter( "pass" );
+
+		User user = new User();
+		writeJSONResponse( resp, user.login(userName, password) );
+	}
+	
+	private void createUser(HttpServletRequest req, HttpServletResponse resp) {
 		String
 		userName = req.getParameter( COL_USERNAME ),
 		description = req.getParameter( COL_DESCRIPTION ),
@@ -61,12 +83,10 @@ public class UserServelet extends HttpServlet {
 			statusMessage = new StatusMessage(StatusMessage.STATUS_ERROR, "Username or password missing.");
 		}
 		else {
-			User user = new User();
-			statusMessage = user.createUser( userName, description, websiteUrl, location, visibility, password );
+			statusMessage = User.createUser( userName, description, websiteUrl, location, visibility, password );
 		}
 		
 		writeJSONStatusResponse(resp, statusMessage);
-		
 	}
 
 }

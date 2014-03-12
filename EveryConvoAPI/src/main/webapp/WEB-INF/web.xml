@@ -16,6 +16,10 @@
       <servlet-class>fi.raka.everyconvo.api.servelets.InstallServelet</servlet-class>
   </servlet>
   <servlet>
+      <servlet-name>Destroy</servlet-name>
+      <servlet-class>fi.raka.everyconvo.api.servelets.DestroyServelet</servlet-class>
+  </servlet>
+  <servlet>
       <servlet-name>User</servlet-name>
       <servlet-class>fi.raka.everyconvo.api.servelets.UserServelet</servlet-class>
   </servlet>
@@ -28,6 +32,10 @@
   <servlet-mapping>
       <servlet-name>Install</servlet-name>
       <url-pattern>/install</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>Destroy</servlet-name>
+      <url-pattern>/destroy</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
       <servlet-name>User</servlet-name>

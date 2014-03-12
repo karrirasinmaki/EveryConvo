@@ -4,11 +4,18 @@
     <title>EveryConvo</title>
     <body>
     
-        <h3>Register user form</h3>
-        <form action="http://localhost:8080/EveryConvoAPI/" method="post">
+        <h3>Register user</h3>
+        <form action="http://localhost:8080/EveryConvoAPI/create-user" method="post">
             <input type="text" name="username">
             <input type="password" name="pass">
             <input type="submit" value="Register">
+        </form>
+        
+        <h3>Login user</h3>
+        <form action="http://localhost:8080/EveryConvoAPI/login" method="post">
+            <input type="text" name="username">
+            <input type="password" name="pass">
+            <input type="submit" value="Login">
         </form>
         
     </body>
