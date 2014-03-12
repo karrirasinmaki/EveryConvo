@@ -1,5 +1,11 @@
 package fi.raka.everyconvo.api.sql;
 
+import static fi.raka.everyconvo.api.sql.SQLUtils.COL_USERID;
+import static fi.raka.everyconvo.api.sql.SQLUtils.FOREIGN_KEY;
+import static fi.raka.everyconvo.api.sql.SQLUtils.PRIMARY_KEY;
+import static fi.raka.everyconvo.api.sql.SQLUtils.REFERENCES;
+import static fi.raka.everyconvo.api.sql.SQLUtils.TABLE_USERS;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,8 +21,49 @@ public class SQLUtils {
 		DATABASE_BASE_URL = "jdbc:mysql://localhost/",
 		DATABASE_NAME = "everyconvo",
 		DATABASE_USER_NAME = "root",
-		DATABASE_USER_PASSWORD = "";
+		DATABASE_USER_PASSWORD = "",
+		
+		TABLE_LOGIN = "login",
+		TABLE_USERS = "users",
+		TABLE_PERSONS = "persons",
+		TABLE_GROUPS = "groups",
+		TABLE_GROUPSUSERS = "groupsusers",
+		TABLE_MESSAGES = "messages",
+		
+		COL_PASSHASH = "passhash",
+		COL_SALT = "salt",
+		COL_USERID = "userid",
+		COL_USERNAME = "username",
+		COL_DESCRIPTION = "description",
+		COL_WEBSITEURL = "websiteurl",
+		COL_LOCATION = "location",
+		COL_VISIBILITY = "visibility",
+		COL_FIRSTNAME = "firstname",
+		COL_LASTNAME = "lastname",
+		COL_GROUPID = "groupid",
+		COL_MESSAGEID = "messageid",
+		COL_MESSAGE = "message",
+		COL_FROMID = "fromid",
+		COL_TOID = "toid",
+		COL_TIMESTAMP = "timestamp",
+		
+		PRIMARY_KEY = "PRIMARY KEY ",
+		FOREIGN_KEY = "FOREIGN KEY ",
+		REFERENCES = "REFERENCES ",
+		INT_NOT_NULL_ = " INT NOT NULL,",
+		INT_NOT_NULL_AUTO_INCREMENT_ = " INT NOT NULL AUTO_INCREMENT,";
 
+	public static String getPrimaryKeyClause(String columnName) {
+		return PRIMARY_KEY + "(" + columnName + ")";
+	}
+	public static String getForeignKeyClause(String columnName, String refTableName, String refColumnName) {
+		return FOREIGN_KEY + "(" + columnName + ") " + 
+				REFERENCES + refTableName + "(" + refColumnName + ")";
+	}
+	public static String getForeignKeyClause(String columnName, String refTableName) {
+		return getForeignKeyClause(columnName, refTableName, columnName);
+	}
+	
 	/**
 	 * Create connection to MySQL server
 	 * @param url where to connect
@@ -77,12 +124,13 @@ public class SQLUtils {
 	 * @throws SQLException
 	 */
 	public static ResultSet selectFrom(Connection conn, String tableName, String[] projection, String[] whereArgs) throws SQLException {
+		String query = 
+				"SELECT " + StringUtils.join(projection, ", ") + 
+				" FROM " + tableName + 
+				" WHERE " + StringUtils.join(whereArgs, " AND ");
+		System.out.println("SQL QUERY:\n" + query);
 		PreparedStatement stmt;
-		stmt = conn.prepareStatement(
-					"SELECT " + StringUtils.join(projection, ", ") + 
-					" FROM " + tableName + 
-					" WHERE " + StringUtils.join(projection, " AND ")
-				);
+		stmt = conn.prepareStatement( query );
 		return stmt.executeQuery();
 	}
 	

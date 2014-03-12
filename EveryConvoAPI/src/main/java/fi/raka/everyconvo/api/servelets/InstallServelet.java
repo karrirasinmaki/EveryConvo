@@ -29,53 +29,54 @@ public class InstallServelet extends HttpServlet {
 			conn.close();
 			
 			conn = getConnection();
-			
+						
 			// users table
-			createTable( conn, "users", 
-			    "userid INT NOT NULL AUTO_INCREMENT, " +
-			    "username VARCHAR(20), " +
-			    "description TEXT, " +
-			    "websiteurl TEXT, " +
-			    "location VARCHAR(255), " +
-			    "visibility INT(1), " +
-			    "PRIMARY KEY ( userid )"
+			createTable( conn, TABLE_USERS, 
+			    COL_USERID + INT_NOT_NULL_AUTO_INCREMENT_ +
+			    COL_USERNAME + " VARCHAR(20), " +
+			    COL_DESCRIPTION + " TEXT, " +
+			    COL_WEBSITEURL + " TEXT, " +
+			    COL_LOCATION + " VARCHAR(255), " +
+			    COL_VISIBILITY + " INT(1), " +
+			    getPrimaryKeyClause(COL_USERID) + "," +
+			    "UNIQUE ( username )"
+			);
+			// login table - stores user ids and passwords
+			createTable( conn, TABLE_LOGIN, 
+				COL_USERID + INT_NOT_NULL_ +
+				COL_PASSHASH + " VARCHAR(128), " +
+				COL_SALT + " VARCHAR(16), " +
+				getForeignKeyClause(COL_USERID, TABLE_USERS)
 			);
 			// persons table
-			createTable( conn, "persons", 
-				"userid INT NOT NULL, " +
-			    "firstname VARCHAR(60), " +
-			    "lastname VARCHAR(60), " +
-			    "FOREIGN KEY ( userid )  " +
-			        "REFERENCES users( userid ) "
+			createTable( conn, TABLE_PERSONS, 
+				COL_USERID + INT_NOT_NULL_ +
+			    COL_FIRSTNAME + " VARCHAR(60), " +
+			    COL_LASTNAME + " VARCHAR(60), " +
+			    getForeignKeyClause(COL_USERID, TABLE_USERS)
 			);
 			// groups table
-			createTable( conn, "groups",
-				"userid INT NOT NULL, " +
-			    "FOREIGN KEY ( userid )  " +
-			        "REFERENCES users( userid ) "
+			createTable( conn, TABLE_GROUPS,
+				COL_USERID + INT_NOT_NULL_ +
+				getForeignKeyClause(COL_USERID, TABLE_USERS)
 			);
 			// groupsusers table
-			createTable( conn, "groupsusers",
-				"groupid INT NOT NULL, " +
-			    "userid INT NOT NULL, " +
-			    "FOREIGN KEY ( groupid )  " +
-			        "REFERENCES groups( userid ), " +
-			    "FOREIGN KEY ( userid )  " +
-			        "REFERENCES users( userid ) "
+			createTable( conn, TABLE_GROUPSUSERS,
+				COL_GROUPID + INT_NOT_NULL_ +
+			    COL_USERID + INT_NOT_NULL_ +
+			    getForeignKeyClause(COL_GROUPID, TABLE_GROUPS, COL_USERID) + "," +
+			    getForeignKeyClause(COL_USERID, TABLE_USERS)
 			);
 			// messages table
-			createTable( conn, "messages", 
-			    "messageid INT NOT NULL AUTO_INCREMENT, " +
-			    "fromid INT NOT NULL, " +
-			    //-- if toid == null, message to everyone, "wall post"
-			    "toid INT, " +
-			    "message TEXT NOT NULL, " +
-			    "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-			    "PRIMARY KEY ( messageid ), " +
-			    "FOREIGN KEY ( fromid )  " +
-			        "REFERENCES users( userid ), " +
-			    "FOREIGN KEY ( toid )  " +
-			        "REFERENCES users( userid ) "
+			createTable( conn, TABLE_MESSAGES, 
+				COL_MESSAGEID + INT_NOT_NULL_AUTO_INCREMENT_ +
+			    COL_FROMID + INT_NOT_NULL_ +
+			    COL_TOID + INT_NOT_NULL_ +
+			    COL_MESSAGE + " TEXT NOT NULL, " +
+			    COL_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+			    getPrimaryKeyClause(COL_MESSAGEID) + "," +
+			    getForeignKeyClause(COL_FROMID, TABLE_USERS, COL_USERID) + "," +
+			    getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
 			);
 			
 			conn.close();
