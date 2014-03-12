@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static fi.raka.everyconvo.api.sql.SQLUtils.*;
+import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
 public class InstallServelet extends HttpServlet {
 	
@@ -37,7 +38,7 @@ public class InstallServelet extends HttpServlet {
 			    COL_DESCRIPTION + " TEXT, " +
 			    COL_WEBSITEURL + " TEXT, " +
 			    COL_LOCATION + " VARCHAR(255), " +
-			    COL_VISIBILITY + " INT(1), " +
+			    COL_VISIBILITY + " VARCHAR(1), " +
 			    getPrimaryKeyClause(COL_USERID) + "," +
 			    "UNIQUE ( username )"
 			);
@@ -45,7 +46,6 @@ public class InstallServelet extends HttpServlet {
 			createTable( conn, TABLE_LOGIN, 
 				COL_USERID + INT_NOT_NULL_ +
 				COL_PASSHASH + " VARCHAR(128), " +
-				COL_SALT + " VARCHAR(16), " +
 				getForeignKeyClause(COL_USERID, TABLE_USERS)
 			);
 			// persons table

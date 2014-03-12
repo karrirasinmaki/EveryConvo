@@ -34,6 +34,9 @@ public class JSONUtils {
 	public static void writeJSONResponse(HttpServletResponse resp, ResultSet rs) {
 		writeJSONResponse( resp, toJSON(rs) );
 	}
+	public static void writeJSONErrorResponse(HttpServletResponse resp, String message) {
+		writeJSONResponse( resp, "{_:[{type:error, message:" + message + "}]}" );
+	}
 	
 	
 	private static JsonObject resultSetRowToJson(ResultSet rs, ResultSetMetaData rsmd, int columnCount) throws SQLException {

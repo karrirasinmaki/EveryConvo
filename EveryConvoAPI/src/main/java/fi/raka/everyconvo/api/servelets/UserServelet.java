@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import fi.raka.everyconvo.api.entities.User;
 import static fi.raka.everyconvo.api.sql.SQLUtils.*;
+import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 import static fi.raka.everyconvo.api.json.JSONUtils.*;
 
 public class UserServelet extends HttpServlet {
@@ -39,6 +40,25 @@ public class UserServelet extends HttpServlet {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		
+		String
+		userName = req.getParameter( COL_USERNAME ),
+		description = req.getParameter( COL_DESCRIPTION ),
+		websiteUrl = req.getParameter( COL_WEBSITEURL ),
+		location = req.getParameter( COL_LOCATION ),
+		visibility = req.getParameter( COL_VISIBILITY ),
+		password = req.getParameter( "pass" );
+		
+		if( userName == null || password == null ) writeJSONErrorResponse(resp, "Username or password missing.");
+		
+		User user = new User();
+		user.createUser( userName, description, websiteUrl, location, visibility, password );
 		
 	}
 
