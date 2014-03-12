@@ -13,6 +13,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import fi.raka.everyconvo.api.entities.StatusMessage;
+
 public class JSONUtils {
 	
 	/**
@@ -34,8 +36,8 @@ public class JSONUtils {
 	public static void writeJSONResponse(HttpServletResponse resp, ResultSet rs) {
 		writeJSONResponse( resp, toJSON(rs) );
 	}
-	public static void writeJSONErrorResponse(HttpServletResponse resp, String message) {
-		writeJSONResponse( resp, "{_:[{type:error, message:" + message + "}]}" );
+	public static void writeJSONStatusResponse(HttpServletResponse resp, StatusMessage statusMessage) {
+		writeJSONResponse( resp, toJSON(statusMessage) );
 	}
 	
 	
@@ -106,5 +108,10 @@ public class JSONUtils {
 		}
 		
 		return json.toString();
+	}
+	
+	public static String toJSON(Object obj) {
+		Gson gson = new Gson();
+		return gson.toJson( obj );
 	}
 }

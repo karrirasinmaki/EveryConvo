@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fi.raka.everyconvo.api.entities.StatusMessage;
 import fi.raka.everyconvo.api.entities.User;
 import static fi.raka.everyconvo.api.sql.SQLUtils.*;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
@@ -46,7 +47,6 @@ public class UserServelet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
 		String
 		userName = req.getParameter( COL_USERNAME ),
 		description = req.getParameter( COL_DESCRIPTION ),
@@ -55,10 +55,17 @@ public class UserServelet extends HttpServlet {
 		visibility = req.getParameter( COL_VISIBILITY ),
 		password = req.getParameter( "pass" );
 		
-		if( userName == null || password == null ) writeJSONErrorResponse(resp, "Username or password missing.");
+		StatusMessage statusMessage;
 		
-		User user = new User();
-		user.createUser( userName, description, websiteUrl, location, visibility, password );
+		if( userName.length() <= 0 || password.length() <= 0 ) {
+			statusMessage = new StatusMessage(StatusMessage.STATUS_ERROR, "Username or password missing.");
+		}
+		else {
+			User user = new User();
+			statusMessage = user.createUser( userName, description, websiteUrl, location, visibility, password );
+		}
+		
+		writeJSONStatusResponse(resp, statusMessage);
 		
 	}
 

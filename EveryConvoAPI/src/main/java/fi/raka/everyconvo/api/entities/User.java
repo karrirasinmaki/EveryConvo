@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import fi.raka.everyconvo.api.utils.PasswordHash;
+import fi.raka.everyconvo.api.entities.StatusMessage;
 
 public class User {
 	
@@ -27,9 +28,11 @@ public class User {
 		return rs;
 	}
 	
-	public boolean createUser(String userName, String description, String websiteUrl, String location, String visibility, String password) {
+	public StatusMessage createUser(String userName, String description, String websiteUrl, String location, String visibility, String password) {
 		
+		StatusMessage statusMessage = null;
 		Connection conn = null;
+		long userId = 0;
 		
 		try {
 			
@@ -43,7 +46,7 @@ public class User {
 			
 			// Get generated userid
 			generatedKeys.first();
-			long userId = generatedKeys.getLong(1);
+			userId = generatedKeys.getLong(1);
 			
 			String passhash = null;
 			try {
@@ -53,7 +56,7 @@ public class User {
 			} catch (InvalidKeySpecException e) {
 				e.printStackTrace();
 			}
-			if(passhash == null) return false;
+			if(passhash == null) statusMessage = new StatusMessage(StatusMessage.STATUS_ERROR, "Server error on creating user.");
 			
 			insertInto(conn, TABLE_LOGIN,
 					new String[] { COL_USERID, COL_PASSHASH },
@@ -62,7 +65,10 @@ public class User {
 			
 			conn.commit();
 			
+			statusMessage = new StatusMessage(StatusMessage.STATUS_OK, "User created with id " + userId);
+			
 		} catch (SQLException e1) {
+			statusMessage = new StatusMessage(StatusMessage.STATUS_ERROR, e1.getMessage());
 			e1.printStackTrace();
 		} catch (InstantiationException e1) {
 			e1.printStackTrace();
@@ -81,7 +87,7 @@ public class User {
 			}
 		}
 		
-		return true;
+		return statusMessage; 
 	}
 
 }
