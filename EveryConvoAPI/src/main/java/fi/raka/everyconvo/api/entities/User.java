@@ -1,16 +1,13 @@
 package fi.raka.everyconvo.api.entities;
 
-import static fi.raka.everyconvo.api.sql.SQLUtils.getConnection;
-import static fi.raka.everyconvo.api.sql.SQLUtils.selectFrom;
-import static fi.raka.everyconvo.api.sql.SQLUtils.insertInto;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import fi.raka.everyconvo.api.sql.SQLChain;
 import fi.raka.everyconvo.api.utils.PasswordHash;
 import fi.raka.everyconvo.api.entities.StatusMessage;
 
@@ -26,24 +23,24 @@ public class User {
 		
 		this.userName = userName;
 		
+		SQLChain chain = new SQLChain();
 		String out = "false";
-		Connection conn = null;
 		ResultSet rs = null;
 		ResultSet lrs = null;
 		
 		try {
 			
-			conn = getConnection();
-			rs = getUserInfoResultSet(conn);
+			chain.open(DATABASE_URL);
+			rs = getUserInfoResultSet(chain);
 			
 			if( rs.first() ) {
 			
 				this.userId = rs.getInt( COL_USERID );
-				
-				lrs = selectFrom(conn, TABLE_LOGIN, 
-						new String[] { COL_USERID, COL_PASSHASH },
-						new String[] { COL_USERID + "='" + userId + "'" }
-					);
+				lrs = chain.cont()
+					.select(COL_USERID, COL_PASSHASH)
+					.from(TABLE_LOGIN)
+					.whereIs(COL_USERID, ""+userId)
+					.exec();
 				
 				lrs.first();
 				String passhash = lrs.getString( COL_PASSHASH );
@@ -55,8 +52,6 @@ public class User {
 				} catch (InvalidKeySpecException e) {
 					e.printStackTrace();
 				}
-	
-				lrs.close();
 			}
 
 		} catch (InstantiationException e1) {
@@ -69,13 +64,6 @@ public class User {
 			e1.printStackTrace();
 		}
 		finally {
-			if( conn != null ) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 			if( rs != null) {
 				try {
 					rs.close();
@@ -100,27 +88,27 @@ public class User {
 
 		this.userName = userName;
 		
-		Connection conn = getConnection();
-		ResultSet rs = getUserInfoResultSet(conn);
+		SQLChain chain = new SQLChain();
+		chain.open(DATABASE_URL);
+		ResultSet rs = getUserInfoResultSet( chain );
 		
 		return rs;
 	}
 	
 	public static StatusMessage createUser(String userName, String description, String websiteUrl, String location, String visibility, String password) {
-		
+
+		SQLChain chain = new SQLChain();
 		StatusMessage statusMessage = null;
-		Connection conn = null;
 		long userId = 0;
 		
 		try {
-			
-			conn = getConnection();
-			conn.setAutoCommit( false );
-			
-			ResultSet generatedKeys = insertInto(conn, TABLE_USERS, 
-					new String[] { COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY },
-					new String[] { userName, description, websiteUrl, location, visibility }
-				);
+						
+			ResultSet generatedKeys = chain
+				.open(DATABASE_URL)
+				.setAutoCommit(false)
+				.insertInto(TABLE_USERS, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY)
+				.values(userName, description, websiteUrl, location, visibility)
+				.exec();
 			
 			// Get generated userid
 			generatedKeys.first();
@@ -135,13 +123,13 @@ public class User {
 				e.printStackTrace();
 			}
 			if(passhash == null) statusMessage = new StatusMessage(StatusMessage.STATUS_ERROR, "Server error on creating user.");
+				
+			chain.cont()
+				.insertInto(TABLE_LOGIN, COL_USERID, COL_PASSHASH)
+				.values("" + userId, passhash)
+				.exec();
 			
-			insertInto(conn, TABLE_LOGIN,
-					new String[] { COL_USERID, COL_PASSHASH },
-					new String[] { "" + userId, passhash }
-				);
-			
-			conn.commit();
+			chain.cont().commit().setAutoCommit( true );
 			
 			statusMessage = new StatusMessage(StatusMessage.STATUS_OK, "User created with id " + userId);
 			
@@ -156,23 +144,24 @@ public class User {
 			e1.printStackTrace();
 		}
 		finally {
-			if( conn != null ) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+			try {
+				chain.cont().close();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 		
 		return statusMessage; 
 	}
 	
-	private ResultSet getUserInfoResultSet(Connection conn) throws SQLException {
-		return selectFrom(conn, TABLE_USERS, 
-				new String[] { COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY },
-				new String[] { COL_USERNAME + "='" + userName + "'" }
-			);
+	private ResultSet getUserInfoResultSet(SQLChain chain) throws SQLException, IllegalAccessException {
+		return chain.cont()
+			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY)
+			.from(TABLE_USERS)
+			.whereIs(COL_USERNAME, userName)
+			.exec();
 	}
 
 }

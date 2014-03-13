@@ -1,7 +1,6 @@
 package fi.raka.everyconvo.api.servelets;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -9,7 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static fi.raka.everyconvo.api.sql.SQLUtils.*;
+import fi.raka.everyconvo.api.entities.StatusMessage;
+import fi.raka.everyconvo.api.sql.SQLChain;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
 public class DestroyServelet extends HttpServlet {
@@ -19,17 +19,22 @@ public class DestroyServelet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
-		Connection conn = null;
+
+		SQLChain chain = new SQLChain();
 		try {
 			
-			conn = getConnection();
-			dropTable(conn, TABLE_GROUPSUSERS);
-			dropTable(conn, TABLE_LOGIN);
-			dropTable(conn, TABLE_MESSAGES);
-			dropTable(conn, TABLE_GROUPS);
-			dropTable(conn, TABLE_PERSONS);
-			dropTable(conn, TABLE_USERS);
+			chain.open(DATABASE_URL)
+				.dropTable(TABLE_GROUPSUSERS).q(";")
+				.dropTable(TABLE_GROUPSUSERS).q(";")
+				.dropTable(TABLE_LOGIN).q(";")
+				.dropTable(TABLE_MESSAGES).q(";")
+				.dropTable(TABLE_GROUPS).q(";")
+				.dropTable(TABLE_PERSONS).q(";")
+				.dropTable(TABLE_USERS)
+				.exec();
+			
+			StatusMessage statusMessage = new StatusMessage(StatusMessage.STATUS_OK, "Database destroyed");
+			fi.raka.everyconvo.api.json.JSONUtils.writeJSONStatusResponse(resp, statusMessage);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -41,13 +46,12 @@ public class DestroyServelet extends HttpServlet {
 			e.printStackTrace();
 		}
 		finally {
-			if(conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			try {
+				chain.cont().close();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 		

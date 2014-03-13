@@ -46,9 +46,7 @@ public class UserServelet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		String[] urlPathParts = Utils.getPathParts( req.getPathInfo() );
-		
-		switch( urlPathParts[0] ) {
+		switch( req.getServletPath().substring(1) ) {
 		case "login":
 			login(req, resp);
 			break;

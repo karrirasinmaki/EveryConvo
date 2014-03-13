@@ -20,6 +20,10 @@
       <servlet-class>fi.raka.everyconvo.api.servelets.DestroyServelet</servlet-class>
   </servlet>
   <servlet>
+      <servlet-name>Message</servlet-name>
+      <servlet-class>fi.raka.everyconvo.api.servelets.MessageServelet</servlet-class>
+  </servlet>
+  <servlet>
       <servlet-name>User</servlet-name>
       <servlet-class>fi.raka.everyconvo.api.servelets.UserServelet</servlet-class>
   </servlet>
@@ -38,8 +42,20 @@
       <url-pattern>/destroy</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+      <servlet-name>Message</servlet-name>
+      <url-pattern>/message/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>Message</servlet-name>
+      <url-pattern>/messages</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
       <servlet-name>User</servlet-name>
-      <url-pattern>/*</url-pattern>
+      <url-pattern>/user/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>User</servlet-name>
+      <url-pattern>/create-user</url-pattern>
   </servlet-mapping>
   
 </web-app>
