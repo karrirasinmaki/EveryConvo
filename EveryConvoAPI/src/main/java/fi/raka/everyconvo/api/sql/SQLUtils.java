@@ -58,6 +58,7 @@ public class SQLUtils {
 		TABLE_GROUPS = "groups",
 		TABLE_GROUPSUSERS = "groupsusers",
 		TABLE_MESSAGES = "messages",
+		TABLE_STORIES = "stories",
 		
 		COL_PASSHASH = "passhash",
 		COL_SALT = "salt",
@@ -75,6 +76,8 @@ public class SQLUtils {
 		COL_FROMID = "fromid",
 		COL_TOID = "toid",
 		COL_TIMESTAMP = "timestamp",
+		COL_MEDIAURL = "mediaurl",
+		COL_STORYID = "storyid",
 		
 		PRIMARY_KEY = "PRIMARY KEY ",
 		FOREIGN_KEY = "FOREIGN KEY ",

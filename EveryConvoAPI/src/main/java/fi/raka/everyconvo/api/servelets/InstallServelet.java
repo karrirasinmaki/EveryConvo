@@ -89,6 +89,19 @@ public class InstallServelet extends HttpServlet {
 					    getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
 					    ).exe()
 					    
+				.create()
+				.table(TABLE_STORIES, null, 
+						COL_STORYID + INT_NOT_NULL_AUTO_INCREMENT,
+					    COL_FROMID + INT_NOT_NULL,
+					    COL_TOID + INT_NOT_NULL,
+					    COL_CONTENT + " TEXT NOT NULL",
+					    COL_MEDIAURL + " TEXT",
+					    COL_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+					    getPrimaryKeyClause(COL_STORYID),
+					    getForeignKeyClause(COL_FROMID, TABLE_USERS, COL_USERID),
+					    getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
+					    ).exe()
+					    
 				.commit()
 				.setAutoCommit( true )
 				.close();

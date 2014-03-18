@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="utf-8">
+    <title>EveryConvo</title>
+    <body>
+    
+        <h3>Register user</h3>
+        <form action="http://localhost:8080/EveryConvoAPI/create-user" method="post">
+            <input type="text" name="username">
+            <input type="password" name="pass">
+            <input type="submit" value="Register">
+        </form>
+        
+        <h3>Login user</h3>
+        <form action="http://localhost:8080/EveryConvoAPI/login" method="post">
+            <input type="text" name="username">
+            <input type="password" name="pass">
+            <input type="submit" value="Login">
+        </form>
+        
+        <h3>Send message</h3>
+        <form action="http://localhost:8080/EveryConvoAPI/message" method="post">
+            <input type="text" name="to">
+            <input type="text" name="content">
+            <input type="submit" value="Send">
+        </form>
+        
+    </body>
+</html>

@@ -24,6 +24,10 @@
       <servlet-class>fi.raka.everyconvo.api.servelets.MessageServelet</servlet-class>
   </servlet>
   <servlet>
+      <servlet-name>Story</servlet-name>
+      <servlet-class>fi.raka.everyconvo.api.servelets.StoryServelet</servlet-class>
+  </servlet>
+  <servlet>
       <servlet-name>User</servlet-name>
       <servlet-class>fi.raka.everyconvo.api.servelets.UserServelet</servlet-class>
   </servlet>
@@ -48,6 +52,14 @@
   <servlet-mapping>
       <servlet-name>Message</servlet-name>
       <url-pattern>/messages</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>Story</servlet-name>
+      <url-pattern>/story/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>Story</servlet-name>
+      <url-pattern>/stories</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
       <servlet-name>User</servlet-name>

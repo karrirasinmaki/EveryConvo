@@ -94,14 +94,16 @@ public class JSONUtils {
 		JsonObject json = new JsonObject();
 		JsonArray rows = new JsonArray();
 		try {
-			ResultSetMetaData rsmd = rs.getMetaData();
-			int columnCount = rsmd.getColumnCount();
-			rs.beforeFirst();
-			while( rs.next() ) {
-				JsonObject row = resultSetRowToJson(rs, rsmd, columnCount);
-				rows.add( row );
+			if( rs != null ) {
+				ResultSetMetaData rsmd = rs.getMetaData();
+				int columnCount = rsmd.getColumnCount();
+				rs.beforeFirst();
+				while( rs.next() ) {
+					JsonObject row = resultSetRowToJson(rs, rsmd, columnCount);
+					rows.add( row );
+				}
+				json.add( "data", rows );
 			}
-			json.add( "_", rows );
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

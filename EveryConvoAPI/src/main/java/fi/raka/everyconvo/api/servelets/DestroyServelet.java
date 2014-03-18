@@ -20,30 +20,19 @@ public class DestroyServelet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
+		StatusMessage statusMessage;
 		SQLChain chain = new SQLChain();
 		try {
 			
 			chain.open(DATABASE_URL)
-				.dropTable(TABLE_GROUPSUSERS).q(";")
-				.dropTable(TABLE_GROUPSUSERS).q(";")
-				.dropTable(TABLE_LOGIN).q(";")
-				.dropTable(TABLE_MESSAGES).q(";")
-				.dropTable(TABLE_GROUPS).q(";")
-				.dropTable(TABLE_PERSONS).q(";")
-				.dropTable(TABLE_USERS)
+				.dropDatabase( DATABASE_NAME )
 				.exec();
 			
-			StatusMessage statusMessage = new StatusMessage(StatusMessage.STATUS_OK, "Database destroyed");
-			fi.raka.everyconvo.api.json.JSONUtils.writeJSONStatusResponse(resp, statusMessage);
+			statusMessage = new StatusMessage(StatusMessage.STATUS_OK, "Database destroyed");
 			
-		} catch (SQLException e) {
+		} catch (SQLException|InstantiationException|IllegalAccessException|ClassNotFoundException e) {
 			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			statusMessage = new StatusMessage( StatusMessage.STATUS_ERROR, e.getMessage() );
 		}
 		finally {
 			try {
@@ -54,6 +43,8 @@ public class DestroyServelet extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
+		
+		fi.raka.everyconvo.api.json.JSONUtils.writeJSONStatusResponse(resp, statusMessage);
 		
 	}
 	

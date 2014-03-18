@@ -79,6 +79,10 @@ public class SQLChain {
 			query.append( "DROP TABLE " + table );
 			return this;
 		}
+		public Chain dropDatabase(String database) {
+			query.append( "DROP DATABASE " + database );
+			return this;
+		}
 		
 		public Chain setAutoCommit(boolean autoCommit) throws SQLException {
 			conn.setAutoCommit(autoCommit);
