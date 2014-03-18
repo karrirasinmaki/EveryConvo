@@ -22,9 +22,10 @@ public class JSONUtils {
 	 * @param json JSON data as string
 	 */
 	public static void writeJSONResponse(HttpServletResponse resp, String json) {
-		resp.setContentType("application/json");
+		resp.setContentType("application/json;charset=utf-8");
 		try {
 			PrintWriter out = resp.getWriter();
+			out.flush();
 			out.print(json);
 			out.close();
 		} catch (IOException e) {
@@ -63,9 +64,11 @@ public class JSONUtils {
 		    case java.sql.Types.FLOAT:
 		    	row.addProperty(columnName, rs.getFloat(i));
 		        break;
+		    case java.sql.Types.LONGNVARCHAR:
 		    case java.sql.Types.NVARCHAR:
 		    	row.addProperty(columnName, rs.getNString(i));
 		        break;
+		    case java.sql.Types.LONGVARCHAR:
 		    case java.sql.Types.VARCHAR:
 		    	row.addProperty(columnName, rs.getString(i));
 		        break;

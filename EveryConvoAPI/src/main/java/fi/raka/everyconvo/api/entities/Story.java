@@ -50,6 +50,7 @@ public class Story {
 				.open(DATABASE_URL)
 				.select(COL_STORYID, COL_FROMID, COL_TOID, COL_CONTENT, COL_MEDIAURL, COL_TIMESTAMP)
 				.from(TABLE_STORIES)
+				.desc(COL_TIMESTAMP)
 				.exec();
 		} catch (InstantiationException e) {
 			e.printStackTrace();

@@ -26,15 +26,7 @@ require(["guda", "widgets/contactWidget", "widgets/postWidget"], function(g, con
     var feed = new g.Widget({
         id: "feed"
     });
-    
-    for(var i=0; i<20; ++i) {
-        var data = {
-            content: "Once you are finished doing development and want to deploy your code for your end users, you can use the optimizer to combine the JavaScript files together and minify it. In the example above, it can combine main.js and helper/util.js into one file and minify the result.",
-            timestamp: "16:" + (i<10?"0"+i:i)
-        };
-        feed.append( postWidget.newPost(data) );
-    }
-    postWidget.loadPosts();
+    postWidget.loadPosts( feed );
     
     var NewStoryWidget = function() {
         this.init({
@@ -43,10 +35,11 @@ require(["guda", "widgets/contactWidget", "widgets/postWidget"], function(g, con
         });
         
         this.title = new g.Widget({ className: "title", textContent: "Share your thoughts" });
-        this.textarea = new g.TextArea({ className: "textarea", name: "content" });
+        this.content = new g.TextArea({ className: "content", name: "content" });
+        this.mediaurl = new g.Input({ className: "mediaurl", name: "mediaurl" });
         this.submit = new g.Button({ className: "submit", textContent: "Send" });
         
-        this.append( this.title ).append( this.textarea ).append( this.submit );
+        this.append( this.title ).append( this.content ).append( this.mediaurl ).append( this.submit );
     };
     NewStoryWidget.prototype = new g.Form;
     

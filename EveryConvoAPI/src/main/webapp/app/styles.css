@@ -19,7 +19,8 @@ html, body                          { margin: 0; padding: 0; width: 100%; height
 .contact .info .user-name           { color: #7b7b7b; }
 
 
-.post                               { padding-bottom: 2em; margin-top: 2em; }
+.post                               { padding-bottom: 2em; margin-top: 2em; min-height: 3.4em; }
 .post .time                         { position: absolute; left: -6ex; top: 0; color: #ccc; }
 .post .picture                      { position: absolute; left: 0; top: 0; width: 3.4em; height: 3.4em; border: 1px solid #ccc; }
 .post .content                      { margin-left: 3.8em; }
+.post .media                        { width: 100%; height: auto; margin-top: 1em; }
