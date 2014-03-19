@@ -48,9 +48,11 @@ public class Story {
 		try {
 			rs = new SQLChain()
 				.open(DATABASE_URL)
-				.select(COL_STORYID, COL_FROMID, COL_TOID, COL_CONTENT, COL_MEDIAURL, COL_TIMESTAMP)
-				.from(TABLE_STORIES)
-				.desc(COL_TIMESTAMP)
+				.select("a."+COL_STORYID, "a."+COL_FROMID, "a."+COL_TOID, "a."+COL_CONTENT, "a."+COL_MEDIAURL, "a."+COL_TIMESTAMP, "b."+COL_USERNAME)
+				.from(TABLE_STORIES+" a")
+				.innerJoin(TABLE_USERS+" b")
+				.on("a."+COL_FROMID, "b."+COL_USERID)
+				.desc("a."+COL_TIMESTAMP)
 				.exec();
 		} catch (InstantiationException e) {
 			e.printStackTrace();

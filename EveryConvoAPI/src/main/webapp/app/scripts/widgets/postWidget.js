@@ -12,12 +12,18 @@ define(["../guda"], function(g) {
     PostWidget.prototype.create = function() {
         this.time = new g.Widget({ className: "time" });
         this.picture = new g.Widget({ className: "picture" });
+        this.username = new g.Widget({ className: "username" });
         this.content = new g.Widget({ className: "content" });
         
+        this.content.insert( this.username );
         this.append( this.time ).append( this.picture ).append( this.content );
     };
+    PostWidget.prototype.setUsername = function(username) {
+        this.username.setText( username );
+        return this;
+    };
     PostWidget.prototype.setContent = function(content) {
-        this.content.element.textContent = content;
+        this.content.setText( content );
         return this;
     };
     PostWidget.prototype.setMedia = function(mediaURL) {
@@ -27,7 +33,7 @@ define(["../guda"], function(g) {
         return this;
     };
     PostWidget.prototype.setTime = function(time) {
-        this.time.element.textContent = time;
+        this.time.setText( time );
         return this;
     };
     
@@ -36,6 +42,7 @@ define(["../guda"], function(g) {
         var post = new PostWidget({
                 className: "post"
             })
+            .setUsername( data.username )
             .setContent( data.content )
             .setTime( time.getHours() + ":" + time.getMinutes() )
             .setMedia( data.mediaurl );
@@ -46,6 +53,7 @@ define(["../guda"], function(g) {
     var loadPosts = function(element) {
         g.getJSON( API.stories ).done(function(data) {
             var data = JSON.parse( data ).data;
+            g.log(data);
             for(var i=0, l=data.length; i<l; ++i) {
                 element.append( newPost(data[i]) );
             }

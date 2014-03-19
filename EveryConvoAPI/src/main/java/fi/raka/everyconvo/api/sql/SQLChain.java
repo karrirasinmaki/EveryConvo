@@ -15,6 +15,7 @@ public class SQLChain {
 	
 	private Connection conn = null;
 	private StringBuilder query;
+	private int tableNumber = 0;
 	
 	public SQLChain() {
 		query = new StringBuilder();
@@ -29,6 +30,10 @@ public class SQLChain {
 		if(conn == null) throw new IllegalAccessError( "You must have opened connection before continue." );
 		query.setLength(0);
 		return new Chain();
+	}
+	
+	private String getTableName(String table) {
+		return "t" + tableNumber + "." + table;
 	}
 	
 	public class Chain {
@@ -127,6 +132,10 @@ public class SQLChain {
 			orFlag = true;
 			return this;
 		}
+		public JoinChain innerJoin(String table) {
+			query.append( " INNER JOIN " + table );
+			return new JoinChain( this );
+		}
 		public SelectChain asc(String ... columns) {
 			orderBy(columns);
 			query.append( " ASC" );
@@ -151,6 +160,21 @@ public class SQLChain {
 				return " WHERE ";
 			}
 		}
+	}
+	
+	public class JoinChain extends Chain {
+		
+		private SelectChain previousChain;
+		
+		public JoinChain(SelectChain previousChain) {
+			this.previousChain = previousChain;
+		}
+		
+		public SelectChain on(String column, String value) {
+			query.append( " ON " + column + "=" + value );
+			return previousChain;
+		}
+		
 	}
 	
 	public class InsertChain extends Chain {

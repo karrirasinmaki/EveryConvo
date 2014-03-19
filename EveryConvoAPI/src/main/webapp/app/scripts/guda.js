@@ -33,12 +33,31 @@
     
     var dom = {
         addClass: function(className, element) {
-            element.className += " " + className;
+            if( this.extendsDom ) element = this.element;
+            if( !element.className ) element.className = className;
+            else element.className += " " + className;
+            
+            if( this.extendsDom ) return this;
+        },
+        removeClass: function(className, element) {
+            if( element.className ) {
+                if( this.extendsDom ) element = this.element;
+                element.className = element.className.replace( className, "" );
+            }
+            
+            if( this.extendsDom ) return this;
         },
         append: function(elementToAppend, element) {
             if( this.extendsDom ) element = this.element;
             if( elementToAppend.extendsDom ) elementToAppend = elementToAppend.element;
             element.appendChild( elementToAppend );
+            
+            if( this.extendsDom ) return this;
+        },
+        insert: function(elementToInsert, element) {
+            if( this.extendsDom ) element = this.element;
+            if( elementToInsert.extendsDom ) elementToInsert = elementToInsert.element;
+            element.insertBefore( elementToInsert, element.childNodes[0] );
             
             if( this.extendsDom ) return this;
         }
@@ -48,6 +67,22 @@
         this.init(params);
     };
     Widget.prototype = dom;
+    Widget.prototype.hide = function() {
+        var el = this.element;
+        this._display = el.style.display;
+        el.style.display = "none";
+    };
+    Widget.prototype.show = function() {
+        this.element.style.display = this._display || "block";
+    };
+    Widget.prototype.toggle = function() {
+        if( this.element.style.display == "none" ) this.show();
+        else this.hide();
+    };
+    Widget.prototype.setText = function(text) {
+        this.text.textContent = text;
+        return this;
+    };
     Widget.prototype.init = function(params, tagName) {
         if( !tagName ) {
             if( this.element ) tagName = this.element.tagName || "div";
@@ -56,6 +91,9 @@
         
         this.extendsDom = true;
         this.element = doc.createElement( tagName );
+        
+        this.text = doc.createTextNode("");
+        this.element.appendChild( this.text );
         
         for(var k in params) {
             this.element[k] = params[k];
@@ -89,18 +127,27 @@
     Button.prototype = new Widget;
     
     var MediaWidget = function(params) {
+        this.create( params );        
+    };
+    MediaWidget.prototype = new Widget;
+    MediaWidget.prototype.onload = function() {
+        dom.removeClass( "loading", this );
+    };
+    MediaWidget.prototype.create = function(params) {
         if( !params || !params.mediaURL ) return;
+        
+        if( !params.className ) params.className = "";
+        params.className += " loading";
         
         var mediaURL = params.mediaURL;
         switch( mediaURL.substr( mediaURL.lastIndexOf(".") + 1 ).toLowerCase() ) {
             case "jpg":
                 this.init( params, "img" );
+                this.element.onload = this.onload;
                 this.element.src = mediaURL;
                 break;
         }
-        
     };
-    MediaWidget.prototype = new Widget;
     
     var SidebarWidget = function(params) {
         this.init( params );

@@ -5,22 +5,46 @@ html, body                          { margin: 0; padding: 0; width: 100%; height
 #app                                { min-height: 100%; padding: 0 240px; }
 #contacts                           { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; }
 #feed                               { max-width: 520px; margin: 0 auto; }
+#menu                               { position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; }
+#menu .second-half                  { position: absolute; left: 0; bottom: 0; right: 0; border-top: 1px solid #ccc; }
+#new-story                          { z-index: 10; position: fixed; left: 220px; bottom: 0; right: 220px; padding: 1em 2em; background: #ccc; }
+#new-story form                     { max-width: 520px; margin: 0 auto; }
+#new-story form *                   { display: block; width: 100%; max-width: 100%; }
+
+input, 
+textarea,
+button                              { box-sizing: border-box; margin: 0.25em 0; padding: 0.25em 0.5em; }
+textarea                            { height: 4em; max-height: 4em; max-width: 100%; transition: 0.2s height; }
+textarea:focus                      { height: 10em; max-height: 10em; }
 
 .contact,
-.post                               { position: relative; border-bottom: 1px solid #ccc; }
+.post,
+.menu-item                          { position: relative; border-bottom: 1px solid #ccc; }
+
+/* Hoverable elements */
+.contact:hover, 
+.menu-item:hover                    { cursor: pointer; background-color: rgba(245, 171, 98, 0.33); }
+
 .picture                            { background-image: url(img/default-profile-pic.png); background-size: cover; }
+.username                           { font-weight: bold; }
+
+.media                              { width: 100%; height: auto; margin-top: 1em; }
+.media.loading                      { background: #ccc; }
 
 .contact .picture,
 .contact .info,
 .post .content                      { display: inline-block; }
 
+/* Menu */
+.menu-item                          { font-size: 1.5em; padding: 0.5em; }
+
+/* Contact */
 .contact .picture                   { position: absolute; left: 0; top: 0; bottom: 0; width: 3.4em; }
 .contact .info                      { padding: 0.7em 0; line-height: 1em; padding-left: 3.8em; }
 .contact .info .user-name           { color: #7b7b7b; }
 
-
+/* Post */
 .post                               { padding-bottom: 2em; margin-top: 2em; min-height: 3.4em; }
 .post .time                         { position: absolute; left: -6ex; top: 0; color: #ccc; }
 .post .picture                      { position: absolute; left: 0; top: 0; width: 3.4em; height: 3.4em; border: 1px solid #ccc; }
 .post .content                      { margin-left: 3.8em; }
-.post .media                        { width: 100%; height: auto; margin-top: 1em; }
