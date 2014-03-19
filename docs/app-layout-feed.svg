@@ -13,7 +13,7 @@
    height="620"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.4 r"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="app-layout-feed.svg">
   <defs
      id="defs4" />
@@ -32,8 +32,8 @@
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:window-width="1858"
-     inkscape:window-height="1057"
+     inkscape:window-width="1304"
+     inkscape:window-height="745"
      inkscape:window-x="54"
      inkscape:window-y="-8"
      inkscape:window-maximized="1" />
@@ -63,7 +63,7 @@
        y="433.97391" />
     <g
        id="g4455"
-       transform="translate(0,88.571429)">
+       transform="translate(0,-1.428571)">
       <flowRoot
          transform="translate(0,432.36218)"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -93,14 +93,14 @@
          x="48.422985"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
          xml:space="preserve"><tspan
-           style="font-size:16px;line-height:89.99999762%"
+           style="font-size:12px;line-height:89.99999762%"
            y="456.01505"
            x="48.422985"
            id="tspan3813"
            sodipodi:role="line">Firstname Lastname</tspan><tspan
            id="tspan3815"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
-           y="470.41504"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
+           y="466.81503"
            x="48.422985"
            sodipodi:role="line">username</tspan></text>
       <path
@@ -125,11 +125,11 @@
            id="tspan3835"
            x="48.422985"
            y="501.47192"
-           style="font-size:16px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
+           style="font-size:12px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
            sodipodi:role="line"
            x="48.422985"
-           y="515.87195"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
+           y="512.27191"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
            id="tspan3837">username</tspan></text>
       <path
          inkscape:connector-curvature="0"
@@ -149,14 +149,14 @@
          x="48.422985"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
          xml:space="preserve"><tspan
-           style="font-size:16px;line-height:89.99999762%"
+           style="font-size:12px;line-height:89.99999762%"
            y="546.67627"
            x="48.422985"
            id="tspan3849"
            sodipodi:role="line">Firstname Lastname</tspan><tspan
            id="tspan3851"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
-           y="561.07629"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
+           y="557.47626"
            x="48.422985"
            sodipodi:role="line">username</tspan></text>
       <path
@@ -181,11 +181,11 @@
            id="tspan3863"
            x="48.422985"
            y="591.88055"
-           style="font-size:16px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
+           style="font-size:12px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
            sodipodi:role="line"
            x="48.422985"
-           y="606.28058"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
+           y="602.68054"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
            id="tspan3865">username</tspan></text>
       <path
          style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -249,14 +249,14 @@
          x="48.422985"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
          xml:space="preserve"><tspan
-           style="font-size:16px;line-height:89.99999762%"
+           style="font-size:12px;line-height:89.99999762%"
            y="637.3374"
            x="48.422985"
            id="tspan3933"
            sodipodi:role="line">Firstname Lastname</tspan><tspan
            id="tspan3935"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
-           y="651.73743"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
+           y="648.13739"
            x="48.422985"
            sodipodi:role="line">username</tspan></text>
       <path
@@ -281,11 +281,11 @@
            id="tspan3947"
            x="48.422985"
            y="682.79431"
-           style="font-size:16px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
+           style="font-size:12px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
            sodipodi:role="line"
            x="48.422985"
-           y="697.19434"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
+           y="693.5943"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
            id="tspan3949">username</tspan></text>
       <path
          inkscape:connector-curvature="0"
@@ -305,14 +305,14 @@
          x="48.422985"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
          xml:space="preserve"><tspan
-           style="font-size:16px;line-height:89.99999762%"
+           style="font-size:12px;line-height:89.99999762%"
            y="727.99866"
            x="48.422985"
            id="tspan3961"
            sodipodi:role="line">Firstname Lastname</tspan><tspan
            id="tspan3963"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
-           y="742.39868"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
+           y="738.79865"
            x="48.422985"
            sodipodi:role="line">username</tspan></text>
       <path
@@ -337,11 +337,11 @@
            id="tspan3975"
            x="48.422985"
            y="773.20294"
-           style="font-size:16px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
+           style="font-size:12px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
            sodipodi:role="line"
            x="48.422985"
-           y="787.60297"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
+           y="784.00293"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
            id="tspan3977">username</tspan></text>
       <path
          style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -365,11 +365,11 @@
            id="tspan3989"
            x="48.422985"
            y="818.65979"
-           style="font-size:16px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
+           style="font-size:12px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
            sodipodi:role="line"
            x="48.422985"
-           y="833.05981"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
+           y="829.45978"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
            id="tspan3991">username</tspan></text>
       <path
          inkscape:connector-curvature="0"
@@ -389,14 +389,14 @@
          x="48.422985"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
          xml:space="preserve"><tspan
-           style="font-size:16px;line-height:89.99999762%"
+           style="font-size:12px;line-height:89.99999762%"
            y="864.1167"
            x="48.422985"
            id="tspan4003"
            sodipodi:role="line">Firstname Lastname</tspan><tspan
            id="tspan4005"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
-           y="878.51672"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
+           y="874.91669"
            x="48.422985"
            sodipodi:role="line">username</tspan></text>
       <rect
@@ -428,11 +428,11 @@
            id="tspan4017"
            x="48.422985"
            y="909.32098"
-           style="font-size:16px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
+           style="font-size:12px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
            sodipodi:role="line"
            x="48.422985"
-           y="923.72101"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
+           y="920.12097"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
            id="tspan4019">username</tspan></text>
       <path
          inkscape:connector-curvature="0"
@@ -452,14 +452,14 @@
          x="48.422985"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
          xml:space="preserve"><tspan
-           style="font-size:16px;line-height:89.99999762%"
+           style="font-size:12px;line-height:89.99999762%"
            y="954.52533"
            x="48.422985"
            id="tspan4031"
            sodipodi:role="line">Firstname Lastname</tspan><tspan
            id="tspan4033"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
-           y="968.92535"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
+           y="965.32532"
            x="48.422985"
            sodipodi:role="line">username</tspan></text>
       <path
@@ -523,11 +523,11 @@
            id="tspan4101"
            x="48.422985"
            y="999.98218"
-           style="font-size:16px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
+           style="font-size:12px;line-height:89.99999762%">Firstname Lastname</tspan><tspan
            sodipodi:role="line"
            x="48.422985"
-           y="1014.3822"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
+           y="1010.7822"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
            id="tspan4103">username</tspan></text>
       <path
          inkscape:connector-curvature="0"
@@ -547,31 +547,20 @@
          x="48.422985"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
          xml:space="preserve"><tspan
-           style="font-size:16px;line-height:89.99999762%"
+           style="font-size:12px;line-height:89.99999762%"
            y="1045.4391"
            x="48.422985"
            id="tspan4115"
            sodipodi:role="line">Firstname Lastname</tspan><tspan
            id="tspan4117"
-           style="font-size:16px;line-height:89.99999762%;fill:#808080"
-           y="1059.8391"
+           style="font-size:12px;line-height:89.99999762%;fill:#808080"
+           y="1056.2391"
            x="48.422985"
            sodipodi:role="line">username</tspan></text>
     </g>
-    <flowRoot
-       xml:space="preserve"
-       id="flowRoot4547"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       transform="matrix(1.3331165,0,0,1.3331165,6.2345943,418.55025)"><flowRegion
-         id="flowRegion4549"><rect
-           id="rect4551"
-           width="211.42857"
-           height="59.285713"
-           x="1.4285715"
-           y="20" /></flowRegion><flowPara
-         id="flowPara4553">Contacts</flowPara></flowRoot>    <path
+    <path
        style="fill:none;stroke:#e6e6e6;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 0.35714286,521.64789 220.71428714,0"
+       d="m 0.35714286,431.64789 220.71428714,0"
        id="path4555"
        inkscape:connector-curvature="0" />
     <rect
@@ -596,48 +585,37 @@
        inkscape:connector-curvature="0"
        id="path4569"
        d="m 1144.9043,567.37539 221.8332,0"
-       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603000000003px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <text
        sodipodi:linespacing="89.999998%"
        id="text4573"
        y="551.55603"
        x="1161.6373"
-       style="font-size:22px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:89.99999762000000200%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        xml:space="preserve"><tspan
          id="tspan4577"
-         style="font-size:22px;line-height:89.99999762%;fill:#000000"
+         style="font-size:12px;line-height:89.99999762000000200%;fill:#000000"
          y="551.55603"
          x="1161.6373"
          sodipodi:role="line">Profile</tspan></text>
     <path
-       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603000000003px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 1144.9043,567.37539 221.8332,0"
        id="path4609"
        inkscape:connector-curvature="0" />
-    <flowRoot
-       transform="matrix(1.3331165,0,0,1.3331165,1193.3775,418.55025)"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       id="flowRoot4741"
-       xml:space="preserve"><flowRegion
-         id="flowRegion4743"><rect
-           y="20"
-           x="1.4285715"
-           height="59.285713"
-           width="211.42857"
-           id="rect4745" /></flowRegion><flowPara
-         id="flowPara4747">Menu</flowPara></flowRoot>    <path
+    <path
        inkscape:connector-curvature="0"
        id="path4749"
        d="m 1146.0714,521.64789 220.7143,0"
        style="fill:none;stroke:#e6e6e6;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
-       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603000000003px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 1144.9043,611.6611 221.8332,0"
        id="path4843"
        inkscape:connector-curvature="0" />
     <text
        xml:space="preserve"
-       style="font-size:22px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:89.99999762000000200%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        x="1161.6373"
        y="595.84174"
        id="text4845"
@@ -645,43 +623,43 @@
          sodipodi:role="line"
          x="1161.6373"
          y="595.84174"
-         style="font-size:22px;line-height:89.99999762%;fill:#000000"
+         style="font-size:12px;line-height:89.99999762000000200%;fill:#000000"
          id="tspan4847">Feed</tspan></text>
     <path
        inkscape:connector-curvature="0"
        id="path4849"
        d="m 1144.9043,611.6611 221.8332,0"
-       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603000000003px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        inkscape:connector-curvature="0"
        id="path4851"
        d="m 1144.9043,657.37539 221.8332,0"
-       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603000000003px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <text
        sodipodi:linespacing="89.999998%"
        id="text4853"
        y="641.55603"
        x="1161.6373"
-       style="font-size:22px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:89.99999762000000200%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        xml:space="preserve"><tspan
          id="tspan4855"
-         style="font-size:22px;line-height:89.99999762%;fill:#000000"
+         style="font-size:12px;line-height:89.99999762000000200%;fill:#000000"
          y="641.55603"
          x="1161.6373"
          sodipodi:role="line">Messages</tspan></text>
     <path
-       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603000000003px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 1144.9043,657.37539 221.8332,0"
        id="path4857"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603000000003px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 1144.9043,1051.3349 221.8332,0"
        id="path4899"
        inkscape:connector-curvature="0" />
     <text
        xml:space="preserve"
-       style="font-size:22px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-size:12px;font-style:normal;font-weight:normal;line-height:89.99999762000000200%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        x="1161.6373"
        y="1035.5155"
        id="text4901"
@@ -689,13 +667,13 @@
          sodipodi:role="line"
          x="1161.6373"
          y="1035.5155"
-         style="font-size:22px;line-height:89.99999762%;fill:#000000"
+         style="font-size:12px;line-height:89.99999762000000200%;fill:#000000"
          id="tspan4903">Settings</tspan></text>
     <path
        inkscape:connector-curvature="0"
        id="path4905"
        d="m 1144.9043,1002.8476 221.8332,0"
-       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       style="fill:none;stroke:#e6e6e6;stroke-width:0.86399603000000003px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
