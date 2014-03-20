@@ -11,13 +11,13 @@ public class Story {
 
 	private int id;
 	private int fromid;
-	private String toid;
+	private int toid;
 	private String content;
 	private String mediaURL;
 	private int visibility;
 	private long timestamp;
 	
-	public Story(int fromid, String toid, String content, String mediaURL) {
+	public Story(int fromid, int toid, String content, String mediaURL) {
 		this.fromid = fromid;
 		this.toid = toid;
 		this.content = content;
@@ -29,7 +29,7 @@ public class Story {
 			new SQLChain()
 				.open(DATABASE_URL)
 				.insertInto(TABLE_STORIES, COL_FROMID, COL_TOID, COL_CONTENT, COL_MEDIAURL)
-				.values(""+fromid, toid, content, mediaURL)
+				.values(""+fromid, ""+toid, content, mediaURL)
 				.exec();
 		} catch (InstantiationException e) {
 			e.printStackTrace();

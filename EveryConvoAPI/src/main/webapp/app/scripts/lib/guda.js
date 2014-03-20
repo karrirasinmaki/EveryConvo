@@ -25,13 +25,16 @@
         return this;
     }
     var getAjax = function(url) { return ajax("get", url); }
-    var getJSON = function(url) { return ajax("get", url); }
     var postAjax = function(url) {
         var strings = url.split("?");
         return ajax("post", strings[0], strings[1]);
     }
     
     var dom = {
+        hasClass: function(className, element) {
+            if( this.extendsDom ) element = this.element;
+            return ( element.className.indexOf( className ) !== -1 );
+        },
         addClass: function(className, element) {
             if( this.extendsDom ) element = this.element;
             if( !element.className ) element.className = className;
@@ -40,9 +43,18 @@
             if( this.extendsDom ) return this;
         },
         removeClass: function(className, element) {
-            if( element.className ) {
-                if( this.extendsDom ) element = this.element;
-                element.className = element.className.replace( className, "" );
+            if( this.extendsDom ) element = this.element;
+            element.className = element.className.replace( className, "" );
+            
+            if( this.extendsDom ) return this;
+        },
+        toggleClass: function(className, element) {
+            if( this.extendsDom ) element = this.element;
+            if( dom.hasClass( className, element ) ) {
+                dom.removeClass( className, element );
+            }
+            else {
+                dom.addClass( className, element );
             }
             
             if( this.extendsDom ) return this;
@@ -160,7 +172,6 @@
         now: now,
         ajax: ajax,
         getAjax: getAjax,
-        getJSON: getJSON,
         postAjax: postAjax,
         dom: dom,
         Widget: Widget,

@@ -24,11 +24,15 @@ public class UserServelet extends HttpServlet {
 		
 		String[] urlPathParts = Utils.getPathParts( req.getPathInfo() );
 		String requestUserName = urlPathParts[0];
-		User user = new User();
 		
 		try {
 			
-			writeJSONResponse( resp, user.getUserInfo(requestUserName) );
+			if( requestUserName == null ) {
+				getSessionUser( req, resp );
+			}
+			else {
+				getUser( req, resp, requestUserName );
+			}
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -56,14 +60,30 @@ public class UserServelet extends HttpServlet {
 		}
 		
 	}
+	
+	private void getSessionUser(HttpServletRequest req, HttpServletResponse resp) {
+		User user = User.getSessionUser( req );
+		if( user == null ) {
+			writeJSONStatusResponse( resp, StatusMessage.sessionError() );
+		}
+		else {
+			writeJSONResponse( resp, user.getUserInfo() );
+		}
+	}
+	
+	private void getUser(HttpServletRequest req, HttpServletResponse resp, String userName) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		User user = new User();
+		writeJSONResponse( resp, user.getUserInfo(userName) );
+	}
 
 	private void login(HttpServletRequest req, HttpServletResponse resp) {
 		String
 		userName = req.getParameter( COL_USERNAME ),
-		password = req.getParameter( "pass" );
+		password = req.getParameter( "password" );
 
 		User user = new User();
-		writeJSONResponse( resp, user.login(userName, password) );
+		writeJSONStatusResponse( resp, user.login(userName, password, req) );
 	}
 	
 	private void createUser(HttpServletRequest req, HttpServletResponse resp) {
@@ -73,7 +93,7 @@ public class UserServelet extends HttpServlet {
 		websiteUrl = req.getParameter( COL_WEBSITEURL ),
 		location = req.getParameter( COL_LOCATION ),
 		visibility = req.getParameter( COL_VISIBILITY ),
-		password = req.getParameter( "pass" );
+		password = req.getParameter( "password" );
 		
 		StatusMessage statusMessage;
 		

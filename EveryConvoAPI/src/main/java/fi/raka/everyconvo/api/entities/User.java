@@ -7,24 +7,40 @@ import java.security.spec.InvalidKeySpecException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import com.google.gson.Gson;
+
 import fi.raka.everyconvo.api.sql.SQLChain;
 import fi.raka.everyconvo.api.utils.PasswordHash;
 import fi.raka.everyconvo.api.entities.StatusMessage;
 
 public class User {
 	
-	private String userName;
-	private int userId;	
+	private static String HTTP_SESSION_ATTRIBUTE_NAME = "user";
+	private String username;
+	private int userid;
 	
 	public User() {
 	}
+	
+	public String getUserName() {
+		return username;
+	}
+	public int getUserId() {
+		return userid;
+	}
 
-	public String login(String userName, String password) {
+	public StatusMessage login(String userName, String password) {
+		return login( userName, password, null );
+	}
+	public StatusMessage login(String userName, String password, HttpServletRequest req) {
 		
-		this.userName = userName;
+		this.username = userName;
 		
+		StatusMessage statusMessage = null;
 		SQLChain chain = new SQLChain();
-		String out = "false";
 		ResultSet rs = null;
 		ResultSet lrs = null;
 		
@@ -35,18 +51,24 @@ public class User {
 			
 			if( rs.first() ) {
 			
-				this.userId = rs.getInt( COL_USERID );
+				userid = rs.getInt( COL_USERID );
 				lrs = chain.cont()
 					.select(COL_USERID, COL_PASSHASH)
 					.from(TABLE_LOGIN)
-					.whereIs(COL_USERID, ""+userId)
+					.whereIs(COL_USERID, ""+userid)
 					.exec();
 				
 				lrs.first();
 				String passhash = lrs.getString( COL_PASSHASH );
 				
 				try {
-					out = PasswordHash.validatePassword( password, passhash ) ? "true" : "false";
+					if( PasswordHash.validatePassword( password, passhash ) ) {
+						statusMessage = new StatusMessage(StatusMessage.STATUS_OK, "Logged in");
+						createHttpSession( req );
+					}
+					else {
+						statusMessage = new StatusMessage(StatusMessage.STATUS_ERROR, "Error with authentication.");
+					}
 				} catch (NoSuchAlgorithmException e) {
 					e.printStackTrace();
 				} catch (InvalidKeySpecException e) {
@@ -80,13 +102,18 @@ public class User {
 			}
 		}
 		
-		return out;
+		return statusMessage;
+	}
+	
+	public String getUserInfo() {
+		Gson gson = new Gson();
+		return gson.toJson(this);
 	}
 	
 	public ResultSet getUserInfo(String userName) 
 			throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
 
-		this.userName = userName;
+		this.username = userName;
 		
 		SQLChain chain = new SQLChain();
 		chain.open(DATABASE_URL);
@@ -156,12 +183,28 @@ public class User {
 		return statusMessage; 
 	}
 	
+	public static User getSessionUser(HttpServletRequest req) {
+		HttpSession session = req.getSession();
+		if( session == null ) return null;
+		return (User) session.getAttribute(HTTP_SESSION_ATTRIBUTE_NAME);
+	}
+	
 	private ResultSet getUserInfoResultSet(SQLChain chain) throws SQLException, IllegalAccessException {
 		return chain.cont()
 			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY)
 			.from(TABLE_USERS)
-			.whereIs(COL_USERNAME, userName)
+			.whereIs(COL_USERNAME, username)
 			.exec();
+	}
+	
+	private void createHttpSession(HttpServletRequest req) {
+		HttpSession session = req.getSession( true );
+		session.setAttribute(HTTP_SESSION_ATTRIBUTE_NAME, this);
+	}
+	
+	private Object getHttpSession(HttpServletRequest req) {
+		HttpSession session = req.getSession();
+		return session.getAttribute(HTTP_SESSION_ATTRIBUTE_NAME);
 	}
 
 }

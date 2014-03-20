@@ -14,4 +14,12 @@ public class StatusMessage {
 		this.message = message;
 	}
 	
+	public static StatusMessage sessionError() {
+		return new StatusMessage(STATUS_ERROR, "Invalid session.");
+	}
+	
+	public static StatusMessage sessionLogout() {
+		return new StatusMessage(STATUS_OK, "Session end.");
+	}
+	
 }

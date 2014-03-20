@@ -3,13 +3,17 @@ html, body                          { margin: 0; padding: 0; width: 100%; height
 
 
 #app                                { min-height: 100%; padding: 0 240px; }
-#contacts                           { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; }
+#contacts                           { z-index: 10; position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; transition: 0.2s right; }
+#contacts.open                      { right: 220px; }
 #feed                               { max-width: 520px; margin: 0 auto; }
-#menu                               { position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; }
+#menu                               { z-index: 11; position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; }
 #menu .second-half                  { position: absolute; left: 0; bottom: 0; right: 0; border-top: 1px solid #ccc; }
-#new-story                          { z-index: 10; position: fixed; left: 220px; bottom: 0; right: 220px; padding: 1em 2em; background: #ccc; }
+#new-story                          { z-index: 12; position: fixed; left: 220px; bottom: 0; right: 220px; padding: 1em 2em; background: #ccc; }
 #new-story form                     { max-width: 520px; margin: 0 auto; }
 #new-story form *                   { display: block; width: 100%; max-width: 100%; }
+
+#contacts, 
+#menu                               { font-size: 88%; }
 
 input, 
 textarea,
@@ -36,7 +40,7 @@ textarea:focus                      { height: 10em; max-height: 10em; }
 .post .content                      { display: inline-block; }
 
 /* Menu */
-.menu-item                          { font-size: 1.5em; padding: 0.5em; }
+.menu-item                          { padding: 0.5em; }
 
 /* Contact */
 .contact .picture                   { position: absolute; left: 0; top: 0; bottom: 0; width: 3.4em; }

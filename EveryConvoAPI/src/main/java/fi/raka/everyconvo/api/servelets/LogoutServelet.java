@@ -8,35 +8,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fi.raka.everyconvo.api.entities.StatusMessage;
-import fi.raka.everyconvo.api.entities.Story;
-import fi.raka.everyconvo.api.entities.User;
 import static fi.raka.everyconvo.api.json.JSONUtils.*;
 
-public class StoryServelet extends HttpServlet {
+public class LogoutServelet extends HttpServlet {
 	
-	private static final long serialVersionUID = 3447776139233999152L;
+	private static final long serialVersionUID = -4032033726169731396L;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		writeJSONResponse( resp, Story.loadStories(1) );
-		
+		logout( req, resp );
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
-		User user = User.getSessionUser( req );
-		if( user == null ) {
-			writeJSONStatusResponse( resp, StatusMessage.sessionError() );
-		}
-		else {
-			Story story = new Story( user.getUserId(), user.getUserId(), req.getParameter("content"), req.getParameter("mediaurl") );
-			story.send();
-		}
-		
+
+		logout( req, resp );
+	}
+	
+	private void logout(HttpServletRequest req, HttpServletResponse resp) {
+		req.getSession().invalidate();
+		writeJSONStatusResponse( resp, StatusMessage.sessionLogout() );
 	}
 
 }

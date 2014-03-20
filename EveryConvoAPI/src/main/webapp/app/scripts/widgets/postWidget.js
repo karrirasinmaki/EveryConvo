@@ -1,4 +1,4 @@
-define(["../guda"], function(g) {
+define(["../lib/guda"], function(g) {
     
     var API = {
         stories: "http://localhost:8080/EveryConvoAPI/stories"
@@ -51,7 +51,7 @@ define(["../guda"], function(g) {
     };
     
     var loadPosts = function(element) {
-        g.getJSON( API.stories ).done(function(data) {
+        g.getAjax( API.stories ).done(function(data) {
             var data = JSON.parse( data ).data;
             g.log(data);
             for(var i=0, l=data.length; i<l; ++i) {

@@ -1,4 +1,4 @@
-define(["../guda"], function(g) {    
+define(["../lib/guda"], function(g) {    
     
     var MenuElement = function(params) {
         this.init( params );

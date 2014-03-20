@@ -1,4 +1,4 @@
-define(["../guda"], function(g) {    
+define(["../lib/guda"], function(g) {    
     
     var ContactWidget = function(params) {
         this.init( params );

@@ -1,5 +1,6 @@
 package fi.raka.everyconvo.api.utils;
 
+
 public class Values {
 
 	public static final char

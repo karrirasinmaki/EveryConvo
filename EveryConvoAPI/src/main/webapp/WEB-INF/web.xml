@@ -29,6 +29,10 @@
       <servlet-class>fi.raka.everyconvo.api.servelets.DestroyServelet</servlet-class>
   </servlet>
   <servlet>
+      <servlet-name>Logout</servlet-name>
+      <servlet-class>fi.raka.everyconvo.api.servelets.LogoutServelet</servlet-class>
+  </servlet>
+  <servlet>
       <servlet-name>Message</servlet-name>
       <servlet-class>fi.raka.everyconvo.api.servelets.MessageServelet</servlet-class>
   </servlet>
@@ -77,6 +81,14 @@
   <servlet-mapping>
       <servlet-name>User</servlet-name>
       <url-pattern>/create-user</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>User</servlet-name>
+      <url-pattern>/login</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>Logout</servlet-name>
+      <url-pattern>/logout</url-pattern>
   </servlet-mapping>
   
 </web-app>
