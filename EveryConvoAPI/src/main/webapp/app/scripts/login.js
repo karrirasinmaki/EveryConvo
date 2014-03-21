@@ -5,7 +5,8 @@ define(["lib/guda", "lib/values"], function(g, values) {
         
         var loginForm = new g.Form({
             method: "post",
-            action: values.API.login
+            action: values.API.login,
+            afterSubmit: function(data) { location.reload(); }
         })
         .append( new g.Widget().setText( "Log in" ) )
         .append(

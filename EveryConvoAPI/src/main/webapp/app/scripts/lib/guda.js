@@ -5,6 +5,42 @@
     var now = function() {
         return new Date().getTime();
     }
+    
+    var serialize = function(form) {
+        if (!form || form.nodeName !== "FORM") {
+            return;
+        }
+        var i, j, q = [];
+        for (i = form.elements.length - 1; i >= 0; i = i - 1) {
+            if (form.elements[i].name === "") {
+                    continue;
+            }
+            var added = false;
+            switch (form.elements[i].nodeName) {
+            case 'INPUT':
+                switch (form.elements[i].type) {
+                case 'checkbox':
+                case 'radio':
+                    if (form.elements[i].checked) {
+                        q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                    }
+                    added = true;
+                    break;
+                }
+                break;
+            case 'select-multiple':
+                for (j = form.elements[i].options.length - 1; j >= 0; j = j - 1) {
+                    if (form.elements[i].options[j].selected) {
+                        q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].options[j].value));
+                    }
+                }
+                added = true;
+                break;
+            }
+            if( !added ) q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+        }
+        return q.join("&");
+    };
 
     var ajax = function(type, url, params, responseType) {
         var doneFn = undefined;
@@ -17,7 +53,7 @@
             }
         }
         xmlhttp.open(type, url, true);
-        xmlhttp.setRequestHeader("Content-type", "application/json");
+//        xmlhttp.setRequestHeader("Content-type", "application/json");
         xmlhttp.setRequestHeader('Accept', 'application/json');
         if(type === "post") xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xmlhttp.send(params || "");
@@ -120,8 +156,16 @@
     
     var Form = function(params) {
         this.init( params, "form" );
+        this.element.onsubmit = this.submit;
     };
     Form.prototype = new Widget;
+    Form.prototype.submit = function(e) {
+        if( e ) e.preventDefault();
+        var _this = this;
+        postAjax( this.action + "?" + serialize(this) ).done(function(data) {
+            if( _this.afterSubmit ) _this.afterSubmit( data );
+        });
+    };
     
     var TextArea = function(params) {
         this.init( params, "textarea" );

@@ -24,7 +24,8 @@ function(values, g, userWidget, contactWidget, postWidget, menuWidget) {
         var NewStoryForm = function() {
             this.init({
                 method: "post",
-                action: values.API.story
+                action: values.API.story,
+                afterSubmit: function(data) { location.reload(); }
             });
 
             this.title = new g.Widget({ className: "title", textContent: "Share your thoughts" });
