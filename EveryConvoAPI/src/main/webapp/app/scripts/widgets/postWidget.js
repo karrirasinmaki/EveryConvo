@@ -50,8 +50,9 @@ define(["../lib/guda"], function(g) {
         return post;
     };
     
-    var loadPosts = function(element) {
-        g.getAjax( API.stories ).done(function(data) {
+    var loadPosts = function(element, filter) {
+        filter = filter || "";
+        g.getAjax( API.stories + "?" + filter ).done(function(data) {
             var data = JSON.parse( data ).data;
             g.log(data);
             for(var i=0, l=data.length; i<l; ++i) {

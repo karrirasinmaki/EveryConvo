@@ -21,8 +21,35 @@ public class User {
 	private static String HTTP_SESSION_ATTRIBUTE_NAME = "user";
 	private String username;
 	private int userid;
+	private String description;
+	private String websiteurl;
+	private String location;
+	private int visibility;
+	private boolean me = false;
 	
 	public User() {
+	}
+	public User(String userName, HttpServletRequest req) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		username = userName;
+		
+		User user = getSessionUser(req);
+		
+		SQLChain chain = new SQLChain();
+		chain.open(DATABASE_URL);
+		ResultSet rs = getUserInfoResultSet( chain );
+		
+		if( rs.first() ) {
+			username = rs.getString( COL_USERNAME );
+			userid = rs.getInt( COL_USERID );
+			description = rs.getString(COL_DESCRIPTION);
+			websiteurl = rs.getString(COL_WEBSITEURL);
+			location = rs.getString(COL_LOCATION);
+			visibility = rs.getInt(COL_VISIBILITY);
+		}
+		
+		if( user.userid == userid ) me = true;
 	}
 	
 	public String getUserName() {
@@ -36,6 +63,18 @@ public class User {
 		return login( userName, password, null );
 	}
 	public StatusMessage login(String userName, String password, HttpServletRequest req) {
+		
+		if( req == null ) return StatusMessage.authError();
+		
+		if( userName == null || password == null ) {
+			User sessionUser = getSessionUser( req );
+			if( sessionUser == null ) {
+				return StatusMessage.authError();
+			}
+			else {
+				return StatusMessage.authOk();
+			}
+		}
 		
 		this.username = userName;
 		
@@ -63,11 +102,11 @@ public class User {
 				
 				try {
 					if( PasswordHash.validatePassword( password, passhash ) ) {
-						statusMessage = new StatusMessage(StatusMessage.STATUS_OK, "Logged in");
+						statusMessage = StatusMessage.authOk();
 						createHttpSession( req );
 					}
 					else {
-						statusMessage = new StatusMessage(StatusMessage.STATUS_ERROR, "Error with authentication.");
+						statusMessage = StatusMessage.authError();
 					}
 				} catch (NoSuchAlgorithmException e) {
 					e.printStackTrace();
@@ -108,18 +147,6 @@ public class User {
 	public String getUserInfo() {
 		Gson gson = new Gson();
 		return gson.toJson(this);
-	}
-	
-	public ResultSet getUserInfo(String userName) 
-			throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-
-		this.username = userName;
-		
-		SQLChain chain = new SQLChain();
-		chain.open(DATABASE_URL);
-		ResultSet rs = getUserInfoResultSet( chain );
-		
-		return rs;
 	}
 	
 	public static StatusMessage createUser(String userName, String description, String websiteUrl, String location, String visibility, String password) {
@@ -181,6 +208,16 @@ public class User {
 		}
 		
 		return statusMessage; 
+	}
+	
+	public static ResultSet getAllUsers() 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		SQLChain chain = new SQLChain();
+		return chain.open(DATABASE_URL)
+			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY)
+			.from(TABLE_USERS)
+			.exec();
 	}
 	
 	public static User getSessionUser(HttpServletRequest req) {

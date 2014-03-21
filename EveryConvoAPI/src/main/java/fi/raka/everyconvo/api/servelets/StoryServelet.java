@@ -20,7 +20,13 @@ public class StoryServelet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		writeJSONResponse( resp, Story.loadStories(1) );
+		String[] users = null;
+		String usersString = req.getParameter("user");
+		if( usersString != null ) {
+			users = usersString.split(",");
+		}
+		
+		writeJSONResponse( resp, Story.loadStories(users) );
 		
 	}
 	

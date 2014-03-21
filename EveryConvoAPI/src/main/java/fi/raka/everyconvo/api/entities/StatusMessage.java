@@ -22,4 +22,11 @@ public class StatusMessage {
 		return new StatusMessage(STATUS_OK, "Session end.");
 	}
 	
+	public static StatusMessage authError() {
+		return new StatusMessage(StatusMessage.STATUS_ERROR, "Error with authentication.");
+	}
+	
+	public static StatusMessage authOk() {
+		return new StatusMessage(StatusMessage.STATUS_OK, "Logged in.");
+	}
 }

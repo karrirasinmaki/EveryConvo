@@ -22,6 +22,12 @@ define(["../lib/guda"], function(g) {
         this.userName.element.textContent = userName;
         return this;
     };
+    ContactWidget.prototype.getFullName = function(fullName) {
+        return this.fullName.element.textContent;
+    };
+    ContactWidget.prototype.getUserName = function(userName) {
+        return this.userName.element.textContent;
+    };
     
     return {
         ContactWidget: ContactWidget

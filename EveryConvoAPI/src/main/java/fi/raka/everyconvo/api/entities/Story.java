@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import fi.raka.everyconvo.api.sql.SQLChain;
+import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
 
 public class Story {
 
@@ -42,18 +43,29 @@ public class Story {
 		}
 	}
 	
-	public static ResultSet loadStories(int userId) {
+	public static ResultSet loadStories(String[] users) {
 		ResultSet rs = null;
 		
 		try {
-			rs = new SQLChain()
+			SelectChain chain = new SQLChain()
 				.open(DATABASE_URL)
 				.select("a."+COL_STORYID, "a."+COL_FROMID, "a."+COL_TOID, "a."+COL_CONTENT, "a."+COL_MEDIAURL, "a."+COL_TIMESTAMP, "b."+COL_USERNAME)
 				.from(TABLE_STORIES+" a")
 				.innerJoin(TABLE_USERS+" b")
-				.on("a."+COL_FROMID, "b."+COL_USERID)
-				.desc("a."+COL_TIMESTAMP)
-				.exec();
+				.on("a."+COL_FROMID, "b."+COL_USERID);
+			
+				if( users != null ) {
+					chain
+					.whereIn("a."+COL_FROMID, users)
+					.or()
+					.whereIn("b."+COL_USERNAME, users);
+				}
+			
+				chain
+				.desc("a."+COL_TIMESTAMP);
+				
+			rs = chain.exec();
+			
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

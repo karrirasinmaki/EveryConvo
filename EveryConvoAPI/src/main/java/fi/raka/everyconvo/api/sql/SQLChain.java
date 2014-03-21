@@ -15,7 +15,6 @@ public class SQLChain {
 	
 	private Connection conn = null;
 	private StringBuilder query;
-	private int tableNumber = 0;
 	
 	public SQLChain() {
 		query = new StringBuilder();
@@ -30,10 +29,6 @@ public class SQLChain {
 		if(conn == null) throw new IllegalAccessError( "You must have opened connection before continue." );
 		query.setLength(0);
 		return new Chain();
-	}
-	
-	private String getTableName(String table) {
-		return "t" + tableNumber + "." + table;
 	}
 	
 	public class Chain {
@@ -118,6 +113,10 @@ public class SQLChain {
 		}
 		public SelectChain from(String ... tables) {
 			query.append( " FROM " + StringUtils.join(tables, ",") );
+			return this;
+		}
+		public SelectChain whereIn(String column, String ... values) {
+			query.append( _where() + column + " IN ('" + StringUtils.join(values, "','") + "')" );
 			return this;
 		}
 		public SelectChain whereIs(String column, String value) {

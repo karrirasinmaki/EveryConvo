@@ -2,9 +2,8 @@ require(
 ["widgets/userWidget", "app", "login"], 
 function(userWidget, app, login) {
     
-    userWidget.login().success(function(data) {
-        console.log(data);
-        app.init();
+    userWidget.login().success(function(user) {
+        app.init( user );
     })
     .error(function(data) {
         console.log(data);

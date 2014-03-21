@@ -111,21 +111,23 @@
         }
     };
     
-    var Widget = function(params) {
-        this.init(params);
+    var Widget = function(params, tagName) {
+        this.init(params, tagName);
     };
     Widget.prototype = dom;
     Widget.prototype.hide = function() {
         var el = this.element;
         this._display = el.style.display;
         el.style.display = "none";
+        return this;
     };
     Widget.prototype.show = function() {
-        this.element.style.display = this._display || "block";
+        this.element.style.display = this._display || "inline-block";
+        return this;
     };
     Widget.prototype.toggle = function() {
-        if( this.element.style.display == "none" ) this.show();
-        else this.hide();
+        if( this.element.style.display == "none" ) return this.show();
+        else return this.hide();
     };
     Widget.prototype.setText = function(text) {
         this.text.textContent = text;
@@ -139,6 +141,7 @@
         
         this.extendsDom = true;
         this.element = doc.createElement( tagName );
+        this.element._g = this;
         
         this.text = doc.createTextNode("");
         this.element.appendChild( this.text );
@@ -182,6 +185,10 @@
     };
     Button.prototype = new Widget;
     
+    /**
+     * MediWidget holds every type of media
+     * @param params { mediaURL: url of media }
+     */
     var MediaWidget = function(params) {
         this.create( params );        
     };

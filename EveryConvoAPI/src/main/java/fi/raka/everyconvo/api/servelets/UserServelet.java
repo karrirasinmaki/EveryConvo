@@ -21,17 +21,18 @@ public class UserServelet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
-		String[] urlPathParts = Utils.getPathParts( req.getPathInfo() );
-		String requestUserName = urlPathParts[0];
-		
-		try {
 			
-			if( requestUserName == null ) {
-				getSessionUser( req, resp );
-			}
-			else {
-				getUser( req, resp, requestUserName );
+		try {
+						
+			switch( req.getServletPath().substring(1) ) {
+			case "user":
+				String[] urlPathParts = Utils.getPathParts( req.getPathInfo() );
+				String requestUserName = urlPathParts[0];
+				printUser( req, resp, requestUserName );
+				break;
+			case "users":
+				printAllUsers( req, resp );
+				break;
 			}
 			
 		} catch (SQLException e) {
@@ -71,17 +72,32 @@ public class UserServelet extends HttpServlet {
 		}
 	}
 	
-	private void getUser(HttpServletRequest req, HttpServletResponse resp, String userName) 
+	private void printUser(HttpServletRequest req, HttpServletResponse resp, String userName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		User user = new User();
-		writeJSONResponse( resp, user.getUserInfo(userName) );
+		
+		User user;
+
+		if( userName == null ) {
+			user = User.getSessionUser( req );
+		}
+		else {
+			user = new User( userName, req );
+		}
+		
+		if( user == null ) writeJSONStatusResponse( resp, StatusMessage.sessionError() );
+		else writeJSONResponse( resp, user.getUserInfo() );
+	}
+	
+	private void printAllUsers(HttpServletRequest req, HttpServletResponse resp) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		writeJSONResponse( resp, User.getAllUsers() );
 	}
 
 	private void login(HttpServletRequest req, HttpServletResponse resp) {
 		String
 		userName = req.getParameter( COL_USERNAME ),
 		password = req.getParameter( "password" );
-
+		
 		User user = new User();
 		writeJSONStatusResponse( resp, user.login(userName, password, req) );
 	}
