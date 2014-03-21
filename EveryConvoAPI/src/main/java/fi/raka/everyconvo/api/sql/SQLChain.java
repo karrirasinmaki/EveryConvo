@@ -47,17 +47,14 @@ public class SQLChain {
 			return this;
 		}
 		public ResultSet exec() throws SQLException {
-			String q = getQuery();
-			System.out.println("query\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n"));
-			query.setLength(0);
-			PreparedStatement stmt;
-			stmt = conn.prepareStatement( q, Statement.RETURN_GENERATED_KEYS );
-			stmt.executeUpdate();
-			return stmt.getGeneratedKeys();
+			return executeUpdate();
 		}
 		public Chain exe() throws SQLException {
 			exec();
 			return this;
+		}
+		public ResultSet update() throws SQLException {
+			return executeUpdate();
 		}
 		
 		public Chain q(String q) {
@@ -71,6 +68,10 @@ public class SQLChain {
 		public InsertChain insertInto(String table, String ... columns) {
 			query.append( "INSERT INTO " + table + " (" + StringUtils.join(columns, ",") + ")"  );
 			return new InsertChain();
+		}
+		public UpdateChain update(String table) {
+			query.append( "UPDATE " + table );
+			return new UpdateChain();
 		}
 		public CreateChain create() {
 			return new CreateChain();
@@ -87,6 +88,16 @@ public class SQLChain {
 		public Chain setAutoCommit(boolean autoCommit) throws SQLException {
 			conn.setAutoCommit(autoCommit);
 			return this;
+		}
+		
+		private ResultSet executeUpdate() throws SQLException {
+			String q = getQuery();
+			System.out.println("query\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n"));
+			query.setLength(0);
+			PreparedStatement stmt;
+			stmt = conn.prepareStatement( q, Statement.RETURN_GENERATED_KEYS );
+			stmt.executeUpdate();
+			return stmt.getGeneratedKeys();
 		}
 	}
 	
@@ -187,6 +198,31 @@ public class SQLChain {
 		}
 		public InsertChain values(String ... values) {
 			query.append( " VALUES ('" + StringUtils.join(values, "','") + "')" );
+			return this;
+		}
+		
+	}
+	
+	public class UpdateChain extends Chain {
+		
+		private boolean firstSet = true;
+		
+		public UpdateChain() {}
+		
+		@Override
+		public UpdateChain q(String q) {
+			super.q(q);
+			return this;
+		}
+		
+		public SelectChain doneSet() {
+			return new SelectChain();
+		}
+		
+		public UpdateChain set(String column, String value) {
+			query.append( firstSet ? " SET " : "," );
+			query.append( column + "='" + value + "'" );
+			firstSet = false;
 			return this;
 		}
 		

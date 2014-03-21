@@ -9,7 +9,7 @@ html, body                          { margin: 0; padding: 0; width: 100%; height
 /* Main */
 #main .inner                        { position: relative; max-width: 820px; min-height: 100%; margin: 0 auto; overflow: hidden; }
 #title                              { margin-left: 220px; margin-bottom: 0; padding-left: 80px; width: 600px; border-bottom: 1px solid #ccc; }
-#side                               { float: left; width: 210px; padding: 0 10px 12em 0; border-right: 1px solid #ccc; }
+#side                               { float: left; width: 210px; padding: 0 10px 12em 0; border-right: 1px solid #ccc; text-align: right; }
 #feed                               { float: right; width: 520px; }
 
 #menu                               { z-index: 11; position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; }
@@ -29,6 +29,8 @@ textarea                            { height: 4em; max-height: 4em; max-width: 1
 textarea:focus                      { height: 10em; max-height: 10em; }
 
 img                                 { max-width: 100%; }
+a                                   { color: #ff7f2a; text-decoration: none; }
+a:hover                             { text-decoration: underline; }
 
 *[contenteditable="true"]           { border: 1px dashed #ccc; }
 
@@ -54,7 +56,22 @@ img                                 { max-width: 100%; }
 .menu-item                          { padding: 0.5em; }
 
 /* User info */
+.user-info .location                { color: #ccc; }
+.user-info .websiteurl              {  }
 .user-info .description             { margin-top: 1em; }
+
+/* Elements under edit */
+.editing .location,
+.editing .websiteurl,
+.editing .description               { position: relative; }
+
+.editing .location:after,
+.editing .websiteurl:after,
+.editing .description:after         { z-index: 1; position: absolute; left: 102%; top: -0.2em; padding: 0.2em 0.4em; background: #101010; color: #ccc; border-radius: 3px; white-space: nowrap; }
+
+.editing .location:after            { content: "Location"; }
+.editing .websiteurl:after          { content: "Website url"; }
+.editing .description:after         { content: "Description"; }
 
 /* Contact */
 .contact .picture                   { position: absolute; left: 0; top: 0; bottom: 0; width: 3.4em; }

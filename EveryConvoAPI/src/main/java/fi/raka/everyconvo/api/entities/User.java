@@ -52,17 +52,35 @@ public class User {
 		if( user.userid == userid ) me = true;
 	}
 	
+	public User setDescription(String description) {
+		this.description = description;
+		return this;
+	}
+	public User setWebsiteUrl(String websiteUrl) {
+		this.websiteurl = websiteUrl;
+		return this;
+	}
+	public User setLocation(String location) {
+		this.location = location;
+		return this;
+	}
+	
 	public String getUserName() {
 		return username;
 	}
 	public int getUserId() {
 		return userid;
 	}
+	public boolean isMe() {
+		return me;
+	}
 
-	public StatusMessage login(String userName, String password) {
+	public StatusMessage login(String userName, String password) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		return login( userName, password, null );
 	}
-	public StatusMessage login(String userName, String password, HttpServletRequest req) {
+	public StatusMessage login(String userName, String password, HttpServletRequest req) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		if( req == null ) return StatusMessage.authError();
 		
@@ -115,29 +133,13 @@ public class User {
 				}
 			}
 
-		} catch (InstantiationException e1) {
-			e1.printStackTrace();
-		} catch (IllegalAccessException e1) {
-			e1.printStackTrace();
-		} catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
 		}
 		finally {
 			if( rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				rs.close();
 			}
 			if( lrs != null) {
-				try {
-					lrs.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				lrs.close();
 			}
 		}
 		
@@ -149,7 +151,8 @@ public class User {
 		return gson.toJson(this);
 	}
 	
-	public static StatusMessage createUser(String userName, String description, String websiteUrl, String location, String visibility, String password) {
+	public static StatusMessage createUser(String userName, String description, String websiteUrl, String location, String visibility, String password) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
 		SQLChain chain = new SQLChain();
 		StatusMessage statusMessage = null;
@@ -187,27 +190,26 @@ public class User {
 			
 			statusMessage = new StatusMessage(StatusMessage.STATUS_OK, "User created with id " + userId);
 			
-		} catch (SQLException e1) {
-			statusMessage = new StatusMessage(StatusMessage.STATUS_ERROR, e1.getMessage());
-			e1.printStackTrace();
-		} catch (InstantiationException e1) {
-			e1.printStackTrace();
-		} catch (IllegalAccessException e1) {
-			e1.printStackTrace();
-		} catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
 		}
 		finally {
-			try {
-				chain.cont().close();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			chain.cont().close();
 		}
 		
 		return statusMessage; 
+	}
+	
+	public ResultSet save() 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		return new SQLChain()
+			.open( DATABASE_URL )
+			.update(TABLE_USERS)
+			.set(COL_LOCATION, location)
+			.set(COL_WEBSITEURL, websiteurl)
+			.set(COL_DESCRIPTION, description)
+			.doneSet()
+			.whereIs(COL_USERID, ""+userid)
+			.update();
 	}
 	
 	public static ResultSet getAllUsers() 

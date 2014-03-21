@@ -51,27 +51,37 @@ public class UserServelet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		switch( req.getServletPath().substring(1) ) {
-		case "login":
-			login(req, resp);
-			break;
-		case "create-user":
-			createUser(req, resp);
-			break;
+		try {
+			
+			switch( req.getServletPath().substring(1) ) {
+			case "login":
+				login(req, resp);
+				break;
+			case "user":
+				updateUser(req, resp);
+				break;
+			case "create-user":
+				createUser(req, resp);
+				break;
+			}
+			
+		} catch (InstantiationException | IllegalAccessException
+				| ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
 		}
 		
 	}
 	
-	private void getSessionUser(HttpServletRequest req, HttpServletResponse resp) {
-		User user = User.getSessionUser( req );
-		if( user == null ) {
-			writeJSONStatusResponse( resp, StatusMessage.sessionError() );
-		}
-		else {
-			writeJSONResponse( resp, user.getUserInfo() );
-		}
-	}
-	
+	/**
+	 * Print user to client. If userName is not set, print current session user.
+	 * @param req HttpServletRequest
+	 * @param resp HttpServletResponse
+	 * @param userName if null, use current session user instead
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	private void printUser(HttpServletRequest req, HttpServletResponse resp, String userName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
@@ -88,12 +98,32 @@ public class UserServelet extends HttpServlet {
 		else writeJSONResponse( resp, user.getUserInfo() );
 	}
 	
+	/**
+	 * Print all users from database to client
+	 * @param req HttpServletRequest
+	 * @param resp HttpServletResponse
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	private void printAllUsers(HttpServletRequest req, HttpServletResponse resp) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		writeJSONResponse( resp, User.getAllUsers() );
 	}
 
-	private void login(HttpServletRequest req, HttpServletResponse resp) {
+	/**
+	 * Login user. Sets user as current session user if login success.
+	 * @param req HttpServletRequest having parameters [userName, password]
+	 * @param resp HttpServletResponse
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	private void login(HttpServletRequest req, HttpServletResponse resp) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
 		String
 		userName = req.getParameter( COL_USERNAME ),
 		password = req.getParameter( "password" );
@@ -102,7 +132,45 @@ public class UserServelet extends HttpServlet {
 		writeJSONStatusResponse( resp, user.login(userName, password, req) );
 	}
 	
-	private void createUser(HttpServletRequest req, HttpServletResponse resp) {
+	/**
+	 * Update current user info
+	 * @param req HttpServletRequest
+	 * @param resp HttpServletResponse
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	private void updateUser(HttpServletRequest req, HttpServletResponse resp) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		String
+		userName = req.getParameter( COL_USERNAME ),
+		description = req.getParameter( COL_DESCRIPTION ),
+		websiteUrl = req.getParameter( COL_WEBSITEURL ),
+		location = req.getParameter( COL_LOCATION );
+		
+		User user = User.getSessionUser( req );
+		if( user != null ) {
+			user.setDescription(description)
+				.setWebsiteUrl(websiteUrl)
+				.setLocation(location)
+				.save();
+		}
+	}
+	
+	/**
+	 * Create new user
+	 * @param req HttpServletRequest having parameters [userName, description, websiteUrl, location, visibility, password]
+	 * @param resp HttpServletResponse
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	private void createUser(HttpServletRequest req, HttpServletResponse resp) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
 		String
 		userName = req.getParameter( COL_USERNAME ),
 		description = req.getParameter( COL_DESCRIPTION ),

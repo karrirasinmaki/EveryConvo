@@ -7,37 +7,39 @@
     }
     
     var serialize = function(form) {
-        if (!form || form.nodeName !== "FORM") {
+        if (!form) {
             return;
         }
+        var valueFieldName = form.tagName == "FORM" ? "value" : "textContent";
         var i, j, q = [];
-        for (i = form.elements.length - 1; i >= 0; i = i - 1) {
-            if (form.elements[i].name === "") {
+        for (i = form.children.length - 1; i >= 0; i = i - 1) {
+            var formEl = form.children[i];
+            if (!formEl.name || formEl.name === "") {
                     continue;
             }
             var added = false;
-            switch (form.elements[i].nodeName) {
+            switch (formEl.nodeName) {
             case 'INPUT':
-                switch (form.elements[i].type) {
+                switch (formEl.type) {
                 case 'checkbox':
                 case 'radio':
-                    if (form.elements[i].checked) {
-                        q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+                    if (formEl.checked) {
+                        q.push(formEl.name + "=" + encodeURIComponent(formEl[valueFieldName]));
                     }
                     added = true;
                     break;
                 }
                 break;
             case 'select-multiple':
-                for (j = form.elements[i].options.length - 1; j >= 0; j = j - 1) {
-                    if (form.elements[i].options[j].selected) {
-                        q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].options[j].value));
+                for (j = formEl.options.length - 1; j >= 0; j = j - 1) {
+                    if (formEl.options[j].selected) {
+                        q.push(formEl.name + "=" + encodeURIComponent(formEl.options[j][valueFieldName]));
                     }
                 }
                 added = true;
                 break;
             }
-            if( !added ) q.push(form.elements[i].name + "=" + encodeURIComponent(form.elements[i].value));
+            if( !added ) q.push(formEl.name + "=" + encodeURIComponent(formEl[valueFieldName]));
         }
         return q.join("&");
     };
@@ -224,6 +226,7 @@
         ajax: ajax,
         getAjax: getAjax,
         postAjax: postAjax,
+        serialize: serialize,
         dom: dom,
         Widget: Widget,
         View: View,
