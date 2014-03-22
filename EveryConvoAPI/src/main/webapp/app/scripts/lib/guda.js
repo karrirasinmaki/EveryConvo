@@ -117,14 +117,32 @@
         this.init(params, tagName);
     };
     Widget.prototype = dom;
-    Widget.prototype.hide = function() {
+    Widget.ANIM = {
+        fadeOut: "fadeOut",
+        fadeIn: "fadeIn",
+        zoomOut: "zoomOut",
+        zoomIn: "zoomIn"
+    };
+    Widget.prototype.animate = function(animation, callback) {
+        var el = this.element;
+        dom.addClass( animation, el );
+        setTimeout( function() {
+            dom.removeClass( animation, el );
+            if( callback ) callback();
+        }, 500 );
+    };
+    Widget.prototype.hide = function(animation) {
+        var _this = this;
         var el = this.element;
         this._display = el.style.display;
-        el.style.display = "none";
+        if( animation ) this.animate( animation, function() { _this.hide() } );
+        else el.style.display = "none";
         return this;
     };
-    Widget.prototype.show = function() {
+    Widget.prototype.show = function(animation) {
+        var _this = this;
         this.element.style.display = this._display || "inline-block";
+        if( animation ) this.animate( animation );
         return this;
     };
     Widget.prototype.toggle = function() {
@@ -198,20 +216,23 @@
     MediaWidget.prototype.onload = function() {
         dom.removeClass( "loading", this );
     };
+    MediaWidget.prototype.setMediaURL = function(mediaURL, params) {
+        switch( mediaURL.substr( mediaURL.lastIndexOf(".") + 1 ).toLowerCase() ) {
+            case "jpg":
+            default:
+                if( params ) this.init( params, "img" );
+                this.element.onload = this.onload;
+                this.element.src = mediaURL;
+                break;
+        }
+    };
     MediaWidget.prototype.create = function(params) {
         if( !params || !params.mediaURL ) return;
         
         if( !params.className ) params.className = "";
         params.className += " loading";
         
-        var mediaURL = params.mediaURL;
-        switch( mediaURL.substr( mediaURL.lastIndexOf(".") + 1 ).toLowerCase() ) {
-            case "jpg":
-                this.init( params, "img" );
-                this.element.onload = this.onload;
-                this.element.src = mediaURL;
-                break;
-        }
+        this.setMediaURL( params.mediaURL, params );
     };
     
     var SidebarWidget = function(params) {

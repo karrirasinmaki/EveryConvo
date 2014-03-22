@@ -49,7 +49,7 @@ public class User {
 			visibility = rs.getInt(COL_VISIBILITY);
 		}
 		
-		if( user.userid == userid ) me = true;
+		if( user != null && user.userid == userid ) me = true;
 	}
 	
 	public User setDescription(String description) {
@@ -75,16 +75,37 @@ public class User {
 		return me;
 	}
 
+	/**
+	 * Log in user and sets successfully logged user as current session user.
+	 * @param userName
+	 * @param password
+	 * @return StatusMessage
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	public StatusMessage login(String userName, String password) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		return login( userName, password, null );
 	}
+	/**
+	 * Log in user and sets successfully logged user as current session user. If username nor password was given, checks current session user login status
+	 * @param userName
+	 * @param password
+	 * @param req HttpServletRequest
+	 * @return StatusMessage
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	public StatusMessage login(String userName, String password, HttpServletRequest req) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		if( req == null ) return StatusMessage.authError();
-		
 		if( userName == null || password == null ) {
+			if( req == null ) return StatusMessage.authError();
+			
 			User sessionUser = getSessionUser( req );
 			if( sessionUser == null ) {
 				return StatusMessage.authError();
@@ -146,12 +167,32 @@ public class User {
 		return statusMessage;
 	}
 	
+	/**
+	 * Get user as JSON format string
+	 * @return User as JSON format string
+	 */
 	public String getUserInfo() {
 		Gson gson = new Gson();
 		return gson.toJson(this);
 	}
 	
-	public static StatusMessage createUser(String userName, String description, String websiteUrl, String location, String visibility, String password) 
+	/**
+	 * Create new user to database and sets it to current session user
+	 * @param userName
+	 * @param description
+	 * @param websiteUrl
+	 * @param location
+	 * @param visibility
+	 * @param password
+	 * @param req HttpServletRequest
+	 * @return StatusMessage
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	public static StatusMessage createUser(
+			String userName, String description, String websiteUrl, String location, String visibility, String password, HttpServletRequest req) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
 		SQLChain chain = new SQLChain();
@@ -189,6 +230,8 @@ public class User {
 			chain.cont().commit().setAutoCommit( true );
 			
 			statusMessage = new StatusMessage(StatusMessage.STATUS_OK, "User created with id " + userId);
+			User user = new User( userName, req );
+			user.createHttpSession( req );
 			
 		}
 		finally {
@@ -198,7 +241,15 @@ public class User {
 		return statusMessage; 
 	}
 	
-	public ResultSet save() 
+	/**
+	 * Update user data in database
+	 * @return ResultSet of generated keys
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	public ResultSet update() 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		return new SQLChain()
@@ -212,6 +263,14 @@ public class User {
 			.update();
 	}
 	
+	/**
+	 * Get all users as ResultSet
+	 * @return ResultSet of all users, user per row, including columns [userid, username, description, websiteurl, location, visibility]
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	public static ResultSet getAllUsers() 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
@@ -222,12 +281,24 @@ public class User {
 			.exec();
 	}
 	
+	/**
+	 * Get current session user
+	 * @param req HttpServletRequest
+	 * @return Current session user, or null if not exists
+	 */
 	public static User getSessionUser(HttpServletRequest req) {
 		HttpSession session = req.getSession();
 		if( session == null ) return null;
 		return (User) session.getAttribute(HTTP_SESSION_ATTRIBUTE_NAME);
 	}
 	
+	/**
+	 * Get user info as ResultSet
+	 * @param chain SQLChain
+	 * @return ResultSet including columns [userid, username, description, websiteurl, location, visibility]
+	 * @throws SQLException
+	 * @throws IllegalAccessException
+	 */
 	private ResultSet getUserInfoResultSet(SQLChain chain) throws SQLException, IllegalAccessException {
 		return chain.cont()
 			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY)
@@ -236,14 +307,13 @@ public class User {
 			.exec();
 	}
 	
+	/**
+	 * Create new HttpSession and attach this user as current session user
+	 * @param req HttpServletRequest
+	 */
 	private void createHttpSession(HttpServletRequest req) {
 		HttpSession session = req.getSession( true );
 		session.setAttribute(HTTP_SESSION_ATTRIBUTE_NAME, this);
-	}
-	
-	private Object getHttpSession(HttpServletRequest req) {
-		HttpSession session = req.getSession();
-		return session.getAttribute(HTTP_SESSION_ATTRIBUTE_NAME);
 	}
 
 }

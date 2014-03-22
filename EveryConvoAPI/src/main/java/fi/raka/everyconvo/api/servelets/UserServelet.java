@@ -155,7 +155,7 @@ public class UserServelet extends HttpServlet {
 			user.setDescription(description)
 				.setWebsiteUrl(websiteUrl)
 				.setLocation(location)
-				.save();
+				.update();
 		}
 	}
 	
@@ -185,7 +185,7 @@ public class UserServelet extends HttpServlet {
 			statusMessage = new StatusMessage(StatusMessage.STATUS_ERROR, "Username or password missing.");
 		}
 		else {
-			statusMessage = User.createUser( userName, description, websiteUrl, location, visibility, password );
+			statusMessage = User.createUser( userName, description, websiteUrl, location, visibility, password, req );
 		}
 		
 		writeJSONStatusResponse(resp, statusMessage);

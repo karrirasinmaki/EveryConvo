@@ -17,7 +17,8 @@ define(["lib/guda", "lib/values"], function(g, values) {
             id: "register",
             className: "box",
             method: "post",
-            action: values.API.createUser
+            action: values.API.createUser,
+            afterSubmit: function(data) { location.reload(); }
         });
         
         loginForm.append( new g.Widget({}, "h3").setText( "Log in" ) )
@@ -30,9 +31,10 @@ define(["lib/guda", "lib/values"], function(g, values) {
         ).append( 
             new g.Button({
                 className: "second-button",
+                type: "button",
                 onclick: function() {
-                    registerForm.show();
-                    loginForm.hide();
+                    registerForm.show( g.Widget.ANIM.zoomIn );
+                    loginForm.hide( g.Widget.ANIM.zoomOut );
                 }
             }).setText( "or register" )
         )
@@ -42,6 +44,10 @@ define(["lib/guda", "lib/values"], function(g, values) {
         registerForm.append( new g.Widget({}, "h3").setText( "Register" ) )
         .append(
             new g.Input({ name: "username", placeholder: "username" })
+        ).append(
+            new g.Input({ name: "firstname", placeholder: "firstname" })
+        ).append(
+            new g.Input({ name: "lastname", placeholder: "lastname" })
         ).append( 
             new g.Input({ name: "password", type: "password", placeholder: "**********" })
         ).append( 
@@ -49,9 +55,10 @@ define(["lib/guda", "lib/values"], function(g, values) {
         ).append( 
             new g.Button({
                 className: "second-button",
+                type: "button",
                 onclick: function() {
-                    loginForm.show();
-                    registerForm.hide();
+                    loginForm.show( g.Widget.ANIM.zoomIn );
+                    registerForm.hide( g.Widget.ANIM.zoomOut );
                 }
             }).setText( "or login" )
         );

@@ -24,10 +24,12 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         if( editMode ) {
             this.editButton.setText( values.TEXT.edit );
             this.saveButton.hide();
+            this.pictureInput.hide();
         }
         else {
             this.editButton.setText( values.TEXT.cancel );
             this.saveButton.show();
+            this.pictureInput.show();
         }
         
         this.websiteurl.setEditMode( !editMode, true );
@@ -58,6 +60,20 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         this.sideView.append( this.picture );
         
         if( user.me ) {
+            this.pictureInput = 
+                new g.Input({
+                    type: "file",
+                    name: "picture",
+                    accept: "image/*",
+                    onchange: function() {
+                        var reader = new FileReader();
+                        reader.onload = function(evt) {
+                            _this.picture.setMediaURL( evt.target.result );
+                            // TODO: File upload to server
+                        };
+                        reader.readAsDataURL( this.files[0] );
+                    }
+                }).hide();
             this.editButton = 
                 new g.Widget({ 
                     className: "edit-button",
@@ -76,7 +92,7 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
                 .setText( values.TEXT.save )
                 .hide();
             
-            this.sideView.append( this.editButton ).append( this.saveButton );
+            this.sideView.append( this.pictureInput ).append( this.editButton ).append( this.saveButton );
         }
         
         this.sideView.append( this.location ).append( this.websiteurl )
