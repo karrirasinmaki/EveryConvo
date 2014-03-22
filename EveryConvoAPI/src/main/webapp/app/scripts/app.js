@@ -59,7 +59,12 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, feed,
             }
         });
         
-        menuWidget.menu.user.setFullName( user.username ).setUserName( user.username );
+        menuWidget.menu.user.setFullName( user.username ).setUserName( user.username ).element.onclick = function() {
+            setView( user.username );
+        };
+        menuWidget.menu.profile.element.onclick = function() {
+            setView( user.username );
+        };
         menuWidget.menu.people.element.onclick = function() {
             contacts.toggleClass( "open" );
         };

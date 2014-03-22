@@ -1,37 +1,63 @@
 define(["lib/guda", "lib/values"], function(g, values) {
     
     var init = function() {
-        var view = new g.View();
+        var view = new g.View({ id: "login-page" });
+        var wrapper = new g.Widget({ className: "inner" });
+        
+        var title = new g.Widget({}, "h1").setText( "EveryConvo" );
         
         var loginForm = new g.Form({
+            id: "login",
+            className: "box",
             method: "post",
             action: values.API.login,
             afterSubmit: function(data) { location.reload(); }
-        })
-        .append( new g.Widget().setText( "Log in" ) )
+        });
+        var registerForm = new g.Form({
+            id: "register",
+            className: "box",
+            method: "post",
+            action: values.API.createUser
+        });
+        
+        loginForm.append( new g.Widget({}, "h3").setText( "Log in" ) )
         .append(
             new g.Input({ name: "username", placeholder: "username" })
         ).append( 
             new g.Input({ name: "password", type: "password", placeholder: "**********" })
         ).append( 
             new g.Button({ name: "submit" }).setText( "Log in" )
-        );
+        ).append( 
+            new g.Button({
+                className: "second-button",
+                onclick: function() {
+                    registerForm.show();
+                    loginForm.hide();
+                }
+            }).setText( "or register" )
+        )
+        .hide();
         
-        var registerForm = new g.Form({
-            method: "post",
-            action: values.API.createUser
-        })
-        .append( new g.Widget().setText( "Register" ) )
+
+        registerForm.append( new g.Widget({}, "h3").setText( "Register" ) )
         .append(
             new g.Input({ name: "username", placeholder: "username" })
         ).append( 
             new g.Input({ name: "password", type: "password", placeholder: "**********" })
         ).append( 
             new g.Button({ name: "submit" }).setText( "Register" )
+        ).append( 
+            new g.Button({
+                className: "second-button",
+                onclick: function() {
+                    loginForm.show();
+                    registerForm.hide();
+                }
+            }).setText( "or login" )
         );
         
-        view.append( loginForm );
-        view.append( registerForm );
+        wrapper.append( title ).append( loginForm ).append( registerForm );
+        view.append( wrapper );
     };
     
     return {
