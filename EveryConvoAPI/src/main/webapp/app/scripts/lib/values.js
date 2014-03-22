@@ -3,6 +3,7 @@ define(function() {
         
     var API = {
         baseUrl: baseUrl,
+        upload: baseUrl + "upload",
         story: baseUrl + "story",
         user: baseUrl + "user",
         users: baseUrl + "users",

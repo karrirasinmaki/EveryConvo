@@ -60,20 +60,28 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         this.sideView.append( this.picture );
         
         if( user.me ) {
+            this.pictureForm = 
+                new g.Form({
+                    method: "post",
+                    action: values.API.upload,
+                    enctype: "multipart/form-data"
+                });
             this.pictureInput = 
                 new g.Input({
                     type: "file",
-                    name: "picture",
+                    name: "file",
                     accept: "image/*",
                     onchange: function() {
                         var reader = new FileReader();
                         reader.onload = function(evt) {
                             _this.picture.setMediaURL( evt.target.result );
+                            _this.pictureForm.element.submit();
                             // TODO: File upload to server
                         };
                         reader.readAsDataURL( this.files[0] );
                     }
                 }).hide();
+            this.pictureForm.append( this.pictureInput );
             this.editButton = 
                 new g.Widget({ 
                     className: "edit-button",
@@ -92,7 +100,7 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
                 .setText( values.TEXT.save )
                 .hide();
             
-            this.sideView.append( this.pictureInput ).append( this.editButton ).append( this.saveButton );
+            this.sideView.append( this.pictureForm ).append( this.editButton ).append( this.saveButton );
         }
         
         this.sideView.append( this.location ).append( this.websiteurl )

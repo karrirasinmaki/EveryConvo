@@ -78,6 +78,7 @@ public class SQLUtils {
 		COL_TIMESTAMP = "timestamp",
 		COL_MEDIAURL = "mediaurl",
 		COL_STORYID = "storyid",
+		COL_IMAGEURL = "imageurl",
 		
 		PRIMARY_KEY = "PRIMARY KEY ",
 		FOREIGN_KEY = "FOREIGN KEY ",

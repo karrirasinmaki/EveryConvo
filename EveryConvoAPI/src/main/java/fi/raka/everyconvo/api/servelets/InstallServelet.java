@@ -44,6 +44,7 @@ public class InstallServelet extends HttpServlet {
 					    COL_WEBSITEURL + " TEXT",
 					    COL_LOCATION + " VARCHAR(255)",
 					    COL_VISIBILITY + " VARCHAR(1)",
+					    COL_IMAGEURL + " TEXT",
 					    getPrimaryKeyClause(COL_USERID),
 					    "UNIQUE ( username )"
 						).exe()
