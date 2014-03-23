@@ -49,7 +49,8 @@ public class Story {
 		try {
 			SelectChain chain = new SQLChain()
 				.open(DATABASE_URL)
-				.select("a."+COL_STORYID, "a."+COL_FROMID, "a."+COL_TOID, "a."+COL_CONTENT, "a."+COL_MEDIAURL, "a."+COL_TIMESTAMP, "b."+COL_USERNAME)
+				.select("a."+COL_STORYID, "a."+COL_FROMID, "a."+COL_TOID, "a."+COL_CONTENT, "a."+COL_MEDIAURL, "a."+COL_TIMESTAMP, 
+						"b."+COL_USERNAME, "b."+COL_IMAGEURL)
 				.from(TABLE_STORIES+" a")
 				.innerJoin(TABLE_USERS+" b")
 				.on("a."+COL_FROMID, "b."+COL_USERID);

@@ -6,6 +6,7 @@ define(function() {
         baseUrl: baseUrl,
         upload: baseUrl + slash + "upload",
         story: baseUrl + slash + "story",
+        stories: baseUrl + slash + "stories",
         user: baseUrl + slash + "user",
         users: baseUrl + slash + "users",
         login: baseUrl + slash + "login",

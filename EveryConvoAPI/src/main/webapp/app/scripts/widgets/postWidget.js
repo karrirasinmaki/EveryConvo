@@ -1,8 +1,4 @@
-define(["../lib/guda"], function(g) {
-    
-    var API = {
-        stories: "http://localhost:8080/EveryConvoAPI/stories"
-    };
+define(["../lib/guda", "../lib/values"], function(g, values) {
     
     var PostWidget = function(params) {
         this.init( params );
@@ -17,6 +13,10 @@ define(["../lib/guda"], function(g) {
         
         this.content.insert( this.username );
         this.append( this.time ).append( this.picture ).append( this.content );
+    };
+    PostWidget.prototype.setPictureUrl = function(imageUrl) {
+        this.picture.element.style.backgroundImage = "url(" + values.API.baseUrl + imageUrl + ")";
+        return this;
     };
     PostWidget.prototype.setUsername = function(username) {
         this.username.setText( username );
@@ -42,6 +42,7 @@ define(["../lib/guda"], function(g) {
         var post = new PostWidget({
                 className: "post"
             })
+            .setPictureUrl( data.imageurl )
             .setUsername( data.username )
             .setContent( data.content )
             .setTime( time.getHours() + ":" + time.getMinutes() )
@@ -52,9 +53,8 @@ define(["../lib/guda"], function(g) {
     
     var loadPosts = function(element, filter) {
         filter = filter || "";
-        g.getAjax( API.stories + "?" + filter ).done(function(data) {
+        g.getAjax( values.API.stories + "?" + filter ).done(function(data) {
             var data = JSON.parse( data ).data;
-            g.log(data);
             for(var i=0, l=data.length; i<l; ++i) {
                 element.append( newPost(data[i]) );
             }

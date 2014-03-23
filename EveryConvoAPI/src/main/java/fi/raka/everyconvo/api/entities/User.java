@@ -33,9 +33,12 @@ public class User {
 	public User(String userName, HttpServletRequest req) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		username = userName;
-		
 		User user = getSessionUser(req);
+		if( userName == null ) {
+			if( user == null ) return;
+			userName = user.getUserName();
+		}
+		username = userName;
 		
 		SQLChain chain = new SQLChain();
 		chain.open(DATABASE_URL);

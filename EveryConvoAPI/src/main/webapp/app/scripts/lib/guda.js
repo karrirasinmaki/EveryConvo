@@ -158,7 +158,7 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
         this.text.textContent = text;
         return this;
     };
-    Widget.prototype.init = function(params, tagName) {
+    Widget.prototype.init = Widget.prototype._init = function(params, tagName) {
         if( !tagName ) {
             if( this.element ) tagName = this.element.tagName || "div";
             else tagName = "div";
@@ -183,10 +183,13 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
     View.prototype = new Widget;
     
     var Form = function(params) {
-        this.init( params, "form" );
-        this.element.onsubmit = this.submit;
+        this.init( params );
     };
     Form.prototype = new Widget;
+    Form.prototype.init = function(params) {
+        this._init( params, "form" );
+        this.element.onsubmit = this.submit;
+    };
     Form.prototype.submit = function(e) {
         if( e ) e.preventDefault();
         var _this = this;

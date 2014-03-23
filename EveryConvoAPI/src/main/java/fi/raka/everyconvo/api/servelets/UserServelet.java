@@ -26,6 +26,7 @@ public class UserServelet extends HttpServlet {
 						
 			switch( req.getServletPath().substring(1) ) {
 			case "user":
+			case "login":
 				String[] urlPathParts = Utils.getPathParts( req.getPathInfo() );
 				String requestUserName = urlPathParts[0];
 				printUser( req, resp, requestUserName );
@@ -85,14 +86,7 @@ public class UserServelet extends HttpServlet {
 	private void printUser(HttpServletRequest req, HttpServletResponse resp, String userName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		User user;
-
-		if( userName == null ) {
-			user = User.getSessionUser( req );
-		}
-		else {
-			user = new User( userName, req );
-		}
+		User user = new User( userName, req );
 		
 		if( user == null ) writeJSONStatusResponse( resp, StatusMessage.sessionError() );
 		else writeJSONResponse( resp, user.getUserInfo() );

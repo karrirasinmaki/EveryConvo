@@ -43,7 +43,6 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, feed,
         });
 
         userWidget.loadAllUsers(function(users) {
-            console.log(users);
             for(var i=0, l=users.length; i<l; ++i) {
                 var u = users[i];
                 contacts.append(
@@ -53,13 +52,14 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, feed,
                             setView( this._g.getUserName() );
                         }
                     })
+                    .setPictureUrl( u.imageurl )
                     .setFullName( u.username )
                     .setUserName( u.username )
                 );
             }
         });
         
-        menuWidget.menu.user.setFullName( user.username ).setUserName( user.username ).element.onclick = function() {
+        menuWidget.menu.user.setPictureUrl( user.imageurl ).setFullName( user.username ).setUserName( user.username ).element.onclick = function() {
             setView( user.username );
         };
         menuWidget.menu.profile.element.onclick = function() {

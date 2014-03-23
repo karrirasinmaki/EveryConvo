@@ -1,4 +1,4 @@
-define(["../lib/guda"], function(g) {    
+define(["../lib/guda", "../lib/values"], function(g, values) {    
     
     var ContactWidget = function(params) {
         this.init( params );
@@ -13,6 +13,10 @@ define(["../lib/guda"], function(g) {
         this.info.append( this.fullName ).append( this.userName );
         
         this.append( this.picture ).append( this.info );
+    };
+    ContactWidget.prototype.setPictureUrl = function(imageUrl) {
+        this.picture.element.style.backgroundImage = "url(" + values.API.baseUrl + imageUrl + ")";
+        return this;
     };
     ContactWidget.prototype.setFullName = function(fullName) {
         this.fullName.element.textContent = fullName;
