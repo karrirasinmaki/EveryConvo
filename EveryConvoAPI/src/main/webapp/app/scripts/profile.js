@@ -50,7 +50,7 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         
         this.picture = new g.MediaWidget({
             className: "picture",
-            mediaURL: "http://mjt.nysv.org/scratch/tissit_xxl.jpg"
+            mediaURL: values.API.baseUrl + user.imageurl || "/default-profile-pic.png"
         });
         this.location = new EditableWidget({ className: "location", name: "location" }).setText( user.location );
         this.websiteurl = new EditableWidget({ className: "websiteurl", name: "websiteurl", href: user.websiteurl }, "a").setText( user.websiteurl );
@@ -73,12 +73,23 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
                     accept: "image/*",
                     onchange: function() {
                         var reader = new FileReader();
+                        var file = this.files[0];
                         reader.onload = function(evt) {
                             _this.picture.setMediaURL( evt.target.result );
-                            _this.pictureForm.element.submit();
                             // TODO: File upload to server
                         };
-                        reader.readAsDataURL( this.files[0] );
+                        reader.readAsDataURL( file );
+                        g.AJAXSubmit( _this.pictureForm.element ).done(function(data) {
+                            g.log( data );
+                            var data = JSON.parse( data );
+                            _this.sideView.append( 
+                                new g.Input({
+                                    type: "hidden",
+                                    name: "imageurl",
+                                    value: data.fileurl
+                                })
+                            );
+                        });
                     }
                 }).hide();
             this.pictureForm.append( this.pictureInput );

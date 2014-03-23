@@ -148,13 +148,15 @@ public class UserServelet extends HttpServlet {
 		userName = req.getParameter( COL_USERNAME ),
 		description = req.getParameter( COL_DESCRIPTION ),
 		websiteUrl = req.getParameter( COL_WEBSITEURL ),
-		location = req.getParameter( COL_LOCATION );
+		location = req.getParameter( COL_LOCATION ),
+		imageUrl = req.getParameter( COL_IMAGEURL );
 		
 		User user = User.getSessionUser( req );
 		if( user != null ) {
 			user.setDescription(description)
 				.setWebsiteUrl(websiteUrl)
 				.setLocation(location)
+				.setImageUrl(imageUrl)
 				.update();
 		}
 	}

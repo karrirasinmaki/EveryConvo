@@ -1,15 +1,16 @@
 define(function() {
-    var baseUrl = "http://localhost:8080/EveryConvoAPI/";
+    var baseUrl = "http://localhost:8080/EveryConvoAPI";
+    var slash = "/";
         
     var API = {
         baseUrl: baseUrl,
-        upload: baseUrl + "upload",
-        story: baseUrl + "story",
-        user: baseUrl + "user",
-        users: baseUrl + "users",
-        login: baseUrl + "login",
-        logout: baseUrl + "logout",
-        createUser: baseUrl + "create-user"
+        upload: baseUrl + slash + "upload",
+        story: baseUrl + slash + "story",
+        user: baseUrl + slash + "user",
+        users: baseUrl + slash + "users",
+        login: baseUrl + slash + "login",
+        logout: baseUrl + slash + "logout",
+        createUser: baseUrl + slash + "create-user"
     };
     
     var VIEW = {

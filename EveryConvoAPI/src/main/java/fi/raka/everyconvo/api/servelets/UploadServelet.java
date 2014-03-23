@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -38,7 +39,7 @@ public class UploadServelet extends HttpServlet {
 					"f" + Utils.getRandomHexString(7) + 
 					getFileExtension(getFilename(filePart));
 			String filePath = saveFile( filePart, fileName );
-			writeJSONResponse( resp, "{\"fileurl:\"" + filePath + "\"}" );
+			writeJSONResponse( resp, "{\"fileurl\":\"" + filePath + "\"}" );
 		}
 	}
 	

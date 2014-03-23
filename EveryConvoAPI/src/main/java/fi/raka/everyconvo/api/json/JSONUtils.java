@@ -26,7 +26,7 @@ public class JSONUtils {
 		try {
 			PrintWriter out = resp.getWriter();
 			out.flush();
-			out.print(json);
+			out.print( json );
 			out.close();
 		} catch (IOException e) {
 			e.printStackTrace();

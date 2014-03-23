@@ -24,6 +24,7 @@ public class User {
 	private String description;
 	private String websiteurl;
 	private String location;
+	private String imageurl;
 	private int visibility;
 	private boolean me = false;
 	
@@ -46,6 +47,7 @@ public class User {
 			description = rs.getString(COL_DESCRIPTION);
 			websiteurl = rs.getString(COL_WEBSITEURL);
 			location = rs.getString(COL_LOCATION);
+			imageurl = rs.getString(COL_IMAGEURL);
 			visibility = rs.getInt(COL_VISIBILITY);
 		}
 		
@@ -62,6 +64,10 @@ public class User {
 	}
 	public User setLocation(String location) {
 		this.location = location;
+		return this;
+	}
+	public User setImageUrl(String imageUrl) {
+		this.imageurl = imageUrl;
 		return this;
 	}
 	
@@ -258,6 +264,7 @@ public class User {
 			.set(COL_LOCATION, location)
 			.set(COL_WEBSITEURL, websiteurl)
 			.set(COL_DESCRIPTION, description)
+			.set(COL_IMAGEURL, imageurl)
 			.doneSet()
 			.whereIs(COL_USERID, ""+userid)
 			.update();
@@ -276,7 +283,7 @@ public class User {
 		
 		SQLChain chain = new SQLChain();
 		return chain.open(DATABASE_URL)
-			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY)
+			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_IMAGEURL, COL_VISIBILITY)
 			.from(TABLE_USERS)
 			.exec();
 	}
@@ -301,7 +308,7 @@ public class User {
 	 */
 	private ResultSet getUserInfoResultSet(SQLChain chain) throws SQLException, IllegalAccessException {
 		return chain.cont()
-			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY)
+			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_IMAGEURL, COL_VISIBILITY)
 			.from(TABLE_USERS)
 			.whereIs(COL_USERNAME, username)
 			.exec();

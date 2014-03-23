@@ -1,4 +1,5 @@
-(function(window, doc) {
+define(["lib/AJAXSubmit"], function(AJAXSubmit) {
+    var doc = window.document;
     
     var log = console.log.bind(console);
 
@@ -10,7 +11,6 @@
         if (!form) {
             return;
         }
-        var valueFieldName = form.tagName == "FORM" ? "value" : "textContent";
         var i, j, q = [];
         for (i = form.children.length - 1; i >= 0; i = i - 1) {
             var formEl = form.children[i];
@@ -23,8 +23,9 @@
                 switch (formEl.type) {
                 case 'checkbox':
                 case 'radio':
+                    var value = formEl.value || formEl.textContent;
                     if (formEl.checked) {
-                        q.push(formEl.name + "=" + encodeURIComponent(formEl[valueFieldName]));
+                        q.push(formEl.name + "=" + encodeURIComponent(value));
                     }
                     added = true;
                     break;
@@ -33,13 +34,17 @@
             case 'select-multiple':
                 for (j = formEl.options.length - 1; j >= 0; j = j - 1) {
                     if (formEl.options[j].selected) {
-                        q.push(formEl.name + "=" + encodeURIComponent(formEl.options[j][valueFieldName]));
+                        var value = formEl.options[j].value || formEl.options[j].textContent;
+                        q.push(formEl.name + "=" + encodeURIComponent(value));
                     }
                 }
                 added = true;
                 break;
             }
-            if( !added ) q.push(formEl.name + "=" + encodeURIComponent(formEl[valueFieldName]));
+            if( !added ) {
+                var value = formEl.value || formEl.textContent;
+                q.push(formEl.name + "=" + encodeURIComponent(value));
+            }
         }
         return q.join("&");
     };
@@ -247,6 +252,7 @@
         ajax: ajax,
         getAjax: getAjax,
         postAjax: postAjax,
+        AJAXSubmit: AJAXSubmit,
         serialize: serialize,
         dom: dom,
         Widget: Widget,
@@ -259,8 +265,6 @@
         SidebarWidget: SidebarWidget
     };
     
-})(window, document);
-
-define(function() {
     return window["g"];
+    
 });
