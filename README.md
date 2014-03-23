@@ -6,6 +6,7 @@ Messaging platform/app with open API
 Build
 -----
 Maven is required to build EveryConvo API.  
+**Note:** MySQL server required, running in localhost (default username:password, "root":"")
 ```
 mvn install
 mvn jetty:run
