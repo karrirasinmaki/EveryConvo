@@ -10,7 +10,8 @@ Maven is required to build EveryConvo API.
 mvn install
 mvn jetty:run
 ```
-API server running at `localhost:8080/EveryConvoAPI`
+API server running at `localhost:8080/EveryConvoAPI`  
+App running at `localhost:8080/EveryConvoAPI/app`  
 
 API calls
 ---------
