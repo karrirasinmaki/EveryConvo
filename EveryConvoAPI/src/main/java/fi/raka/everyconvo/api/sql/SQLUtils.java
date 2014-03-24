@@ -50,7 +50,7 @@ public class SQLUtils {
 		DATABASE_NAME = "everyconvo",
 		DATABASE_URL = DATABASE_BASE_URL + DATABASE_NAME,
 		DATABASE_USER_NAME = "root",
-		DATABASE_USER_PASSWORD = "",
+		DATABASE_USER_PASSWORD = "password",
 		
 		TABLE_LOGIN = "login",
 		TABLE_USERS = "users",

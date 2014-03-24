@@ -89,7 +89,7 @@ a:hover                             { text-decoration: underline; }
 .post                               { padding-bottom: 2em; margin-top: 2em; min-height: 3.4em; }
 .post .time                         { position: absolute; left: -54px; top: 0; color: #ccc; }
 .post .picture                      { position: absolute; left: 0; top: 0; width: 3.4em; height: 3.4em; border: 1px solid #ccc; }
-.post .content                      { margin-left: 3.8em; }
+.post .content                      { margin-left: 3.8em; white-space: pre-line; }
 
 
 /* Animations */

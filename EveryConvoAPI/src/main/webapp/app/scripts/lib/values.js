@@ -1,5 +1,5 @@
 define(function() {
-    var baseUrl = "http://localhost:8080/EveryConvoAPI";
+    var baseUrl = location.href.substring(0, location.href.indexOf("EveryConvoAPI") + 13);
     var slash = "/";
         
     var API = {
