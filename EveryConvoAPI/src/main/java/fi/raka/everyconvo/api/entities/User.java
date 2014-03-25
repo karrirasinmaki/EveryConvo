@@ -58,19 +58,19 @@ public class User {
 	}
 	
 	public User setDescription(String description) {
-		this.description = description;
+		if( description != null ) this.description = description;
 		return this;
 	}
 	public User setWebsiteUrl(String websiteUrl) {
-		this.websiteurl = websiteUrl;
+		if( websiteUrl != null ) this.websiteurl = websiteUrl;
 		return this;
 	}
 	public User setLocation(String location) {
-		this.location = location;
+		if( location != null ) this.location = location;
 		return this;
 	}
 	public User setImageUrl(String imageUrl) {
-		this.imageurl = imageUrl;
+		if( imageUrl != null ) this.imageurl = imageUrl;
 		return this;
 	}
 	
