@@ -156,6 +156,28 @@ public class SQLChain {
 			query.append( " DESC" );
 			return this;
 		}
+		public SelectChain as(String value) {
+			query.append( " AS " + value );
+			return this;
+		}
+		public SelectChain Case() {
+			whereUsed = true;
+			query.append( " CASE " );
+			return this;
+		}
+		public SelectChain when() {
+			query.append( " WHEN " );
+			return this;
+		}
+		public SelectChain then(String value) {
+			query.append( " THEN " + value );
+			return this;
+		}
+		public SelectChain end() {
+			whereUsed = false;
+			query.append( " END " );
+			return this;
+		}
 		
 		private SelectChain orderBy(String ... columns) {
 			query.append( " ORDER BY " + StringUtils.join(columns, ",") );

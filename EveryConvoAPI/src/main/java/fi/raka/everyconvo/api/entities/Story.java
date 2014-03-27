@@ -5,6 +5,8 @@ import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import fi.raka.everyconvo.api.sql.SQLChain;
 import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
 
@@ -43,7 +45,9 @@ public class Story {
 		}
 	}
 	
-	public static ResultSet loadStories(String[] users) {
+	public static ResultSet loadStories(String[] users, HttpServletRequest req) {
+		
+		User user = User.getSessionUser(req);
 		ResultSet rs = null;
 		
 		try {
@@ -51,6 +55,11 @@ public class Story {
 				.open(DATABASE_URL)
 				.select("a."+COL_STORYID, "a."+COL_FROMID, "a."+COL_TOID, "a."+COL_CONTENT, "a."+COL_MEDIAURL, "a."+COL_TIMESTAMP, 
 						"b."+COL_USERNAME, "b."+COL_IMAGEURL)
+				.Case()
+					.when()
+					.whereIs(COL_USERID, ""+user.getUserId())
+					.then("true")
+				.end().as( "me" )
 				.from(TABLE_STORIES+" a")
 				.innerJoin(TABLE_USERS+" b")
 				.on("a."+COL_FROMID, "b."+COL_USERID);

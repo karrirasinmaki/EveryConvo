@@ -26,7 +26,7 @@ public class StoryServelet extends HttpServlet {
 			users = usersString.split(",");
 		}
 		
-		writeJSONResponse( resp, Story.loadStories(users) );
+		writeJSONResponse( resp, Story.loadStories(users, req) );
 		
 	}
 	

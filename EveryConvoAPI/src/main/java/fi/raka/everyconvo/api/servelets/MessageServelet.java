@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fi.raka.everyconvo.api.entities.Message;
+import fi.raka.everyconvo.api.entities.User;
 import static fi.raka.everyconvo.api.json.JSONUtils.*;
 
 public class MessageServelet extends HttpServlet {
@@ -26,8 +27,11 @@ public class MessageServelet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		Message message = new Message( 1, req.getParameter("to"), req.getParameter("content") );
-		message.send();
+		User user = User.getSessionUser( req );
+		if( user != null ) {
+			Message message = new Message( user.getUserId(), req.getParameter("to"), req.getParameter("content") );
+			message.send();
+		}
 		
 	}
 
