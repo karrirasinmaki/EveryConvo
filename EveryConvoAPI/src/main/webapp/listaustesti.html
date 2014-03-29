@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Listaustesti</title>
+        <script src="app/scripts/lib/guda.js"></script>
+        <style>
+            tr:nth-child(even) { background: #f0f0f0; }
+            tr td:nth-child(even) { border: 1px solid black; border-bottom: 0; border-top: 0; }
+            td { padding: 0 0.2em; }
+        </style>
+    </head>
+    <body>
+        
+        <h1>Listaustesti</h1>
+        <h3>Listaa kaikki palvelun käyttäjät</h3>
+        <table>
+            <thead>
+                <tr>
+                    <td>userid</td>
+                    <td>username</td>
+                    <td>description</td>
+                    <td>websiteurl</td>
+                    <td>location</td>
+                    <td>imageurl</td>
+                    <td>visibility</td>
+                </tr>
+            </thead>
+            <tbody id="list">
+            </tbody>
+        </table>
+    
+        <script>
+            var baseUrl = location.href.substring(0, location.href.indexOf("EveryConvoAPI") + 13);
+            var list = document.getElementById("list");
+            var tr = function(inner) {
+                return "<tr>" + inner + "</tr>";
+            };
+            var td = function(inner) {
+                return "<td>" + inner + "</td>";
+            };
+            g.getAjax(baseUrl + "/users").done(function(json) {
+                var data = JSON.parse(json);
+                data = data.data;
+                for( var i=0, l=data.length; i<l; ++i ) {
+                    var d = data[i];
+                    list.innerHTML += tr( 
+                        td( d.userid ) + 
+                        td( d.username ) +
+                        td( d.description ) +
+                        td( d.websiteurl ) +
+                        td( d.location) +
+                        td( d.imageurl ) +
+                        td( d.visibility ) 
+                    );
+                }
+            });
+        </script>
+    </body>
+    
+</html>

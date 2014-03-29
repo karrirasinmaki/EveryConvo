@@ -1,3 +1,4 @@
+var define = define || function(_,f) {f()};
 define(["lib/AJAXSubmit"], function(AJAXSubmit) {
     var doc = window.document;
     
