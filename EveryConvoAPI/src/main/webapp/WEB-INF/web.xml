@@ -49,6 +49,10 @@
       <servlet-name>User</servlet-name>
       <servlet-class>fi.raka.everyconvo.api.servelets.UserServelet</servlet-class>
   </servlet>
+  <servlet>
+      <servlet-name>Delete</servlet-name>
+      <servlet-class>fi.raka.everyconvo.api.servelets.DeleteServelet</servlet-class>
+  </servlet>
   
   <!-- SERVELETS MAPPING -->
   <servlet-mapping>
@@ -66,6 +70,10 @@
   <servlet-mapping>
       <servlet-name>Upload</servlet-name>
       <url-pattern>/upload</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>Delete</servlet-name>
+      <url-pattern>/delete</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
       <servlet-name>Message</servlet-name>

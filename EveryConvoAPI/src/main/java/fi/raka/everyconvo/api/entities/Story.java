@@ -55,9 +55,10 @@ public class Story {
 				.open(DATABASE_URL)
 				.select("a."+COL_STORYID, "a."+COL_FROMID, "a."+COL_TOID, "a."+COL_CONTENT, "a."+COL_MEDIAURL, "a."+COL_TIMESTAMP, 
 						"b."+COL_USERNAME, "b."+COL_IMAGEURL)
+				.q(",")
 				.Case()
 					.when()
-					.whereIs(COL_USERID, ""+user.getUserId())
+					.whereIs("a."+COL_FROMID, ""+user.getUserId())
 					.then("true")
 				.end().as( "me" )
 				.from(TABLE_STORIES+" a")

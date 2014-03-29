@@ -20,11 +20,25 @@ public class SQLChain {
 		query = new StringBuilder();
 	}
 	
+	/**
+	 * Opens new database connection
+	 * @param url database url
+	 * @return new SQLChain
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	public Chain open(String url) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.jdbc.Driver").newInstance();
 		conn = DriverManager.getConnection(url, DATABASE_USER_NAME, DATABASE_USER_PASSWORD);
 		return new Chain();
 	}
+	/**
+	 * Opens new SQLChain using already opened connection. Throws error if not any connection have opened
+	 * @return new SQLChain
+	 * @throws IllegalAccessException
+	 */
 	public Chain cont() throws IllegalAccessException {
 		if(conn == null) throw new IllegalAccessError( "You must have opened connection before continue." );
 		query.setLength(0);
@@ -35,28 +49,61 @@ public class SQLChain {
 		
 		public Chain() {}
 		
+		/**
+		 * Get current query as string
+		 * @return query as string
+		 */
 		public String getQuery() {
 			return query.toString();
 		}
 		
+		/**
+		 * Closes connection
+		 * @throws SQLException
+		 */
 		public void close() throws SQLException {
 			conn.close();
 		}
+		/**
+		 * Commit SQL query
+		 * @return Chain
+		 * @throws SQLException
+		 */
 		public Chain commit() throws SQLException {
 			conn.commit();
 			return this;
 		}
+		/**
+		 * Executes SQL chain
+		 * @return ResultSet of generated keys
+		 * @throws SQLException
+		 */
 		public ResultSet exec() throws SQLException {
 			return executeUpdate();
 		}
+		/**
+		 * Executes SQL chain
+		 * @return Chain
+		 * @throws SQLException
+		 */
 		public Chain exe() throws SQLException {
 			exec();
 			return this;
 		}
+		/**
+		 * Executes SQL chain update.
+		 * @return ResultSet of generated keys
+		 * @throws SQLException
+		 */
 		public ResultSet update() throws SQLException {
 			return executeUpdate();
 		}
 		
+		/**
+		 * Adds free text to SQL query
+		 * @param q
+		 * @return Chain
+		 */
 		public Chain q(String q) {
 			query.append(q);
 			return this;
@@ -72,6 +119,10 @@ public class SQLChain {
 		public UpdateChain update(String table) {
 			query.append( "UPDATE " + table );
 			return new UpdateChain();
+		}
+		public SelectChain delete() {
+			query.append( "DELETE " );
+			return new SelectChain();
 		}
 		public CreateChain create() {
 			return new CreateChain();
@@ -105,6 +156,7 @@ public class SQLChain {
 		
 		private boolean whereUsed = false;
 		private boolean orFlag = false;
+		private boolean caseChain = false;
 		
 		public SelectChain() {}
 		
@@ -161,7 +213,7 @@ public class SQLChain {
 			return this;
 		}
 		public SelectChain Case() {
-			whereUsed = true;
+			caseChain = true;
 			query.append( " CASE " );
 			return this;
 		}
@@ -174,7 +226,7 @@ public class SQLChain {
 			return this;
 		}
 		public SelectChain end() {
-			whereUsed = false;
+			caseChain = false;
 			query.append( " END " );
 			return this;
 		}
@@ -189,7 +241,7 @@ public class SQLChain {
 			}
 			else {
 				whereUsed = true;
-				return " WHERE ";
+				return caseChain ? "" : " WHERE ";
 			}
 		}
 	}

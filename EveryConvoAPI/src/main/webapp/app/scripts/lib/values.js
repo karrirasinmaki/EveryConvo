@@ -11,8 +11,10 @@ define(function() {
         users: baseUrl + slash + "users",
         login: baseUrl + slash + "login",
         logout: baseUrl + slash + "logout",
-        createUser: baseUrl + slash + "create-user"
+        createUser: baseUrl + slash + "create-user",
+        del: baseUrl + slash + "delete"
     };
+    API.deleteStory = API.del + "?type=story&id=";
     
     var VIEW = {
         feed: "feed"
@@ -25,7 +27,9 @@ define(function() {
     var TEXT = {
         edit: "Edit",
         save: "Save",
-        cancel: "Cancel"
+        cancel: "Cancel",
+        del: "Delete",
+        wannaDelete: "Do you really want to delete that item?"
     };
     
     return {

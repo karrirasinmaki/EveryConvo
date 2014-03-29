@@ -36,8 +36,27 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
         this.time.setText( time );
         return this;
     };
+    PostWidget.prototype.setEditable = function() {
+        var _this = this;
+        this.append( 
+            new g.Button({ 
+                className: "delete",
+                onclick: function() {
+                    _this.delete();
+                }
+            }).setText( values.TEXT.del )
+        );
+    };
+    PostWidget.prototype.delete = function() {
+        if( !confirm( values.TEXT.wannaDelete ) ) return;
+        var _this = this;
+        g.log( values.API.deleteStory + _this.__id );
+        g.postAjax( values.API.deleteStory + _this.__id ).done(function() {
+            _this.element.remove();
+        });
+    };
     
-    var newPost = function(data) {
+    var newPost = function(data) {console.log(data);
         var time = new Date(data.timestamp);
         var post = new PostWidget({
                 className: "post"
@@ -47,6 +66,11 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
             .setContent( data.content )
             .setTime( time.getHours() + ":" + time.getMinutes() )
             .setMedia( data.mediaurl );
+        post.__id = data.storyid;
+        
+        if( data.me ) {
+            post.setEditable();
+        }
         
         return post;
     };
