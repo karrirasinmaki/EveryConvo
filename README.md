@@ -58,6 +58,10 @@ Asterix (*) means action needs authenticated user
 - /upload POST *
   - // upload file to server and returns uploaded file url
   - accepts "multipart/form-data"-form with single file
+- /delete 
+  - // delete entity
+  - type // type of entity. eq. story
+  - id
 
 Tech talking
 ------------
