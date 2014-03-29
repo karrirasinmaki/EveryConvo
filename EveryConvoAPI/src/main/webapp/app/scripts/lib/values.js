@@ -12,7 +12,11 @@ define(function() {
         login: baseUrl + slash + "login",
         logout: baseUrl + slash + "logout",
         createUser: baseUrl + slash + "create-user",
-        del: baseUrl + slash + "delete"
+        del: baseUrl + slash + "delete",
+        status: {
+            error: "error",
+            ok: "ok"
+        }
     };
     API.deleteStory = API.del + "?type=story&id=";
     
@@ -29,7 +33,10 @@ define(function() {
         save: "Save",
         cancel: "Cancel",
         del: "Delete",
-        wannaDelete: "Do you really want to delete that item?"
+        like: "Like",
+        wannaDelete: "Do you really want to delete that item?",
+        loginError: "Error with login. Make sure you used correct pair of username and password",
+        registerError: "Error with registration. Make sure you fill every field or try with another username"
     };
     
     return {

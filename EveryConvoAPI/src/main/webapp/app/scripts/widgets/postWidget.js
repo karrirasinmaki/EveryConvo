@@ -10,9 +10,26 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
         this.picture = new g.Widget({ className: "picture" });
         this.username = new g.Widget({ className: "username" });
         this.content = new g.Widget({ className: "content" });
+        this.actionBar = new g.Widget({ className: "action-bar" });
+        this.createActionBar();
         
         this.content.insert( this.username );
-        this.append( this.time ).append( this.picture ).append( this.content );
+        this.append( this.time ).append( this.picture ).append( this.content ).append( this.actionBar );
+    };
+    PostWidget.prototype.like = function() {
+        this.likeButton.setText( "just dummy button atm" );
+    };
+    PostWidget.prototype.createActionBar = function() {
+        var _this = this;
+        this.likeButton = 
+            new g.Button({
+                className: "like",
+                onclick: function() {
+                    _this.like();
+                }
+            }).setText( values.TEXT.like );
+        
+        this.actionBar.append( this.likeButton );
     };
     PostWidget.prototype.setPictureUrl = function(imageUrl) {
         this.picture.element.style.backgroundImage = "url(" + values.API.baseUrl + imageUrl + ")";
@@ -38,7 +55,7 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
     };
     PostWidget.prototype.setEditable = function() {
         var _this = this;
-        this.append( 
+        this.actionBar.append( 
             new g.Button({ 
                 className: "delete",
                 onclick: function() {

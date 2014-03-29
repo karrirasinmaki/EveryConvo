@@ -126,7 +126,7 @@ public class User {
 		
 		this.username = userName;
 		
-		StatusMessage statusMessage = null;
+		StatusMessage statusMessage = StatusMessage.authError();
 		SQLChain chain = new SQLChain();
 		ResultSet rs = null;
 		ResultSet lrs = null;

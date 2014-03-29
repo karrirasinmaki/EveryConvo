@@ -86,10 +86,10 @@ a:hover                             { text-decoration: underline; }
 .contact .info .user-name           { color: #7b7b7b; }
 
 /* Post */
-.post                               { padding-bottom: 2em; margin-top: 2em; min-height: 3.4em; }
+.post                               { padding-bottom: 2em; margin-top: 2em; }
 .post .time                         { position: absolute; left: -54px; top: 0; color: #ccc; }
 .post .picture                      { position: absolute; left: 0; top: 0; width: 3.4em; height: 3.4em; border: 1px solid #ccc; }
-.post .content                      { margin-left: 3.8em; white-space: pre-line; }
+.post .content                      { margin-left: 3.8em; min-height: 3.4em; white-space: pre-line; }
 
 
 /* Animations */

@@ -6,19 +6,40 @@ define(["lib/guda", "lib/values"], function(g, values) {
         
         var title = new g.Widget({}, "h1").setText( "EveryConvo" );
         
-        var loginForm = new g.Form({
+        var loginForm = undefined;
+        loginForm = new g.Form({
             id: "login",
             className: "box",
             method: "post",
             action: values.API.login,
-            afterSubmit: function(data) { location.reload(); }
+            afterSubmit: function(data) { 
+                data = JSON.parse( data );
+                if( data.status && data.status == values.API.status.error ) {
+                    var message = new g.Widget({ className: "error" }).setText( values.TEXT.loginError );
+                    loginForm.append( message );
+                    setTimeout( function() {
+                        message.element.remove();
+                    }, 3000 );
+                }
+                else location.reload(); 
+            }
         });
         var registerForm = new g.Form({
             id: "register",
             className: "box",
             method: "post",
             action: values.API.createUser,
-            afterSubmit: function(data) { location.reload(); }
+            afterSubmit: function(data) { 
+                data = JSON.parse( data );
+                if( data.status && data.status == values.API.status.error ) {
+                    var message = new g.Widget({ className: "error" }).setText( values.TEXT.registerError );
+                    registerForm.append( message );
+                    setTimeout( function() {
+                        message.element.remove();
+                    }, 3000 );
+                }
+                else location.reload(); 
+            }
         });
         
         loginForm.append( new g.Widget({}, "h3").setText( "Log in" ) )
