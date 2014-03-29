@@ -1,7 +1,9 @@
 EveryConvo
 ==========
 
-Messaging platform/app with open API
+Messaging platform/app with open API  
+Demo at:  
+http://188.226.165.140:8088/EveryConvoAPI/app/
 
 Build
 -----
