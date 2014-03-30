@@ -15,6 +15,9 @@ mvn jetty:run
 ```
 API server running at `localhost:8080/EveryConvoAPI`  
 App running at `localhost:8080/EveryConvoAPI/app`  
+
+Install
+-------
 When server is up and running, you have to install application's database structure and set database's username and password. Those steps are done by so:  
 ```
 localhost:8080/EveryConvoAPI/install?username=YOUR_DB_USER&password=YOUR_DB_PASS
