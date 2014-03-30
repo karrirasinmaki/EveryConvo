@@ -9,4 +9,9 @@ public class Values {
 	VISIBILITY_FOLLOWERS = 'f',
 	VISIBILITY_PRIVATE = 'i';
 	
+	public static final String
+	CONFIG_FILE_PATH = "config.properties",
+	CONFIG_DB_USER = "db_user",
+	CONFIG_DB_PASS = "db_pass";
+	
 }

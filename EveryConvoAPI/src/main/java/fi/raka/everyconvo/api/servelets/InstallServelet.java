@@ -1,7 +1,13 @@
 package fi.raka.everyconvo.api.servelets;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import fi.raka.everyconvo.api.entities.StatusMessage;
 import fi.raka.everyconvo.api.sql.SQLChain;
+import fi.raka.everyconvo.api.sql.SQLChain.Chain;
+import fi.raka.everyconvo.api.utils.Values;
 import static fi.raka.everyconvo.api.sql.SQLUtils.*;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
@@ -21,6 +29,47 @@ public class InstallServelet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
+		String dbUser = req.getParameter("username");
+		String dbPass = req.getParameter("password");
+		
+		System.out.println(dbUser + "::::" + dbPass);
+		
+		if( dbUser == null && dbPass == null ) {
+			File settingsFile = new File(Values.CONFIG_FILE_PATH);
+			if( settingsFile.exists() ) {
+				createDatabase(resp);
+			}
+		}
+		else {
+			installAndCreateConfigFile( dbUser, dbPass, resp );
+		}
+		
+	}
+	
+	private void installAndCreateConfigFile(String dbUser, String dbPass, HttpServletResponse resp) throws IOException {
+		try {
+			
+			Chain chain = new SQLChain().open( DATABASE_BASE_URL, dbUser, dbPass );
+			
+			Properties props = new Properties();
+			OutputStream out = new FileOutputStream(Values.CONFIG_FILE_PATH);
+			
+			props.setProperty(Values.CONFIG_DB_USER, dbUser);
+			props.setProperty(Values.CONFIG_DB_PASS, dbPass);
+			
+			props.store(out, null);
+			
+			createDatabase(resp);
+			
+		} catch (InstantiationException | IllegalAccessException
+				| ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			fi.raka.everyconvo.api.json.JSONUtils.writeJSONStatusResponse(resp, StatusMessage.authError() );
+		}
+	}
+	
+	private void createDatabase(HttpServletResponse resp) {
+
 		StatusMessage statusMessage = null;
 		SQLChain chain = new SQLChain();
 		

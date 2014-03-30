@@ -20,11 +20,15 @@ public class DestroyServelet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
+
+		String dbUser = req.getParameter("username");
+		String dbPass = req.getParameter("password");
+		
 		StatusMessage statusMessage;
 		SQLChain chain = new SQLChain();
 		try {
 			
-			chain.open(DATABASE_URL)
+			chain.open(DATABASE_URL, dbUser, dbPass)
 				.dropDatabase( DATABASE_NAME )
 				.exec();
 			

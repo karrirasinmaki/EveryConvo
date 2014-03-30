@@ -1,15 +1,20 @@
 package fi.raka.everyconvo.api.sql;
 
-import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+
+import fi.raka.everyconvo.api.utils.Values;
 
 public class SQLChain {
 	
@@ -20,6 +25,11 @@ public class SQLChain {
 		query = new StringBuilder();
 	}
 	
+	public Chain open(String url, String username, String password) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		Class.forName("com.mysql.jdbc.Driver").newInstance();
+		conn = DriverManager.getConnection(url, username, password);
+		return new Chain();
+	}
 	/**
 	 * Opens new database connection
 	 * @param url database url
@@ -30,9 +40,22 @@ public class SQLChain {
 	 * @throws SQLException
 	 */
 	public Chain open(String url) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		Class.forName("com.mysql.jdbc.Driver").newInstance();
-		conn = DriverManager.getConnection(url, DATABASE_USER_NAME, DATABASE_USER_PASSWORD);
-		return new Chain();
+		Properties props = new Properties();
+		InputStream in = null;
+		try {
+			
+			in = new FileInputStream(Values.CONFIG_FILE_PATH);
+			props.load(in);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		String username = props.getProperty(Values.CONFIG_DB_USER);
+		String password = props.getProperty(Values.CONFIG_DB_PASS);
+		
+		return open( url, username, password );
 	}
 	/**
 	 * Opens new SQLChain using already opened connection. Throws error if not any connection have opened

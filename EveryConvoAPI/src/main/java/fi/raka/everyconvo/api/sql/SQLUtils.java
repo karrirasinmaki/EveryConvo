@@ -2,10 +2,6 @@ package fi.raka.everyconvo.api.sql;
 
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 public class SQLUtils {
 	
 	public static String getPrimaryKeyClause(String columnName) {
@@ -19,38 +15,11 @@ public class SQLUtils {
 		return getForeignKeyClause(columnName, refTableName, columnName);
 	}
 	
-	/**
-	 * Create connection to MySQL server
-	 * @param url where to connect
-	 * @return Connection or null if fails
-	 * @throws SQLException 
-	 * @throws ClassNotFoundException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 */
-	public static Connection getConnection(String url) throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-		Class.forName("com.mysql.jdbc.Driver").newInstance();
-		return DriverManager.getConnection(url, DATABASE_USER_NAME, DATABASE_USER_PASSWORD);
-	}
-	/**
-	 * Create connection to MySQL server
-	 * @return Connection or null if fails
-	 * @throws SQLException 
-	 * @throws ClassNotFoundException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 */
-	public static Connection getConnection() throws SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-		return getConnection( DATABASE_BASE_URL + DATABASE_NAME );
-	}
-	
 	public class Values {
 		public static final String 
 		DATABASE_BASE_URL = "jdbc:mysql://localhost/",
 		DATABASE_NAME = "everyconvo",
 		DATABASE_URL = DATABASE_BASE_URL + DATABASE_NAME,
-		DATABASE_USER_NAME = "root",
-		DATABASE_USER_PASSWORD = "",
 		
 		TABLE_LOGIN = "login",
 		TABLE_USERS = "users",
@@ -85,6 +54,7 @@ public class SQLUtils {
 		REFERENCES = "REFERENCES ",
 		INT_NOT_NULL = " INT NOT NULL",
 		INT_NOT_NULL_AUTO_INCREMENT = " INT NOT NULL AUTO_INCREMENT";
+		
 	}
 	
 }
