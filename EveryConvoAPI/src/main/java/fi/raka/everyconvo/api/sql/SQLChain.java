@@ -45,6 +45,10 @@ public class SQLChain {
 		return new Chain();
 	}
 	
+	public Connection getConnection() {
+		return conn;
+	}
+	
 	public class Chain {
 		
 		public Chain() {}

@@ -36,7 +36,7 @@ public class DestroyServelet extends HttpServlet {
 		}
 		finally {
 			try {
-				chain.cont().close();
+				if( chain.getConnection() != null ) chain.cont().close();
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			} catch (SQLException e) {
