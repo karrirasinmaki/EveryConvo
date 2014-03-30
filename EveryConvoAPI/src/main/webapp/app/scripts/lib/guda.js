@@ -225,12 +225,17 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
     MediaWidget.prototype.onload = function() {
         dom.removeClass( "loading", this );
     };
+    MediaWidget.prototype.onerror = function() {
+        dom.addClass( "nofound", this );
+    };
     MediaWidget.prototype.setMediaURL = function(mediaURL, params) {
+        if( mediaURL == undefined || mediaURL == null ) mediaURL = "defaut.png";
         switch( mediaURL.substr( mediaURL.lastIndexOf(".") + 1 ).toLowerCase() ) {
             case "jpg":
             default:
                 if( params ) this.init( params, "img" );
                 this.element.onload = this.onload;
+                this.element.onerror = this.onerror;
                 this.element.src = mediaURL;
                 break;
         }

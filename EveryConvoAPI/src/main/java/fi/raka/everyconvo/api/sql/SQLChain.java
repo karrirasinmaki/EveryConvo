@@ -227,6 +227,7 @@ public class SQLChain {
 		}
 		public SelectChain end() {
 			caseChain = false;
+			whereUsed = false;
 			query.append( " END " );
 			return this;
 		}

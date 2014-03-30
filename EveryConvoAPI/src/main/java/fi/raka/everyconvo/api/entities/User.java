@@ -13,6 +13,8 @@ import javax.servlet.http.HttpSession;
 import com.google.gson.Gson;
 
 import fi.raka.everyconvo.api.sql.SQLChain;
+import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
+import fi.raka.everyconvo.api.sql.SQLChain.UpdateChain;
 import fi.raka.everyconvo.api.utils.PasswordHash;
 import fi.raka.everyconvo.api.entities.StatusMessage;
 
@@ -58,19 +60,19 @@ public class User {
 	}
 	
 	public User setDescription(String description) {
-		if( description != null ) this.description = description;
+		this.description = description;
 		return this;
 	}
 	public User setWebsiteUrl(String websiteUrl) {
-		if( websiteUrl != null ) this.websiteurl = websiteUrl;
+		this.websiteurl = websiteUrl;
 		return this;
 	}
 	public User setLocation(String location) {
-		if( location != null ) this.location = location;
+		this.location = location;
 		return this;
 	}
 	public User setImageUrl(String imageUrl) {
-		if( imageUrl != null ) this.imageurl = imageUrl;
+		this.imageurl = imageUrl;
 		return this;
 	}
 	
@@ -261,13 +263,17 @@ public class User {
 	public ResultSet update() 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		return new SQLChain()
+		UpdateChain chain = new SQLChain()
 			.open( DATABASE_URL )
-			.update(TABLE_USERS)
-			.set(COL_LOCATION, location)
-			.set(COL_WEBSITEURL, websiteurl)
-			.set(COL_DESCRIPTION, description)
-			.set(COL_IMAGEURL, imageurl)
+			.update(TABLE_USERS);
+		
+			if( location != null ) chain.set(COL_LOCATION, location);
+			if( websiteurl != null ) chain.set(COL_WEBSITEURL, websiteurl);
+			if( description != null ) chain.set(COL_DESCRIPTION, description);
+			if( imageurl != null ) chain.set(COL_IMAGEURL, imageurl);
+		
+			return
+			chain
 			.doneSet()
 			.whereIs(COL_USERID, ""+userid)
 			.update();

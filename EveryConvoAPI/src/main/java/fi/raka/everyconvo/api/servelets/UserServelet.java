@@ -88,7 +88,7 @@ public class UserServelet extends HttpServlet {
 		
 		User user = new User( userName, req );
 		
-		if( user == null ) writeJSONStatusResponse( resp, StatusMessage.sessionError() );
+		if( user.getUserId() == 0 ) writeJSONStatusResponse( resp, StatusMessage.sessionError() );
 		else writeJSONResponse( resp, user.getUserInfo() );
 	}
 	

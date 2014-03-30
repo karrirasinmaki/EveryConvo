@@ -41,6 +41,8 @@ a:hover                             { text-decoration: underline; }
 
 *[contenteditable="true"]           { border: 1px dashed #ccc; }
 
+img.nofound                         { width: 100%; height: auto; background: #ccc; }
+
 .contact,
 .post,
 .menu-item                          { position: relative; border-bottom: 1px solid #ccc; }
