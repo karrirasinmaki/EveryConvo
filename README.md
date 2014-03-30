@@ -15,14 +15,25 @@ mvn jetty:run
 ```
 API server running at `localhost:8080/EveryConvoAPI`  
 App running at `localhost:8080/EveryConvoAPI/app`  
+When server is up and running, you have to install application's database structure and set database's username and password. Those steps are done by so:  
+```
+localhost:8080/EveryConvoAPI/install?username=YOUR_DB_USER&password=YOUR_DB_PASS
+```
+If everything went well, app created database called `everyconvo` to your MySQL and EveryConvo is ready to rock n roll.
 
 API calls
 ---------
 **Server admins only:**
 - /install
   - // installs 'everyconvo' database structure to server
+  - // requires db username & password
+  - username
+  - password
 - /destroy
   - // destroys 'everyconvo' database
+  - // requires db username & password
+  - username
+  - password
 
 **Public API:**
 Asterix (*) means action needs authenticated user
