@@ -14,19 +14,30 @@ public class StatusMessage {
 		this.message = message;
 	}
 	
+	private static StatusMessage generateError(String status, String message, Exception e) {
+		return new StatusMessage(status, message + "\n" + e.getMessage());
+	}
+	private static StatusMessage generateError(String status, String message) {
+		return new StatusMessage(status, message);
+	}
+	
 	public static StatusMessage sessionError() {
-		return new StatusMessage(STATUS_ERROR, "Invalid session.");
+		return generateError(STATUS_ERROR, "Invalid session.");
 	}
 	
 	public static StatusMessage sessionLogout() {
-		return new StatusMessage(STATUS_OK, "Session end.");
+		return generateError(STATUS_OK, "Session end.");
 	}
 	
 	public static StatusMessage authError() {
-		return new StatusMessage(StatusMessage.STATUS_ERROR, "Error with authentication.");
+		return generateError(StatusMessage.STATUS_ERROR, "Error with authentication.");
 	}
 	
 	public static StatusMessage authOk() {
-		return new StatusMessage(StatusMessage.STATUS_OK, "Logged in.");
+		return generateError(StatusMessage.STATUS_OK, "Logged in.");
+	}
+	
+	public static StatusMessage generalError(Exception e) {
+		return generateError(STATUS_ERROR, "Something went wrong.", e);
 	}
 }

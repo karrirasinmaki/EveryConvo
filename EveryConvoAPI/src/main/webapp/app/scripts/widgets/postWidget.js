@@ -73,19 +73,21 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
         });
     };
     
-    var newPost = function(data) {console.log(data);
+    var newPost = function(data) {
+        console.log(data);
+        var user = data.user;
         var time = new Date(data.timestamp);
         var post = new PostWidget({
                 className: "post"
             })
             .setPictureUrl( data.imageurl )
-            .setUsername( data.username )
+            .setUsername( user.username )
             .setContent( data.content )
             .setTime( time.getHours() + ":" + time.getMinutes() )
             .setMedia( data.mediaurl );
         post.__id = data.storyid;
         
-        if( data.me ) {
+        if( user.me ) {
             post.setEditable();
         }
         

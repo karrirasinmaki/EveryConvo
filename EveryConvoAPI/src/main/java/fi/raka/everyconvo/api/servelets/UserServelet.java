@@ -87,9 +87,9 @@ public class UserServelet extends HttpServlet {
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		User user = new User( userName, req );
-		
-		if( user.getUserId() == 0 ) writeJSONStatusResponse( resp, StatusMessage.sessionError() );
-		else writeJSONResponse( resp, user.getUserInfo() );
+		Integer userId = user.getUserId();
+		if( userId == null || userId == 0 ) writeJSONStatusResponse( resp, StatusMessage.sessionError() );
+		else writeJSONResponse( resp, user );
 	}
 	
 	/**
@@ -103,7 +103,7 @@ public class UserServelet extends HttpServlet {
 	 */
 	private void printAllUsers(HttpServletRequest req, HttpServletResponse resp) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		writeJSONResponse( resp, User.getAllUsers() );
+		writeJSONResponse( resp, User.loadAllUsers(req) );
 	}
 
 	/**

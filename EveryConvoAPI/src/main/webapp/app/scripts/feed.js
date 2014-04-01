@@ -20,7 +20,6 @@ define(["lib/guda", "widgets/postWidget"], function(g, postWidget) {
         var filter = "";
         if( empty ) this.feed.element.innerHTML = "";
         if( userName ) filter += "user=" + userName
-        g.log(filter);
         postWidget.loadPosts( this.feed, filter );
     };
     

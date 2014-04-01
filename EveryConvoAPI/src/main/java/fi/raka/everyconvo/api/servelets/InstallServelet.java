@@ -1,11 +1,9 @@
 package fi.raka.everyconvo.api.servelets;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -16,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import fi.raka.everyconvo.api.entities.StatusMessage;
 import fi.raka.everyconvo.api.sql.SQLChain;
-import fi.raka.everyconvo.api.sql.SQLChain.Chain;
 import fi.raka.everyconvo.api.utils.Values;
 import static fi.raka.everyconvo.api.sql.SQLUtils.*;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
@@ -46,10 +43,17 @@ public class InstallServelet extends HttpServlet {
 		
 	}
 	
+	/**
+	 * Creates database structure and configure file
+	 * @param dbUser DB username
+	 * @param dbPass DB user password
+	 * @param resp HttpServletResponse
+	 * @throws IOException
+	 */
 	private void installAndCreateConfigFile(String dbUser, String dbPass, HttpServletResponse resp) throws IOException {
 		try {
 			
-			Chain chain = new SQLChain().open( DATABASE_BASE_URL, dbUser, dbPass );
+			new SQLChain().open( DATABASE_BASE_URL, dbUser, dbPass );
 			
 			Properties props = new Properties();
 			OutputStream out = new FileOutputStream(Values.CONFIG_FILE_PATH);
@@ -68,6 +72,10 @@ public class InstallServelet extends HttpServlet {
 		}
 	}
 	
+	/**
+	 * Creates database structure
+	 * @param resp HttpServletResponse
+	 */
 	private void createDatabase(HttpServletResponse resp) {
 
 		StatusMessage statusMessage = null;
@@ -88,28 +96,28 @@ public class InstallServelet extends HttpServlet {
 				.create()
 				.table(TABLE_USERS, null, 
 						COL_USERID + INT_NOT_NULL_AUTO_INCREMENT,
-					    COL_USERNAME + " VARCHAR(20)",
-					    COL_DESCRIPTION + " TEXT",
-					    COL_WEBSITEURL + " TEXT",
-					    COL_LOCATION + " VARCHAR(255)",
-					    COL_VISIBILITY + " VARCHAR(1)",
-					    COL_IMAGEURL + " TEXT",
+					    COL_USERNAME + varchar(60),
+					    COL_DESCRIPTION + TEXT,
+					    COL_WEBSITEURL + TEXT,
+					    COL_LOCATION + varchar(255),
+					    COL_VISIBILITY + varchar(1),
+					    COL_IMAGEURL + TEXT,
 					    getPrimaryKeyClause(COL_USERID),
-					    "UNIQUE ( username )"
+					    unique(COL_USERNAME)
 						).exe()
 						
 				.create()
 				.table(TABLE_LOGIN, null, 
 						COL_USERID + INT_NOT_NULL,
-						COL_PASSHASH + " VARCHAR(128)",
+						COL_PASSHASH + varchar(128),
 						getForeignKeyClause(COL_USERID, TABLE_USERS)
 					    ).exe()
 					    
 				.create()
 				.table(TABLE_PERSONS, null, 
 						COL_USERID + INT_NOT_NULL,
-					    COL_FIRSTNAME + " VARCHAR(60)",
-					    COL_LASTNAME + " VARCHAR(60)",
+					    COL_FIRSTNAME + varchar(60),
+					    COL_LASTNAME + varchar(60),
 					    getForeignKeyClause(COL_USERID, TABLE_USERS)
 					    ).exe()
 					    
@@ -132,8 +140,8 @@ public class InstallServelet extends HttpServlet {
 						COL_MESSAGEID + INT_NOT_NULL_AUTO_INCREMENT,
 					    COL_FROMID + INT_NOT_NULL,
 					    COL_TOID + INT_NOT_NULL,
-					    COL_CONTENT + " TEXT NOT NULL",
-					    COL_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+					    COL_CONTENT + TEXT + NOT_NULL,
+					    COL_TIMESTAMP + TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP,
 					    getPrimaryKeyClause(COL_MESSAGEID),
 					    getForeignKeyClause(COL_FROMID, TABLE_USERS, COL_USERID),
 					    getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
@@ -144,13 +152,21 @@ public class InstallServelet extends HttpServlet {
 						COL_STORYID + INT_NOT_NULL_AUTO_INCREMENT,
 					    COL_FROMID + INT_NOT_NULL,
 					    COL_TOID + INT_NOT_NULL,
-					    COL_CONTENT + " TEXT NOT NULL",
-					    COL_MEDIAURL + " TEXT",
-					    COL_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+					    COL_CONTENT + TEXT + NOT_NULL,
+					    COL_MEDIAURL + TEXT,
+					    COL_TIMESTAMP + TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP,
 					    getPrimaryKeyClause(COL_STORYID),
 					    getForeignKeyClause(COL_FROMID, TABLE_USERS, COL_USERID),
 					    getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
 					    ).exe()
+					    
+				.create()
+				.table(TABLE_LIKES, null, 
+						COL_STORYID + INT_NOT_NULL,
+						COL_USERID + INT_NOT_NULL,
+						getForeignKeyClause(COL_STORYID, TABLE_STORIES),
+						getForeignKeyClause(COL_USERNAME, TABLE_USERS)
+						).exe()
 					    
 				.commit()
 				.setAutoCommit( true )

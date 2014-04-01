@@ -4,15 +4,49 @@ import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
 public class SQLUtils {
 	
+	/**
+	 * Get PRIMARY_KEY(columnName) SQL clause
+	 * @param columnName
+	 * @return PRIMARY_KEY(columnName)
+	 */
 	public static String getPrimaryKeyClause(String columnName) {
 		return PRIMARY_KEY + "(" + columnName + ")";
 	}
+	/**
+	 * Get FOREIGN_KEY(columnName) REFERENCES refTableName (refColumnName) SQL clause
+	 * @param columnName
+	 * @param refTableName
+	 * @param refColumnName
+	 * @return FOREIGN_KEY(columnName) REFERENCES refTableName (refColumnName)
+	 */
 	public static String getForeignKeyClause(String columnName, String refTableName, String refColumnName) {
 		return FOREIGN_KEY + "(" + columnName + ") " + 
 				REFERENCES + refTableName + "(" + refColumnName + ")";
 	}
+	/**
+	 * Get FOREIGN_KEY(columnName) refTableName REFERENCES(columnName) SQL clause, where key and reference key are same
+	 * @param columnName
+	 * @param refTableName
+	 * @return FOREIGN_KEY(columnName) REFERENCES refTableName (columnName)
+	 */
 	public static String getForeignKeyClause(String columnName, String refTableName) {
 		return getForeignKeyClause(columnName, refTableName, columnName);
+	}
+	/**
+	 * Get UNIQUE(columnName) SQL clause
+	 * @param columnName
+	 * @return UNIQUE(columnName)
+	 */
+	public static String unique(String columnName) {
+		return "UNIQUE(" + columnName + ")";
+	}
+	/**
+	 * Get VARCHAR(len) SQL clause
+	 * @param len
+	 * @return VARCHAR(len) SQL clause
+	 */
+	public static String varchar(int len) {
+		return " VARCHAR(" + len + ")";
 	}
 	
 	public class Values {
@@ -28,6 +62,7 @@ public class SQLUtils {
 		TABLE_GROUPSUSERS = "groupsusers",
 		TABLE_MESSAGES = "messages",
 		TABLE_STORIES = "stories",
+		TABLE_LIKES = "likes",
 		
 		COL_PASSHASH = "passhash",
 		COL_SALT = "salt",
@@ -52,8 +87,11 @@ public class SQLUtils {
 		PRIMARY_KEY = "PRIMARY KEY ",
 		FOREIGN_KEY = "FOREIGN KEY ",
 		REFERENCES = "REFERENCES ",
+		TEXT = " TEXT",
+		NOT_NULL = " NOT NULL",
 		INT_NOT_NULL = " INT NOT NULL",
-		INT_NOT_NULL_AUTO_INCREMENT = " INT NOT NULL AUTO_INCREMENT";
+		INT_NOT_NULL_AUTO_INCREMENT = " INT NOT NULL AUTO_INCREMENT",
+		TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP = " TIMESTAMP DEFAULT CURRENT_TIMESTAMP";
 		
 	}
 	

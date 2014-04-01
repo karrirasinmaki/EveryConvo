@@ -36,6 +36,9 @@ public class JSONUtils {
 	public static void writeJSONResponse(HttpServletResponse resp, ResultSet rs) {
 		writeJSONResponse( resp, toJSON(rs) );
 	}
+	public static void writeJSONResponse(HttpServletResponse resp, Object o) {
+		writeJSONResponse( resp, toJSON(o) );
+	}
 	public static void writeJSONStatusResponse(HttpServletResponse resp, StatusMessage statusMessage) {
 		writeJSONResponse( resp, toJSON(statusMessage) );
 	}
@@ -115,7 +118,24 @@ public class JSONUtils {
 	}
 	
 	public static String toJSON(Object obj) {
+		Data data = new Data(obj);
 		Gson gson = new Gson();
-		return gson.toJson( obj );
+		return gson.toJson( data );
 	}
+	
+	private static class Data {
+		private Object data;
+		private Integer prev;
+		private Integer next;
+		
+		public Data(Object data, Integer prev, Integer next) {
+			this.data = data;
+			this.prev = prev;
+			this.next = next;
+		}
+		public Data(Object data) {
+			this.data = data;
+		}
+	}
+	
 }

@@ -10,7 +10,7 @@ define(["../lib/values", "../lib/guda"], function(values, g) {
             
         g.getAjax(values.API.user).done(function(data) {
             console.log(data);
-            data = JSON.parse( data );
+            data = JSON.parse( data ).data;
             if( data.userid ) {
                 user = data;
                 if( successFn ) successFn( data );

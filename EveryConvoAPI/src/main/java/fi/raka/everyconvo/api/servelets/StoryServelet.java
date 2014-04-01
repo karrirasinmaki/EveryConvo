@@ -1,6 +1,7 @@
 package fi.raka.everyconvo.api.servelets;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,7 +27,15 @@ public class StoryServelet extends HttpServlet {
 			users = usersString.split(",");
 		}
 		
-		writeJSONResponse( resp, Story.loadStories(users, req) );
+		try {
+			
+			writeJSONResponse( resp, Story.loadStories(users, req) );
+			
+		} catch (InstantiationException | IllegalAccessException
+				| ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+			writeJSONStatusResponse(resp, StatusMessage.generalError(e));
+		}
 		
 	}
 	

@@ -121,7 +121,7 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         this._load( userName, true );
         var _this = this;
         g.getAjax( values.API.user +"/"+ userName ).done(function(data) {
-            _this.user = JSON.parse(data);
+            _this.user = JSON.parse(data).data;
             _this.fillInfo( _this.user );
         });
     };
