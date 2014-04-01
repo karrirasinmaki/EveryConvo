@@ -165,7 +165,7 @@ public class InstallServelet extends HttpServlet {
 						COL_STORYID + INT_NOT_NULL,
 						COL_USERID + INT_NOT_NULL,
 						getForeignKeyClause(COL_STORYID, TABLE_STORIES),
-						getForeignKeyClause(COL_USERNAME, TABLE_USERS)
+						getForeignKeyClause(COL_USERID, TABLE_USERS)
 						).exe()
 					    
 				.commit()

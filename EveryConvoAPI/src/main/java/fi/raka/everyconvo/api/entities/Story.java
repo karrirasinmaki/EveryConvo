@@ -4,6 +4,7 @@ import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,8 +20,10 @@ public class Story {
 	private String content;
 	private String mediaurl;
 	private int visibility;
-	private long timestamp;
+	private Timestamp timestamp;
 	private User user;
+	private ArrayList<Like> likes;
+	private Boolean melikes;
 	
 	public Story() {}
 	public Story(int fromid, int toid, String content, String mediaURL) {
@@ -30,27 +33,20 @@ public class Story {
 		this.mediaurl = mediaURL;
 	}
 	
-	public void send() {
-		try {
-			new SQLChain()
-				.open(DATABASE_URL)
-				.insertInto(TABLE_STORIES, COL_FROMID, COL_TOID, COL_CONTENT, COL_MEDIAURL)
-				.values(""+fromid, ""+toid, content, mediaurl)
-				.exec();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public void send() 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		new SQLChain()
+			.open(DATABASE_URL)
+			.insertInto(TABLE_STORIES, COL_FROMID, COL_TOID, COL_CONTENT, COL_MEDIAURL)
+			.values(""+fromid, ""+toid, content, mediaurl)
+			.exec();
 	}
 	
 	public static ArrayList<Story> loadStories(String[] users, HttpServletRequest req) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
+		User sessionUser = User.getSessionUser( req );
 		ArrayList<Story> stories = new ArrayList<Story>();
 		ResultSet rs = loadStoriesResultSet( users, req );
 			
@@ -62,10 +58,21 @@ public class Story {
 			story.toid = rs.getInt(COL_TOID);
 			story.content = rs.getString(COL_CONTENT);
 			story.mediaurl = rs.getString(COL_MEDIAURL);
+			story.timestamp = rs.getTimestamp(COL_TIMESTAMP);
 			
 			story.user = new User();
 			story.user.setUserName( rs.getString(COL_USERNAME) );
 			story.user.setIsMe( rs.getBoolean("me") );
+			
+			story.likes = Like.loadAllLikes( ""+story.storyid, null );
+			if( sessionUser != null ) {
+				for( Like like : story.likes ) {
+					if( like.getUserId() == sessionUser.getUserId() ) {
+						story.melikes = true;
+						break;
+					}
+				}
+			}
 			
 			stories.add( story );
 		}

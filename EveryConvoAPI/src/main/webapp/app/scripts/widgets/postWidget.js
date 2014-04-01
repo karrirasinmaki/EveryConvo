@@ -17,7 +17,10 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
         this.append( this.time ).append( this.picture ).append( this.content ).append( this.actionBar );
     };
     PostWidget.prototype.like = function() {
-        this.likeButton.setText( "just dummy button atm" );
+        var _this = this;
+        g.postAjax(values.API.story + "/" + this.__id + "?like=true").done(function() {
+            _this.likeButton.setText( values.TEXT.liked );
+        });
     };
     PostWidget.prototype.createActionBar = function() {
         var _this = this;
@@ -28,8 +31,9 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
                     _this.like();
                 }
             }).setText( values.TEXT.like );
+        this.likeCount = new g.Widget({ className: "like-count" });
         
-        this.actionBar.append( this.likeButton );
+        this.actionBar.append( this.likeButton ).append( this.likeCount );
     };
     PostWidget.prototype.setPictureUrl = function(imageUrl) {
         this.picture.element.style.backgroundImage = "url(" + values.API.baseUrl + imageUrl + ")";
@@ -51,6 +55,14 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
     };
     PostWidget.prototype.setTime = function(time) {
         this.time.setText( time );
+        return this;
+    };
+    PostWidget.prototype.setLikes = function(likes, meLikes) {
+        var likesLen = likes.length;
+        this.likeCount.setText( likesLen + " " + (likesLen > 1 ? values.TEXT.likes : values.TEXT.like) );
+        if( meLikes ) {
+            this.likeButton.setText( values.TEXT.liked );
+        }
         return this;
     };
     PostWidget.prototype.setEditable = function() {
@@ -84,7 +96,8 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
             .setUsername( user.username )
             .setContent( data.content )
             .setTime( time.getHours() + ":" + time.getMinutes() )
-            .setMedia( data.mediaurl );
+            .setMedia( data.mediaurl )
+            .setLikes( data.likes, data.melikes );
         post.__id = data.storyid;
         
         if( user.me ) {
