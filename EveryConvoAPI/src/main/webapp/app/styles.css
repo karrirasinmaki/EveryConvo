@@ -15,9 +15,9 @@ html, body                          { margin: 0; padding: 0; width: 100%; height
 
 /* Main */
 #main .inner                        { position: relative; max-width: 820px; min-height: 100%; margin: 0 auto; overflow: hidden; }
-#title                              { margin-left: 220px; margin-bottom: 0; padding-left: 80px; width: 600px; border-bottom: 1px solid #ccc; }
-#side                               { float: left; width: 210px; padding: 0 9px 12em 0; border-right: 1px solid #ccc; text-align: right; }
-#feed                               { float: right; width: 520px; padding-left: 80px; }
+#title                              { margin-left: 25%%; margin-bottom: 0; padding-left: 80px; width: 65%; border-bottom: 1px solid #ccc; box-sizing: border-box; }
+#side                               { float: left; width: 25%; padding: 0 9px 12em 0; border-right: 1px solid #ccc; text-align: right; box-sizing: border-box; }
+#feed                               { float: right; width: 65%; padding-left: 10%; }
 
 #menu                               { z-index: 11; position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; }
 #menu .second-half                  { position: absolute; left: 0; bottom: 0; right: 0; border-top: 1px solid #ccc; }
