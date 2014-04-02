@@ -9,9 +9,11 @@ import java.sql.SQLException;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import fi.raka.everyconvo.api.entities.Paged;
 import fi.raka.everyconvo.api.entities.StatusMessage;
 
 public class JSONUtils {
@@ -34,15 +36,47 @@ public class JSONUtils {
 		
 	}
 	public static void writeJSONResponse(HttpServletResponse resp, ResultSet rs) {
-		writeJSONResponse( resp, toJSON(rs) );
+		writeJSONResponse( resp, rsToJSON(rs) );
 	}
 	public static void writeJSONResponse(HttpServletResponse resp, Object o) {
-		writeJSONResponse( resp, toJSON(o) );
+		writeJSONResponse( resp, toDataJSON(o) );
+	}
+	public static void writeJSONPagedResponse(HttpServletResponse resp, Paged paged) {
+		writeJSONResponse( resp, toJSON(paged) );
 	}
 	public static void writeJSONStatusResponse(HttpServletResponse resp, StatusMessage statusMessage) {
-		writeJSONResponse( resp, toJSON(statusMessage) );
+		writeJSONResponse( resp, toDataJSON(statusMessage) );
 	}
 	
+	public static String rsToJSON(ResultSet rs) {		
+		JsonObject json = new JsonObject();
+		JsonArray rows = new JsonArray();
+		try {
+			if( rs != null ) {
+				ResultSetMetaData rsmd = rs.getMetaData();
+				int columnCount = rsmd.getColumnCount();
+				rs.beforeFirst();
+				while( rs.next() ) {
+					JsonObject row = resultSetRowToJson(rs, rsmd, columnCount);
+					rows.add( row );
+				}
+				json.add( "data", rows );
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return json.toString();
+	}
+
+	public static String toJSON(Object o) {
+		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+		return gson.toJson( o );
+	}
+	public static String toDataJSON(Object o) {
+		Data data = new Data( o );
+		return toJSON( data );
+	}
 	
 	private static JsonObject resultSetRowToJson(ResultSet rs, ResultSetMetaData rsmd, int columnCount) throws SQLException {
 		JsonObject row = new JsonObject();
@@ -96,45 +130,10 @@ public class JSONUtils {
 		return row;
 	}
 	
-	public static String toJSON(ResultSet rs) {		
-		JsonObject json = new JsonObject();
-		JsonArray rows = new JsonArray();
-		try {
-			if( rs != null ) {
-				ResultSetMetaData rsmd = rs.getMetaData();
-				int columnCount = rsmd.getColumnCount();
-				rs.beforeFirst();
-				while( rs.next() ) {
-					JsonObject row = resultSetRowToJson(rs, rsmd, columnCount);
-					rows.add( row );
-				}
-				json.add( "data", rows );
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return json.toString();
-	}
-	
-	public static String toJSON(Object obj) {
-		Data data = new Data(obj);
-		Gson gson = new Gson();
-		return gson.toJson( data );
-	}
-	
-	private static class Data {
+	static class Data {
 		private Object data;
-		private Integer prev;
-		private Integer next;
-		
-		public Data(Object data, Integer prev, Integer next) {
-			this.data = data;
-			this.prev = prev;
-			this.next = next;
-		}
-		public Data(Object data) {
-			this.data = data;
+		public Data(Object o) {
+			data = o;
 		}
 	}
 	

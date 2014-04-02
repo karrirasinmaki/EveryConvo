@@ -89,7 +89,7 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
     };
     PostWidget.prototype.setEditable = function() {
         var _this = this;
-        this.actionBar.append( 
+        this.append( 
             new g.Button({ 
                 className: "delete",
                 onclick: function() {
@@ -127,21 +127,10 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
         }
         
         return post;
-    };
-    
-    var loadPosts = function(element, filter) {
-        filter = filter || "";
-        g.getAjax( values.API.stories + "?" + filter ).done(function(data) {
-            var data = JSON.parse( data ).data;
-            for(var i=0, l=data.length; i<l; ++i) {
-                element.append( newPost(data[i]) );
-            }
-        });
-    };
+    };    
     
     return {
-        newPost: newPost,
-        loadPosts: loadPosts
+        newPost: newPost
     };
     
 });

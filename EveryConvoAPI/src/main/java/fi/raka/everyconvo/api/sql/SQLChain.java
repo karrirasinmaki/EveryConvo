@@ -257,6 +257,22 @@ public class SQLChain {
 			query.append( " END " );
 			return this;
 		}
+		public SelectChain limit(int limit) {
+			query.append( " LIMIT " + limit );
+			return this;
+		}
+		public SelectChain offset(int offset) {
+			query.append( " OFFSET " + offset );
+			return this;
+		}
+		public SelectChain gte(String column, long value) {
+			query.append( _where() + column + ">" + value + "" );
+			return this;
+		}
+		public SelectChain lte(String column, long value) {
+			query.append( _where() + column + "<" + value + "" );
+			return this;
+		}
 		
 		private SelectChain orderBy(String ... columns) {
 			query.append( " ORDER BY " + StringUtils.join(columns, ",") );

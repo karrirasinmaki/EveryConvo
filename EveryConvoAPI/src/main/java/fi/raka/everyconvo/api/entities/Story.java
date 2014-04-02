@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,12 +44,12 @@ public class Story {
 			.exec();
 	}
 	
-	public static ArrayList<Story> loadStories(String[] users, HttpServletRequest req) 
+	public static ArrayList<Story> loadStories(String[] users, HttpServletRequest req, int limit, long startTimeMillis, int offset)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		User sessionUser = User.getSessionUser( req );
 		ArrayList<Story> stories = new ArrayList<Story>();
-		ResultSet rs = loadStoriesResultSet( users, req );
+		ResultSet rs = loadStoriesResultSet( users, req, limit, startTimeMillis, offset );
 			
 		rs.beforeFirst();
 		while( rs.next() ) {
@@ -79,8 +80,9 @@ public class Story {
 		
 		return stories;
 	}
-	
-	public static ResultSet loadStoriesResultSet(String[] users, HttpServletRequest req) 
+
+//  users, req, limit, startTime, (page-1)*limit
+	public static ResultSet loadStoriesResultSet(String[] users, HttpServletRequest req, int limit, long startTimeMillis, int offset) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		User user = User.getSessionUser(req);
@@ -109,9 +111,12 @@ public class Story {
 				.or()
 				.whereIn("b."+COL_USERNAME, users);
 			}
-		
+
 			chain
-			.desc("a."+COL_TIMESTAMP);
+			.gte("a."+COL_TIMESTAMP, startTimeMillis)
+			.desc("a."+COL_TIMESTAMP)
+			.limit(limit)
+			.offset(offset);
 			
 		rs = chain.exec();
 		

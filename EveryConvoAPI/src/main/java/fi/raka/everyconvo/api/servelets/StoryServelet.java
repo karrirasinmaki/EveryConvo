@@ -3,6 +3,7 @@ package fi.raka.everyconvo.api.servelets;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fi.raka.everyconvo.api.entities.Like;
+import fi.raka.everyconvo.api.entities.PagedStories;
 import fi.raka.everyconvo.api.entities.StatusMessage;
 import fi.raka.everyconvo.api.entities.Story;
 import fi.raka.everyconvo.api.entities.User;
@@ -24,15 +26,27 @@ public class StoryServelet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		String[] users = null;
 		String usersString = req.getParameter("user");
+		String limitString = req.getParameter("limit");
+		String pageString = req.getParameter("page");
+		String startString = req.getParameter("start");
+		
+		Integer limit = null;
+		Integer page = null;
+		Long start = null;
+		
+		String[] users = null;
 		if( usersString != null ) {
 			users = usersString.split(",");
 		}
 		
 		try {
+						
+			if( limitString != null ) limit = Integer.parseInt( limitString );
+			if( pageString != null ) page = Integer.parseInt( pageString );
+			if( startString != null ) start = Long.parseLong( startString );
 			
-			writeJSONResponse( resp, Story.loadStories(users, req) );
+			writeJSONPagedResponse( resp, new PagedStories(users, req, limit, page, start) );
 			
 		} catch (InstantiationException | IllegalAccessException
 				| ClassNotFoundException | SQLException e) {

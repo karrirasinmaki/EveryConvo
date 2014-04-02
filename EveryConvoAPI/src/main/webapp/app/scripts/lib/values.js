@@ -36,6 +36,7 @@ define(function() {
         like: "like",
         likes: "likes",
         liked: "liked",
+        loadMore: "load more",
         wannaDelete: "Do you really want to delete that item?",
         loginError: "Error with login. Make sure you used correct pair of username and password",
         registerError: "Error with registration. Make sure you fill every field or try with another username"

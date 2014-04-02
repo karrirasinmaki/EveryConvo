@@ -88,11 +88,12 @@ img.nofound                         { width: 100%; height: auto; background: #cc
 .contact .info .user-name           { color: #7b7b7b; }
 
 /* Post */
-.post                               { padding-bottom: 2em; margin-top: 2em; }
-.post .time                         { position: absolute; left: -54px; top: 0; color: #ccc; }
-.post .picture                      { position: absolute; left: 0; top: 0; width: 3.4em; height: 3.4em; border: 1px solid #ccc; }
+.post                               { padding-bottom: 2em; padding-top: 2em; }
+.post .time                         { position: absolute; left: -54px; top: 2em; color: #ccc; }
+.post .picture                      { position: absolute; left: 0; top: 2em; width: 3.4em; height: 3.4em; border: 1px solid #ccc; }
 .post .content                      { margin-left: 3.8em; min-height: 3.4em; white-space: pre-line; }
-
+.post .delete                       { display: none; position: absolute; right: 0; top: 2em; }
+.post:hover .delete                 { display: inline; }
 
 /* Animations */
 @-webkit-keyframes fadeOut {
