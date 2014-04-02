@@ -159,6 +159,9 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
         this.text.textContent = text;
         return this;
     };
+    Widget.prototype.getText = function(text) {
+        return this.text.textContent;
+    };
     Widget.prototype.init = Widget.prototype._init = function(params, tagName) {
         if( !tagName ) {
             if( this.element ) tagName = this.element.tagName || "div";

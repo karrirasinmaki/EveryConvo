@@ -63,9 +63,11 @@ public class StoryServelet extends HttpServlet {
 			}
 			else {
 				if( requestStoryId != null ) {
-					if( req.getParameter("like") != null ) {
+					String likeOrNot = req.getParameter("like");
+					if( likeOrNot != null ) {
 						Like like = new Like( user.getUserId(), requestStoryId );
-						like.save();
+						if( likeOrNot.equals("false") ) like.remove();
+						else like.save();
 					}
 				}
 				else {
@@ -77,6 +79,7 @@ public class StoryServelet extends HttpServlet {
 		} catch (InstantiationException | IllegalAccessException
 				| ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
+			writeJSONStatusResponse(resp, StatusMessage.generalError(e));
 		}
 		
 	}

@@ -1,5 +1,21 @@
 define(["../lib/guda", "../lib/values"], function(g, values) {
     
+    var CounterWidget = function(params, tagName) {
+        tagName = tagName || "span";
+        this.counterTextSingular = " " + params.counterTextSingular || "";
+        this.counterTextPlural = " " + params.counterTextPlural || "";
+        this.init( params, tagName );
+    };
+    CounterWidget.prototype = new g.Widget;
+    CounterWidget.prototype.setCount = function(count) {
+        this.setText( count + (Math.abs(count) == 1 ? this.counterTextSingular : this.counterTextPlural) );
+        return this;
+    };
+    CounterWidget.prototype.addCount = function(count) {
+        this.setCount( parseInt(this.getText()) + count );
+        return this;
+    };
+    
     var PostWidget = function(params) {
         this.init( params );
         this.create();
@@ -16,12 +32,6 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
         this.content.insert( this.username );
         this.append( this.time ).append( this.picture ).append( this.content ).append( this.actionBar );
     };
-    PostWidget.prototype.like = function() {
-        var _this = this;
-        g.postAjax(values.API.story + "/" + this.__id + "?like=true").done(function() {
-            _this.likeButton.setText( values.TEXT.liked );
-        });
-    };
     PostWidget.prototype.createActionBar = function() {
         var _this = this;
         this.likeButton = 
@@ -31,9 +41,24 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
                     _this.like();
                 }
             }).setText( values.TEXT.like );
-        this.likeCount = new g.Widget({ className: "like-count" });
+        this.likeCount = new CounterWidget({ 
+            className: "like-count", 
+            counterTextSingular: values.TEXT.like,
+            counterTextPlural: values.TEXT.likes
+        });
         
         this.actionBar.append( this.likeButton ).append( this.likeCount );
+    };
+    PostWidget.prototype.like = function() {
+        var _this = this;
+        this.likeCount.addCount( this.userLikes ? -1 : 1 );
+        this.setUserLikes( !this.userLikes );
+        g.postAjax(values.API.story + "/" + this.__id + "?like=" + this.userLikes ).done(function() {
+        });
+    };
+    PostWidget.prototype.setUserLikes = function(likeOrNot) {
+        this.userLikes = likeOrNot;
+        this.likeButton.setText( this.userLikes ? values.TEXT.liked : values.TEXT.like );
     };
     PostWidget.prototype.setPictureUrl = function(imageUrl) {
         this.picture.element.style.backgroundImage = "url(" + values.API.baseUrl + imageUrl + ")";
@@ -58,11 +83,8 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
         return this;
     };
     PostWidget.prototype.setLikes = function(likes, meLikes) {
-        var likesLen = likes.length;
-        this.likeCount.setText( likesLen + " " + (likesLen > 1 ? values.TEXT.likes : values.TEXT.like) );
-        if( meLikes ) {
-            this.likeButton.setText( values.TEXT.liked );
-        }
+        this.likeCount.setCount( likes.length );
+        this.setUserLikes( meLikes );
         return this;
     };
     PostWidget.prototype.setEditable = function() {

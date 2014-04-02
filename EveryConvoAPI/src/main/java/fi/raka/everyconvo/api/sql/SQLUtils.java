@@ -2,6 +2,8 @@ package fi.raka.everyconvo.api.sql;
 
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class SQLUtils {
 	
 	/**
@@ -9,8 +11,8 @@ public class SQLUtils {
 	 * @param columnName
 	 * @return PRIMARY_KEY(columnName)
 	 */
-	public static String getPrimaryKeyClause(String columnName) {
-		return PRIMARY_KEY + "(" + columnName + ")";
+	public static String getPrimaryKeyClause(String ... columns) {
+		return PRIMARY_KEY + "(" + StringUtils.join(columns, ",") + ")";
 	}
 	/**
 	 * Get FOREIGN_KEY(columnName) REFERENCES refTableName (refColumnName) SQL clause

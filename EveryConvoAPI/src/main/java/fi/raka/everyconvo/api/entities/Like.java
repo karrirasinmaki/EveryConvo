@@ -45,6 +45,17 @@ public class Like {
 			.update();
 	}
 	
+	public void remove() 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		new SQLChain().open(DATABASE_URL)
+			.delete()
+			.from(TABLE_LIKES)
+			.whereIs(COL_USERID, ""+getUserId())
+			.whereIs(COL_STORYID, ""+getStoryId())
+			.update();
+	}
+	
 	public static ArrayList<Like> loadAllLikes(String storyIds, String userIds) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		

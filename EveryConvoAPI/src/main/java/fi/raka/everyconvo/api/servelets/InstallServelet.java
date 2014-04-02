@@ -164,6 +164,7 @@ public class InstallServelet extends HttpServlet {
 				.table(TABLE_LIKES, null, 
 						COL_STORYID + INT_NOT_NULL,
 						COL_USERID + INT_NOT_NULL,
+						getPrimaryKeyClause(COL_STORYID, COL_USERID),
 						getForeignKeyClause(COL_STORYID, TABLE_STORIES),
 						getForeignKeyClause(COL_USERID, TABLE_USERS)
 						).exe()
