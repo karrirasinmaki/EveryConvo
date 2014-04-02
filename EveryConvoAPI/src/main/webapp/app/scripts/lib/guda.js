@@ -231,15 +231,31 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
     MediaWidget.prototype.onerror = function() {
         dom.addClass( "nofound", this );
     };
+    /*
+<iframe width="560" height="315" src="//www.youtube.com/embed/M97c5bbrqYo" frameborder="0" allowfullscreen></iframe>
+*/
     MediaWidget.prototype.setMediaURL = function(mediaURL, params) {
         if( mediaURL == undefined || mediaURL == null ) mediaURL = "defaut.png";
         switch( mediaURL.substr( mediaURL.lastIndexOf(".") + 1 ).toLowerCase() ) {
+            case "gif":
+            case "jpeg":
+            case "png":
             case "jpg":
-            default:
                 if( params ) this.init( params, "img" );
                 this.element.onload = this.onload;
                 this.element.onerror = this.onerror;
                 this.element.src = mediaURL;
+                break;
+            default:
+                var youtubeUrlPartIndexOf = mediaURL.indexOf("youtube.com/watch?v=");
+                if( youtubeUrlPartIndexOf !== -1 ) {
+                    if( params ) this.init( params, "iframe" );
+                    this.element.onload = this.onload;
+                    this.element.onerror = this.onerror;
+                    this.element.src = "//www.youtube.com/embed/" + mediaURL.substr( youtubeUrlPartIndexOf + 20 );
+                    this.element.frameBorder = 0;
+                    this.element.allowFullScreen = true;
+                }
                 break;
         }
     };

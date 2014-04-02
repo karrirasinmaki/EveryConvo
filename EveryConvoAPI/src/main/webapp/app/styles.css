@@ -18,6 +18,7 @@ html, body                          { margin: 0; padding: 0; width: 100%; height
 #title                              { margin-left: 25%%; margin-bottom: 0; padding-left: 80px; width: 65%; border-bottom: 1px solid #ccc; box-sizing: border-box; }
 #side                               { float: left; width: 25%; padding: 0 9px 12em 0; border-right: 1px solid #ccc; text-align: right; box-sizing: border-box; }
 #feed                               { float: right; width: 65%; padding-left: 10%; }
+#feed .load-more                    { display: block; width: 100%; }
 
 #menu                               { z-index: 11; position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; }
 #menu .second-half                  { position: absolute; left: 0; bottom: 0; right: 0; border-top: 1px solid #ccc; }
@@ -94,6 +95,7 @@ img.nofound                         { width: 100%; height: auto; background: #cc
 .post .content                      { margin-left: 3.8em; min-height: 3.4em; white-space: pre-line; }
 .post .delete                       { display: none; position: absolute; right: 0; top: 2em; }
 .post:hover .delete                 { display: inline; }
+.post iframe                        { height: 285px; }
 
 /* Animations */
 @-webkit-keyframes fadeOut {
