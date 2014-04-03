@@ -113,7 +113,8 @@ public class Story {
 				chain
 				.whereIn("a."+COL_FROMID, users)
 				.or()
-				.whereIn("b."+COL_USERNAME, users);
+				.whereIn("b."+COL_USERNAME, users)
+				.and();
 			}
 
 			chain

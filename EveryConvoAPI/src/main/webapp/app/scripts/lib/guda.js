@@ -140,14 +140,14 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
     Widget.prototype.hide = function(animation) {
         var _this = this;
         var el = this.element;
-        this._display = el.style.display;
+        if( this._display == undefined ) this._display = el.style.display;
         if( animation ) this.animate( animation, function() { _this.hide() } );
         else el.style.display = "none";
         return this;
     };
     Widget.prototype.show = function(animation) {
         var _this = this;
-        this.element.style.display = this._display || "inline-block";
+        this.element.style.display = this._display;
         if( animation ) this.animate( animation );
         return this;
     };

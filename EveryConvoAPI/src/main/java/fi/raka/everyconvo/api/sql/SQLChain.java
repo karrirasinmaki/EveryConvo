@@ -220,6 +220,10 @@ public class SQLChain {
 			orFlag = true;
 			return this;
 		}
+		public SelectChain and() {
+			orFlag = false;
+			return this;
+		}
 		public JoinChain innerJoin(String table) {
 			query.append( " INNER JOIN " + table );
 			return new JoinChain( this );

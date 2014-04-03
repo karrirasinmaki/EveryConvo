@@ -5,8 +5,9 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, feed,
     var user = {};
     
     var main = new g.Widget({ id: "main" });
-    var feedView = new feed.FeedView();    
+    var feedView = new feed.FeedView();
     var profileView = new profile.ProfileView();
+    profileView.currentProfilePath = undefined;
     
     var changeView = function() {
         var path = location.hash.substr(2);
@@ -14,12 +15,16 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, feed,
             case "":
             case values.VIEW.feed:
                 g.log(feedView);
-                feedView.load( null, true );
-                feedView.title.setText( "Feed" );
+                profileView.hide( g.Widget.ANIM.fadeOut );
+                feedView.show( g.Widget.ANIM.fadeIn );
                 break;
             default:
-                profileView.load( path );
-                feedView.hide();
+                feedView.hide( g.Widget.ANIM.fadeOut );
+                if( profileView.currentProfilePath != path ) {
+                    profileView.load( path );
+                    profileView.currentProfilePath = path;
+                }
+                profileView.show( g.Widget.ANIM.fadeIn );
                 break;
         }
     };
@@ -78,6 +83,9 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, feed,
                 location.reload();
             });
         };
+        
+        feedView.load( null, true );
+        feedView.title.setText( "Feed" );
         
         main.append( feedView ).append( profileView );
 
