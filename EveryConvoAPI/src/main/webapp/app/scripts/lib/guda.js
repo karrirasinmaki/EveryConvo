@@ -231,9 +231,6 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
     MediaWidget.prototype.onerror = function() {
         dom.addClass( "nofound", this );
     };
-    /*
-<iframe width="560" height="315" src="//www.youtube.com/embed/M97c5bbrqYo" frameborder="0" allowfullscreen></iframe>
-*/
     MediaWidget.prototype.setMediaURL = function(mediaURL, params) {
         if( mediaURL == undefined || mediaURL == null ) mediaURL = "defaut.png";
         switch( mediaURL.substr( mediaURL.lastIndexOf(".") + 1 ).toLowerCase() ) {

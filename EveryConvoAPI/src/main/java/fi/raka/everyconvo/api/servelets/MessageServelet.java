@@ -1,6 +1,7 @@
 package fi.raka.everyconvo.api.servelets;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fi.raka.everyconvo.api.entities.Message;
+import fi.raka.everyconvo.api.entities.StatusMessage;
 import fi.raka.everyconvo.api.entities.User;
 import static fi.raka.everyconvo.api.json.JSONUtils.*;
 
@@ -19,7 +21,7 @@ public class MessageServelet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		writeJSONResponse( resp, Message.loadMessages(1) );
+		//writeJSONResponse( resp, Message.loadMessages(1) );
 		
 	}
 	
@@ -30,7 +32,13 @@ public class MessageServelet extends HttpServlet {
 		User user = User.getSessionUser( req );
 		if( user != null ) {
 			Message message = new Message( user.getUserId(), req.getParameter("to"), req.getParameter("content") );
-			message.send();
+			try {
+				message.send();
+			} catch (InstantiationException | IllegalAccessException
+					| ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+				writeJSONStatusResponse( resp, StatusMessage.generalError(e ));
+			}
 		}
 		
 	}

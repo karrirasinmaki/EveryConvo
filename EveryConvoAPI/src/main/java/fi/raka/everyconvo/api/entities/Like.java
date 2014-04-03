@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import fi.raka.everyconvo.api.sql.SQLChain;
+import fi.raka.everyconvo.api.sql.SQLChain.Chain;
 import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
 
 public class Like {
@@ -42,7 +43,8 @@ public class Like {
 		new SQLChain().open(DATABASE_URL)
 			.insertInto(TABLE_LIKES, COL_USERID, COL_STORYID)
 			.values(""+userid, ""+storyid)
-			.update();
+			.update()
+			.close();
 	}
 	
 	public void remove() 
@@ -53,14 +55,17 @@ public class Like {
 			.from(TABLE_LIKES)
 			.whereIs(COL_USERID, ""+getUserId())
 			.whereIs(COL_STORYID, ""+getStoryId())
-			.update();
+			.update()
+			.close();
 	}
 	
 	public static ArrayList<Like> loadAllLikes(String storyIds, String userIds) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		ArrayList<Like> likes = new ArrayList<Like>();
-		ResultSet rs = loadAllLikesResultSet( storyIds, userIds );
+		Chain chain = new SQLChain().open(DATABASE_URL);
+		ResultSet rs = loadAllLikesResultSet( storyIds, userIds, chain );
+		
 		rs.beforeFirst();
 		while( rs.next() ) {
 			Like like = new Like();
@@ -70,13 +75,16 @@ public class Like {
 			likes.add( like );
 		}
 		
+		rs.close();
+		chain.close();
+		
 		return likes;
 	}
 	
-	private static ResultSet loadAllLikesResultSet(String storyIds, String userIds) 
+	private static ResultSet loadAllLikesResultSet(String storyIds, String userIds, Chain ch) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		SelectChain chain = new SQLChain().open(DATABASE_URL)
+		SelectChain chain = ch
 			.select(COL_USERID, COL_STORYID)
 			.from(TABLE_LIKES);
 		

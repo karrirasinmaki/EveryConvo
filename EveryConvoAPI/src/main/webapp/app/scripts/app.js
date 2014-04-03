@@ -5,22 +5,21 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, feed,
     var user = {};
     
     var main = new g.Widget({ id: "main" });
+    var feedView = new feed.FeedView();    
+    var profileView = new profile.ProfileView();
     
     var changeView = function() {
         var path = location.hash.substr(2);
-        main.element.innerHTML = "";
         switch(path) {
             case "":
             case values.VIEW.feed:
-                var feedView = new feed.FeedView();
+                g.log(feedView);
                 feedView.load( null, true );
                 feedView.title.setText( "Feed" );
-                main.append( feedView );
                 break;
             default:
-                var profileView = new profile.ProfileView();
                 profileView.load( path );
-                main.append( profileView );
+                feedView.hide();
                 break;
         }
     };
@@ -79,6 +78,8 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, feed,
                 location.reload();
             });
         };
+        
+        main.append( feedView ).append( profileView );
 
         page.append( contacts );
         page.append( newStoryWidget.newStory );

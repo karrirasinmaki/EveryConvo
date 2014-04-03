@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import fi.raka.everyconvo.api.sql.SQLChain;
+import fi.raka.everyconvo.api.sql.SQLChain.Chain;
 
 public class Message {
 
@@ -21,47 +22,27 @@ public class Message {
 		this.content = content;
 	}
 	
-	public void send() {
-		try {
-			new SQLChain()
-				.open(DATABASE_URL)
-				.insertInto(TABLE_MESSAGES, COL_FROMID, COL_TOID, COL_CONTENT)
-				.values(""+fromid, toid, content)
-				.exec();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public void send() 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		new SQLChain()
+			.open(DATABASE_URL)
+			.insertInto(TABLE_MESSAGES, COL_FROMID, COL_TOID, COL_CONTENT)
+			.values(""+fromid, toid, content)
+			.exec()
+			.close();
 	}
 	
-	public static ResultSet loadMessages(int userId) {
-		ResultSet rs = null;
+	public static ResultSet loadMessages(int userId, Chain chain) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		try {
-			rs = new SQLChain()
-				.open(DATABASE_URL)
-				.select(COL_MESSAGEID, COL_FROMID, COL_TOID, COL_CONTENT, COL_TIMESTAMP)
-				.from(TABLE_MESSAGES)
-				.whereIs(COL_TOID, ""+userId)
-				.or()
-				.whereIs(COL_FROMID, ""+userId)
-				.exec();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return rs;
+		return chain
+			.select(COL_MESSAGEID, COL_FROMID, COL_TOID, COL_CONTENT, COL_TIMESTAMP)
+			.from(TABLE_MESSAGES)
+			.whereIs(COL_TOID, ""+userId)
+			.or()
+			.whereIs(COL_FROMID, ""+userId)
+			.exec();
 	}
 	
 }

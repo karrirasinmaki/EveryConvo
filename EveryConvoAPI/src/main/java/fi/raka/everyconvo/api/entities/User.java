@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import fi.raka.everyconvo.api.sql.SQLChain;
+import fi.raka.everyconvo.api.sql.SQLChain.Chain;
 import fi.raka.everyconvo.api.sql.SQLChain.UpdateChain;
 import fi.raka.everyconvo.api.utils.PasswordHash;
 import fi.raka.everyconvo.api.entities.StatusMessage;
@@ -33,28 +34,7 @@ public class User {
 	public User(String userName, HttpServletRequest req) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		User user = getSessionUser(req);
-		if( userName == null ) {
-			if( user == null ) return;
-			userName = user.getUserName();
-		}
-		setUserName( userName );
-		
-		SQLChain chain = new SQLChain();
-		chain.open(DATABASE_URL);
-		ResultSet rs = getUserInfoResultSet( chain );
-		
-		if( rs.first() ) {
-			username = rs.getString( COL_USERNAME );
-			userid = rs.getInt( COL_USERID );
-			description = rs.getString(COL_DESCRIPTION);
-			websiteurl = rs.getString(COL_WEBSITEURL);
-			location = rs.getString(COL_LOCATION);
-			imageurl = rs.getString(COL_IMAGEURL);
-			visibility = rs.getInt(COL_VISIBILITY);
-		}
-		
-		if( user != null && user.userid == userid ) me = true;
+		load( userName, req );
 	}
 	
 	public User setUserName(String userName) {
@@ -124,68 +104,76 @@ public class User {
 	public StatusMessage login(String userName, String password, HttpServletRequest req) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		if( userName == null || password == null ) {
-			if( req == null ) return StatusMessage.authError();
-			
-			User sessionUser = getSessionUser( req );
-			if( sessionUser == null ) {
-				return StatusMessage.authError();
-			}
-			else {
-				return StatusMessage.authOk();
-			}
-		}
-		
-		this.username = userName;
+		Chain chain = new SQLChain().open(DATABASE_URL);
+		load( userName, req, chain );
 		
 		StatusMessage statusMessage = StatusMessage.authError();
-		SQLChain chain = new SQLChain();
-		ResultSet rs = null;
-		ResultSet lrs = null;
+		
+		ResultSet rs = chain
+			.select(COL_USERID, COL_PASSHASH)
+			.from(TABLE_LOGIN)
+			.whereIs(COL_USERID, ""+getUserId())
+			.exec();
+		
+		rs.first();
+		
+		String passhash = rs.getString( COL_PASSHASH );
 		
 		try {
-			
-			chain.open(DATABASE_URL);
-			rs = getUserInfoResultSet(chain);
-			
-			if( rs.first() ) {
-			
-				userid = rs.getInt( COL_USERID );
-				lrs = chain.cont()
-					.select(COL_USERID, COL_PASSHASH)
-					.from(TABLE_LOGIN)
-					.whereIs(COL_USERID, ""+userid)
-					.exec();
-				
-				lrs.first();
-				String passhash = lrs.getString( COL_PASSHASH );
-				
-				try {
-					if( PasswordHash.validatePassword( password, passhash ) ) {
-						statusMessage = StatusMessage.authOk();
-						createHttpSession( req );
-					}
-					else {
-						statusMessage = StatusMessage.authError();
-					}
-				} catch (NoSuchAlgorithmException e) {
-					e.printStackTrace();
-				} catch (InvalidKeySpecException e) {
-					e.printStackTrace();
-				}
+			if( PasswordHash.validatePassword( password, passhash ) ) {
+				statusMessage = StatusMessage.authOk();
+				createHttpSession( req );
 			}
-
-		}
-		finally {
-			if( rs != null) {
-				rs.close();
+			else {
+				statusMessage = StatusMessage.authError();
 			}
-			if( lrs != null) {
-				lrs.close();
-			}
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			e.printStackTrace();
 		}
 		
+		rs.close();
+		chain.close();
+		
 		return statusMessage;
+	}
+	
+	public void load(String userName, HttpServletRequest req, Chain chain) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+				
+		User user = getSessionUser(req);
+		if( userName == null ) {
+			if( user == null ) return;
+			userName = user.getUserName();
+		}
+		
+		ResultSet rs = chain
+			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_IMAGEURL, COL_VISIBILITY)
+			.from(TABLE_USERS)
+			.whereIs(COL_USERNAME, userName)
+			.exec();
+		
+		if( rs.first() ) {
+			username = rs.getString( COL_USERNAME );
+			userid = rs.getInt( COL_USERID );
+			description = rs.getString(COL_DESCRIPTION);
+			websiteurl = rs.getString(COL_WEBSITEURL);
+			location = rs.getString(COL_LOCATION);
+			imageurl = rs.getString(COL_IMAGEURL);
+			visibility = rs.getInt(COL_VISIBILITY);
+		}
+		
+		rs.close();
+		
+		if( user != null && user.userid == userid ) me = true;
+	}
+	public void load(String userName, HttpServletRequest req) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		Chain chain = new SQLChain().open(DATABASE_URL);
+		load( userName, req, chain );
+		chain.close();
 	}
 	
 	/**
@@ -196,7 +184,7 @@ public class User {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public ResultSet update() 
+	public void update() 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		UpdateChain chain = new SQLChain()
@@ -208,11 +196,11 @@ public class User {
 			if( description != null ) chain.set(COL_DESCRIPTION, description);
 			if( imageurl != null ) chain.set(COL_IMAGEURL, imageurl);
 		
-			return
 			chain
 			.doneSet()
 			.whereIs(COL_USERID, ""+userid)
-			.update();
+			.update()
+			.close();
 	}
 	
 	/**
@@ -233,51 +221,46 @@ public class User {
 	public static StatusMessage createUser(
 			String userName, String description, String websiteUrl, String location, String visibility, String password, HttpServletRequest req) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		String passhash = getPassHash( password );
+		if(passhash == null) return new StatusMessage(StatusMessage.STATUS_ERROR, "Server error on creating user.");
 
-		SQLChain chain = new SQLChain();
-		StatusMessage statusMessage = null;
+		Chain chain = new SQLChain().open(DATABASE_URL);
+		ResultSet generatedKeys = null;
 		long userId = 0;
 		
-		try {
-						
-			ResultSet generatedKeys = chain
-				.open(DATABASE_URL)
-				.setAutoCommit(false)
-				.insertInto(TABLE_USERS, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY)
-				.values(userName, description, websiteUrl, location, visibility)
-				.exec();
-			
-			// Get generated userid
-			generatedKeys.first();
-			userId = generatedKeys.getLong(1);
-			
-			String passhash = null;
-			try {
-				passhash = PasswordHash.createHash( password );
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			} catch (InvalidKeySpecException e) {
-				e.printStackTrace();
-			}
-			if(passhash == null) statusMessage = new StatusMessage(StatusMessage.STATUS_ERROR, "Server error on creating user.");
-				
-			chain.cont()
-				.insertInto(TABLE_LOGIN, COL_USERID, COL_PASSHASH)
-				.values("" + userId, passhash)
-				.exec();
-			
-			chain.cont().commit().setAutoCommit( true );
-			
-			statusMessage = new StatusMessage(StatusMessage.STATUS_OK, "User created with id " + userId);
-			User user = new User( userName, req );
-			user.createHttpSession( req );
-			
-		}
-		finally {
-			chain.cont().close();
-		}
+		generatedKeys = chain
+			.setAutoCommit(false)
+			.insertInto(TABLE_USERS, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY)
+			.values(userName, description, websiteUrl, location, visibility)
+			.exec();
 		
-		return statusMessage; 
+		// Get generated userid
+		generatedKeys.first();
+		userId = generatedKeys.getLong(1);
+			
+		chain
+			.insertInto(TABLE_LOGIN, COL_USERID, COL_PASSHASH)
+			.values("" + userId, passhash)
+			.exec();
+		
+		chain.commit().setAutoCommit( true );
+		
+		generatedKeys.close();
+		chain.close();
+
+		User user = new User( userName, req );
+		user.createHttpSession( req );
+		return new StatusMessage(StatusMessage.STATUS_OK, "User created with id " + userId);
+	}
+	
+	private static String getPassHash(String password) {
+		try {
+			return PasswordHash.createHash( password );
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 		
 	/**
@@ -293,8 +276,10 @@ public class User {
 		
 		User sessionUser = User.getSessionUser( req );
 		ArrayList<User> users = new ArrayList<User>();
-		ResultSet rs = loadAllUsersResultSet();
+		Chain chain = new SQLChain().open(DATABASE_URL);
+		ResultSet rs = loadAllUsersResultSet( chain );
 		rs.beforeFirst();
+		
 		while( rs.next() ) {
 			User user = new User();
 			user.setUserId( rs.getInt(COL_USERID) )
@@ -307,6 +292,9 @@ public class User {
 			
 			users.add( user );
 		}
+		
+		rs.close();
+		chain.close();
 		return users;
 	}
 	
@@ -329,28 +317,12 @@ public class User {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	
-	private static ResultSet loadAllUsersResultSet() 
+	private static ResultSet loadAllUsersResultSet(Chain chain) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		
-		SQLChain chain = new SQLChain();
-		return chain.open(DATABASE_URL)
+
+		return chain
 			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_IMAGEURL, COL_VISIBILITY)
 			.from(TABLE_USERS)
-			.exec();
-	}
-	/**
-	 * Get user info as ResultSet
-	 * @param chain SQLChain
-	 * @return ResultSet including columns [userid, username, description, websiteurl, location, visibility]
-	 * @throws SQLException
-	 * @throws IllegalAccessException
-	 */
-	private ResultSet getUserInfoResultSet(SQLChain chain) throws SQLException, IllegalAccessException {
-		return chain.cont()
-			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_IMAGEURL, COL_VISIBILITY)
-			.from(TABLE_USERS)
-			.whereIs(COL_USERNAME, username)
 			.exec();
 	}
 	

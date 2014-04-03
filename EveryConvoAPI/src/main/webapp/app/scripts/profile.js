@@ -57,8 +57,6 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         this.websiteurl.element.style.display = "block";
         this.description = new EditableWidget({ className: "description", name: "description" }).setText( user.description );
         
-        this.sideView.append( this.picture );
-        
         if( user.me ) {
             this.pictureForm = 
                 new g.Form({
@@ -76,7 +74,6 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
                         var file = this.files[0];
                         reader.onload = function(evt) {
                             _this.picture.setMediaURL( evt.target.result );
-                            // TODO: File upload to server
                         };
                         reader.readAsDataURL( file );
                         g.AJAXSubmit( _this.pictureForm.element ).done(function(data) {
@@ -111,7 +108,7 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
                 .setText( values.TEXT.save )
                 .hide();
             
-            this.sideView.append( this.pictureForm ).append( this.editButton ).append( this.saveButton );
+            this.sideView.append( this.picture ).append( this.pictureForm ).append( this.editButton ).append( this.saveButton );
         }
         
         this.sideView.append( this.location ).append( this.websiteurl )

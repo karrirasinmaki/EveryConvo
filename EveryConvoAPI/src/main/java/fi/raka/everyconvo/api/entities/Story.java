@@ -11,6 +11,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import fi.raka.everyconvo.api.sql.SQLChain;
+import fi.raka.everyconvo.api.sql.SQLChain.Chain;
 import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
 
 public class Story {
@@ -41,7 +42,8 @@ public class Story {
 			.open(DATABASE_URL)
 			.insertInto(TABLE_STORIES, COL_FROMID, COL_TOID, COL_CONTENT, COL_MEDIAURL)
 			.values(""+fromid, ""+toid, content, mediaurl)
-			.exec();
+			.exec()
+			.close();
 	}
 	
 	public static ArrayList<Story> loadStories(String[] users, HttpServletRequest req, int limit, long startTimeMillis, int offset)
@@ -49,7 +51,8 @@ public class Story {
 		
 		User sessionUser = User.getSessionUser( req );
 		ArrayList<Story> stories = new ArrayList<Story>();
-		ResultSet rs = loadStoriesResultSet( users, req, limit, startTimeMillis, offset );
+		Chain chain = new SQLChain().open(DATABASE_URL);
+		ResultSet rs = loadStoriesResultSet( users, req, limit, startTimeMillis, offset, chain );
 			
 		rs.beforeFirst();
 		while( rs.next() ) {
@@ -78,19 +81,20 @@ public class Story {
 			stories.add( story );
 		}
 		
+		rs.close();
+		chain.close();
+		
 		return stories;
 	}
 
 //  users, req, limit, startTime, (page-1)*limit
-	public static ResultSet loadStoriesResultSet(String[] users, HttpServletRequest req, int limit, long startTimeMillis, int offset) 
+	public static ResultSet loadStoriesResultSet(String[] users, HttpServletRequest req, int limit, long startTimeMillis, int offset, Chain ch) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		User user = User.getSessionUser(req);
 		Integer currentUserId = user != null ? user.getUserId() : null;
-		ResultSet rs = null;
 		
-		SelectChain chain = new SQLChain()
-			.open(DATABASE_URL)
+		SelectChain chain = ch
 			.select("a."+COL_STORYID, "a."+COL_FROMID, "a."+COL_TOID, "a."+COL_CONTENT, "a."+COL_MEDIAURL, "a."+COL_TIMESTAMP, 
 					"b."+COL_USERNAME, "b."+COL_IMAGEURL)
 		
@@ -118,9 +122,7 @@ public class Story {
 			.limit(limit)
 			.offset(offset);
 			
-		rs = chain.exec();
-		
-		return rs;
+		return chain.exec();
 	}
 	
 }

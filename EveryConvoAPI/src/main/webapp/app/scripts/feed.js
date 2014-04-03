@@ -3,6 +3,7 @@ define(["lib/guda", "lib/values", "widgets/postWidget"], function(g, values, pos
     var FeedView = function() {
         
         this.init({ className: "inner" });
+        this.create();
         
     };
     FeedView.prototype = new g.Widget;
@@ -37,7 +38,10 @@ define(["lib/guda", "lib/values", "widgets/postWidget"], function(g, values, pos
         this.nextCursor = nextCursor;
     };
     FeedView.prototype._load = FeedView.prototype.load = function(userName, empty) {
-        this.create();
+        if( empty ) {
+            this.element.innerHTML = "";
+            this.create();
+        }
         var filter = "";
         if( userName ) filter += "user=" + userName
         this.loadPosts( values.API.stories + "?" + filter );
