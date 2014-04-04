@@ -367,6 +367,10 @@ public class SQLChain {
 			query.append( " ADD " + StringUtils.join(clauses, ",") );
 			return this;
 		}
+		public AlterChain modify(String ... clauses) {
+			query.append( " MODIFY COLUMN " + StringUtils.join(clauses, ",") );
+			return this;
+		}
 		
 	}
 	
@@ -401,7 +405,11 @@ public class SQLChain {
 				try {
 					new AlterChain().alter( table ).add( clause ).update();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					try {
+						new AlterChain().alter( table ).modify( clause ).update();
+					} catch (SQLException e2) {
+						e2.printStackTrace();
+					}
 				}
 			}
 			return this;

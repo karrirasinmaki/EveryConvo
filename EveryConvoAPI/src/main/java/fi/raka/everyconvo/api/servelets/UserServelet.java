@@ -86,9 +86,8 @@ public class UserServelet extends HttpServlet {
 	private void printUser(HttpServletRequest req, HttpServletResponse resp, String userName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		User user = new User( userName, req );
-		Integer userId = user.getUserId();
-		if( userId == null || userId == 0 ) writeJSONStatusResponse( resp, StatusMessage.sessionError() );
+		User user = User.loadUser( userName, req );
+		if( user == null ) writeJSONStatusResponse( resp, StatusMessage.sessionError() );
 		else writeJSONResponse( resp, user );
 	}
 	
@@ -172,8 +171,10 @@ public class UserServelet extends HttpServlet {
 		description = req.getParameter( COL_DESCRIPTION ),
 		websiteUrl = req.getParameter( COL_WEBSITEURL ),
 		location = req.getParameter( COL_LOCATION ),
-		visibility = req.getParameter( COL_VISIBILITY ),
 		password = req.getParameter( "password" );
+		
+		Integer 
+		visibility = Utils.parseInteger( req.getParameter( COL_VISIBILITY ) );
 		
 		StatusMessage statusMessage;
 		
@@ -181,7 +182,9 @@ public class UserServelet extends HttpServlet {
 			statusMessage = new StatusMessage(StatusMessage.STATUS_ERROR, "Username or password missing.");
 		}
 		else {
-			statusMessage = User.createUser( userName, description, websiteUrl, location, visibility, password, req );
+			User user = new User( userName, description, websiteUrl, location, visibility );
+			user.register( password );
+			statusMessage = new StatusMessage( StatusMessage.STATUS_OK, "User created with id " + user.getUserId() );
 		}
 		
 		writeJSONStatusResponse(resp, statusMessage);
