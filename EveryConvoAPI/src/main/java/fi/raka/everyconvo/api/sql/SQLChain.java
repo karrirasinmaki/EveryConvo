@@ -153,6 +153,9 @@ public class SQLChain {
 		public CreateChain create() {
 			return new CreateChain();
 		}
+		public CreateChain alterOrCreate() {
+			return new CreateChain(true);
+		}
 		public Chain dropTable(String table) {
 			query.append( "DROP TABLE " + table );
 			return this;
@@ -349,11 +352,33 @@ public class SQLChain {
 		
 	}
 	
+	public class AlterChain extends Chain {
+		
+		private String table;
+		
+		public AlterChain() {}
+		
+		public AlterChain alter(String table) {
+			this.table = table;
+			query.append( " ALTER TABLE " + table );
+			return this;
+		}
+		public AlterChain add(String ... clauses) {
+			query.append( " ADD " + StringUtils.join(clauses, ",") );
+			return this;
+		}
+		
+	}
+	
 	public class CreateChain extends Chain {
 		
 		public static final String IF_NOT_EXISTS = "IF NOT EXISTS";
+		private boolean force = false;
 		
 		public CreateChain() {}
+		public CreateChain(boolean force) {
+			this.force = force;
+		}
 		
 		public CreateChain database(String database, String condition) {
 			query.append( "CREATE DATABASE " + condition + " " + database );
@@ -366,7 +391,19 @@ public class SQLChain {
 			if(condition == null) condition = "";
 			else condition += " ";
 			
+			if( force ) alterOneByOne( table, clauses );
 			query.append( "CREATE TABLE " + condition + table + " (" + StringUtils.join(clauses, ",") + ")" );
+			return this;
+		}
+		
+		private CreateChain alterOneByOne(String table, String ... clauses) {
+			for( String clause : clauses ) {
+				try {
+					new AlterChain().alter( table ).add( clause ).update();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 			return this;
 		}
 		

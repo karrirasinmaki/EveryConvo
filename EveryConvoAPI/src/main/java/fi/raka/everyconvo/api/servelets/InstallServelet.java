@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import fi.raka.everyconvo.api.entities.StatusMessage;
 import fi.raka.everyconvo.api.sql.SQLChain;
+import fi.raka.everyconvo.api.sql.SQLChain.CreateChain;
 import fi.raka.everyconvo.api.utils.Values;
 import static fi.raka.everyconvo.api.sql.SQLUtils.*;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
@@ -93,8 +94,8 @@ public class InstallServelet extends HttpServlet {
 			chain.open(DATABASE_URL)
 				.setAutoCommit( false )
 				
-				.create()
-				.table(TABLE_USERS, null, 
+				.alterOrCreate()
+				.table(TABLE_USERS, CreateChain.IF_NOT_EXISTS, 
 						COL_USERID + INT_NOT_NULL_AUTO_INCREMENT,
 					    COL_USERNAME + varchar(60),
 					    COL_DESCRIPTION + TEXT,
@@ -106,37 +107,38 @@ public class InstallServelet extends HttpServlet {
 					    unique(COL_USERNAME)
 						).exe()
 						
-				.create()
-				.table(TABLE_LOGIN, null, 
+				.alterOrCreate()
+				.table(TABLE_LOGIN, CreateChain.IF_NOT_EXISTS, 
 						COL_USERID + INT_NOT_NULL,
 						COL_PASSHASH + varchar(128),
 						getForeignKeyClause(COL_USERID, TABLE_USERS)
 					    ).exe()
 					    
-				.create()
-				.table(TABLE_PERSONS, null, 
+				.alterOrCreate()
+				.table(TABLE_PERSONS, CreateChain.IF_NOT_EXISTS, 
 						COL_USERID + INT_NOT_NULL,
 					    COL_FIRSTNAME + varchar(60),
 					    COL_LASTNAME + varchar(60),
 					    getForeignKeyClause(COL_USERID, TABLE_USERS)
 					    ).exe()
 					    
-				.create()
-				.table(TABLE_GROUPS, null, 
+				.alterOrCreate()
+				.table(TABLE_GROUPS, CreateChain.IF_NOT_EXISTS, 
+						COL_FULLNAME + TEXT + NOT_NULL,
 						COL_USERID + INT_NOT_NULL,
 						getForeignKeyClause(COL_USERID, TABLE_USERS)
 					    ).exe()
 					    
-				.create()
-				.table(TABLE_GROUPSUSERS, null, 
+				.alterOrCreate()
+				.table(TABLE_GROUPSUSERS, CreateChain.IF_NOT_EXISTS, 
 						COL_GROUPID + INT_NOT_NULL,
 					    COL_USERID + INT_NOT_NULL,
 					    getForeignKeyClause(COL_GROUPID, TABLE_GROUPS, COL_USERID),
 					    getForeignKeyClause(COL_USERID, TABLE_USERS)
 					    ).exe()
 					    
-				.create()
-				.table(TABLE_MESSAGES, null, 
+				.alterOrCreate()
+				.table(TABLE_MESSAGES, CreateChain.IF_NOT_EXISTS, 
 						COL_MESSAGEID + INT_NOT_NULL_AUTO_INCREMENT,
 					    COL_FROMID + INT_NOT_NULL,
 					    COL_TOID + INT_NOT_NULL,
@@ -147,8 +149,8 @@ public class InstallServelet extends HttpServlet {
 					    getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
 					    ).exe()
 					    
-				.create()
-				.table(TABLE_STORIES, null, 
+				.alterOrCreate()
+				.table(TABLE_STORIES, CreateChain.IF_NOT_EXISTS, 
 						COL_STORYID + INT_NOT_NULL_AUTO_INCREMENT,
 					    COL_FROMID + INT_NOT_NULL,
 					    COL_TOID + INT_NOT_NULL,
@@ -160,8 +162,8 @@ public class InstallServelet extends HttpServlet {
 					    getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
 					    ).exe()
 					    
-				.create()
-				.table(TABLE_LIKES, null, 
+				.alterOrCreate()
+				.table(TABLE_LIKES, CreateChain.IF_NOT_EXISTS, 
 						COL_STORYID + INT_NOT_NULL,
 						COL_USERID + INT_NOT_NULL,
 						getPrimaryKeyClause(COL_STORYID, COL_USERID),

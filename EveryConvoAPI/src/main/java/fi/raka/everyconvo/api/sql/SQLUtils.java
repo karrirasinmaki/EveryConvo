@@ -70,6 +70,7 @@ public class SQLUtils {
 		COL_SALT = "salt",
 		COL_USERID = "userid",
 		COL_USERNAME = "username",
+		COL_FULLNAME = "fullname",
 		COL_DESCRIPTION = "description",
 		COL_WEBSITEURL = "websiteurl",
 		COL_LOCATION = "location",

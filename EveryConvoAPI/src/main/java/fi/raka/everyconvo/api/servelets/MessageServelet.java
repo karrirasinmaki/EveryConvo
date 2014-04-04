@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import fi.raka.everyconvo.api.entities.Message;
 import fi.raka.everyconvo.api.entities.StatusMessage;
 import fi.raka.everyconvo.api.entities.User;
+import fi.raka.everyconvo.api.utils.Utils;
 import static fi.raka.everyconvo.api.json.JSONUtils.*;
 
 public class MessageServelet extends HttpServlet {
@@ -21,23 +22,30 @@ public class MessageServelet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		//writeJSONResponse( resp, Message.loadMessages(1) );
-		
+		User user = Utils.getSessionUser( req, resp );
+		if( user != null ) {
+			try {
+				writeJSONResponse( resp, Message.loadMessages(user.getUserId()) );
+			} catch (InstantiationException | IllegalAccessException
+					| ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+				writeJSONStatusResponse( resp, StatusMessage.generalError(e ));
+			}
+		}
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		User user = User.getSessionUser( req );
+		User user = Utils.getSessionUser( req, resp );
 		if( user != null ) {
-			Message message = new Message( user.getUserId(), req.getParameter("to"), req.getParameter("content") );
+			Integer toid = Utils.parseInteger( req.getParameter("to") );
+			Message message = new Message( user.getUserId(), toid, req.getParameter("content") );
 			try {
 				message.send();
 			} catch (InstantiationException | IllegalAccessException
 					| ClassNotFoundException | SQLException e) {
-				e.printStackTrace();
-				writeJSONStatusResponse( resp, StatusMessage.generalError(e ));
 			}
 		}
 		
