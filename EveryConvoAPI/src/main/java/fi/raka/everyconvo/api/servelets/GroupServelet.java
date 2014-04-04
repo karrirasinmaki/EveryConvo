@@ -21,7 +21,7 @@ public class GroupServelet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		try {
-			writeJSONResponse( resp, Group.loadGroups() );
+			writeJSONResponse( resp, Group.loadGroups(req) );
 		} catch (InstantiationException | IllegalAccessException
 				| ClassNotFoundException | SQLException e) {
 			e.printStackTrace();

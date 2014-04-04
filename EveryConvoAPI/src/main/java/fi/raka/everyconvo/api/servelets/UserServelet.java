@@ -102,7 +102,7 @@ public class UserServelet extends HttpServlet {
 	 */
 	private void printAllUsers(HttpServletRequest req, HttpServletResponse resp) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		writeJSONResponse( resp, User.loadAllUsers(req) );
+		writeJSONResponse( resp, User.loadAll(req) );
 	}
 
 	/**

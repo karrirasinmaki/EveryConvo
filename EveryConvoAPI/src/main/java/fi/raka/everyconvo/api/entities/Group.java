@@ -4,11 +4,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import fi.raka.everyconvo.api.sql.SQLChain;
 import fi.raka.everyconvo.api.sql.SQLChain.Chain;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
 public class Group extends User {
+	
+	private static String a = TABLE_GROUPS+".";
+	public static String FROM = TABLE_GROUPS;
+	public static String FK_USERID = a+COL_USERID;
+	public static String[] PROJECTION = ArrayUtils.addAll( new String[] {FK_USERID, a+COL_FULLNAME}, User.PROJECTION );
 
 	private String fullname;
 	
@@ -16,9 +25,17 @@ public class Group extends User {
 		this.fullname = fullName;
 	}
 	public Group(ResultSet rs) throws SQLException {
+		super(rs);
 		fullname = rs.getString( COL_FULLNAME );
 	}
 	
+	/**
+	 * Add new group row to groups table
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	private void addGroupRow() 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
@@ -42,19 +59,17 @@ public class Group extends User {
 		addGroupRow();
 	}
 	
-	public static void add(String fullName) 
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		new Group( fullName ).add();
-	}
-	
-	public static ArrayList<Group> loadGroups() 
+	public static ArrayList<Group> loadGroups(HttpServletRequest req) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
+		System.out.println("MOMOMOM");
 		ArrayList<Group> groups = new ArrayList<Group>();
 		Chain chain = new SQLChain().open(DATABASE_URL);
 		ResultSet rs = chain
-			.select(COL_USERID, COL_FULLNAME)
-			.from(TABLE_GROUPS)
+			.select(PROJECTION)
+			.from(FROM)
+			.innerJoin(User.FROM)
+			.on(FK_USERID, User.PK_USERID)
 			.exec();
 		
 		rs.beforeFirst();
