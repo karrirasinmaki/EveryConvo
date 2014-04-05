@@ -37,6 +37,10 @@ public class StatusMessage {
 		return generateError(StatusMessage.STATUS_OK, "Logged in.");
 	}
 	
+	public static StatusMessage updateCompleted() {
+		return generateError(STATUS_OK, "Update operation completed");
+	}
+	
 	public static StatusMessage generalError(Exception e) {
 		return generateError(STATUS_ERROR, "Something went wrong.", e);
 	}

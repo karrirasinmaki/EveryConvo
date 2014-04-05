@@ -48,6 +48,10 @@ public class User {
 		this(userName, description, websiteUrl, location, visibility);
 		setUserId(userId);
 	}
+	public User(Integer userId, String userName, String description, String websiteUrl, String location, Integer visibility, String imageUrl) {
+		this(userId, userName, description, websiteUrl, location, visibility);
+		setImageUrl(imageUrl);
+	}
 	public User(ResultSet rs) throws SQLException {
 		this(
 			rs.getInt( COL_USERID ), 
@@ -55,10 +59,10 @@ public class User {
 			rs.getString(COL_DESCRIPTION), 
 			rs.getString(COL_WEBSITEURL), 
 			rs.getString(COL_LOCATION), 
-			rs.getInt(COL_VISIBILITY)
+			rs.getInt(COL_VISIBILITY),
+			rs.getString(COL_IMAGEURL)
 			);
-	}
-	
+	}	
 	
 	public User setUserName(String userName) {
 		this.username = userName;
@@ -334,8 +338,8 @@ public class User {
 		}
 		
 		ResultSet rs = chain
-			.select(COL_USERID, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_IMAGEURL, COL_VISIBILITY)
-			.from(TABLE_USERS)
+			.select(PROJECTION)
+			.from(FROM)
 			.whereIs(COL_USERNAME, userName)
 			.exec();
 
@@ -365,6 +369,28 @@ public class User {
 		User user = User.loadUser( userName, req, chain );
 		chain.close();
 		return user;
+	}
+	
+	public static StatusMessage updateCurrentUser(HttpServletRequest req) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		String
+		userName = req.getParameter( COL_USERNAME ),
+		description = req.getParameter( COL_DESCRIPTION ),
+		websiteUrl = req.getParameter( COL_WEBSITEURL ),
+		location = req.getParameter( COL_LOCATION ),
+		imageUrl = req.getParameter( COL_IMAGEURL );
+		
+		User user = User.getSessionUser( req );
+		if( user != null ) {
+			user.setDescription(description)
+				.setWebsiteUrl(websiteUrl)
+				.setLocation(location)
+				.setImageUrl(imageUrl)
+				.update();
+			return StatusMessage.updateCompleted();
+		}
+		return StatusMessage.sessionError();
 	}
 	
 	/**

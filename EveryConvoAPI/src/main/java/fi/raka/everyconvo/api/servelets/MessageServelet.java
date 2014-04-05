@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import fi.raka.everyconvo.api.entities.Message;
 import fi.raka.everyconvo.api.entities.StatusMessage;
 import fi.raka.everyconvo.api.entities.User;
+import fi.raka.everyconvo.api.utils.ServeletUtils;
 import fi.raka.everyconvo.api.utils.Utils;
 import static fi.raka.everyconvo.api.json.JSONUtils.*;
 
@@ -22,7 +23,7 @@ public class MessageServelet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		User user = Utils.getSessionUser( req, resp );
+		User user = ServeletUtils.getSessionUser( req, resp );
 		if( user != null ) {
 			try {
 				writeJSONResponse( resp, Message.loadMessages(user.getUserId()) );
@@ -38,7 +39,7 @@ public class MessageServelet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		User user = Utils.getSessionUser( req, resp );
+		User user = ServeletUtils.getSessionUser( req, resp );
 		if( user != null ) {
 			Integer toid = Utils.parseInteger( req.getParameter("to") );
 			Message message = new Message( user.getUserId(), toid, req.getParameter("content") );

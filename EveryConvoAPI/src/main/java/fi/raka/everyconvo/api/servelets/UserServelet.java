@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import fi.raka.everyconvo.api.entities.StatusMessage;
 import fi.raka.everyconvo.api.entities.User;
+import fi.raka.everyconvo.api.utils.ServeletUtils;
 import fi.raka.everyconvo.api.utils.Utils;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 import static fi.raka.everyconvo.api.json.JSONUtils.*;
@@ -54,12 +55,12 @@ public class UserServelet extends HttpServlet {
 
 		try {
 			
-			switch( req.getServletPath().substring(1) ) {
+			switch( ServeletUtils.getCallString(req) ) {
 			case "login":
 				login(req, resp);
 				break;
 			case "user":
-				updateUser(req, resp);
+				writeJSONStatusResponse( resp, User.updateCurrentUser( req ) );
 				break;
 			case "create-user":
 				createUser(req, resp);
@@ -123,35 +124,6 @@ public class UserServelet extends HttpServlet {
 		
 		User user = new User();
 		writeJSONStatusResponse( resp, user.login(userName, password, req) );
-	}
-	
-	/**
-	 * Update current user info
-	 * @param req HttpServletRequest
-	 * @param resp HttpServletResponse
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
-	 */
-	private void updateUser(HttpServletRequest req, HttpServletResponse resp) 
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		
-		String
-		userName = req.getParameter( COL_USERNAME ),
-		description = req.getParameter( COL_DESCRIPTION ),
-		websiteUrl = req.getParameter( COL_WEBSITEURL ),
-		location = req.getParameter( COL_LOCATION ),
-		imageUrl = req.getParameter( COL_IMAGEURL );
-		
-		User user = User.getSessionUser( req );
-		if( user != null ) {
-			user.setDescription(description)
-				.setWebsiteUrl(websiteUrl)
-				.setLocation(location)
-				.setImageUrl(imageUrl)
-				.update();
-		}
 	}
 	
 	/**

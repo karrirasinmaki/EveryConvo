@@ -6,7 +6,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
-import fi.raka.everyconvo.utils.ServeletUtils;
+import fi.raka.everyconvo.api.utils.ServeletUtils;
 
 public class PagedStories extends Paged {
 

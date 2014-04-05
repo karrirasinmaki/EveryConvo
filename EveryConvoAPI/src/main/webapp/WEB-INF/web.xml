@@ -79,6 +79,8 @@
       <servlet-name>Delete</servlet-name>
       <url-pattern>/delete</url-pattern>
   </servlet-mapping>
+  
+  <!-- Message -->
   <servlet-mapping>
       <servlet-name>Message</servlet-name>
       <url-pattern>/message/*</url-pattern>
@@ -87,6 +89,8 @@
       <servlet-name>Message</servlet-name>
       <url-pattern>/messages</url-pattern>
   </servlet-mapping>
+  
+  <!-- Story -->
   <servlet-mapping>
       <servlet-name>Story</servlet-name>
       <url-pattern>/story/*</url-pattern>
@@ -95,10 +99,18 @@
       <servlet-name>Story</servlet-name>
       <url-pattern>/stories</url-pattern>
   </servlet-mapping>
+  
+  <!-- Group -->
   <servlet-mapping>
       <servlet-name>Group</servlet-name>
       <url-pattern>/groups</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>Group</servlet-name>
+      <url-pattern>/create-group</url-pattern>
+  </servlet-mapping>
+  
+  <!-- User -->
   <servlet-mapping>
       <servlet-name>User</servlet-name>
       <url-pattern>/users</url-pattern>
