@@ -24,12 +24,15 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
     PostWidget.prototype.create = function() {
         this.time = new g.Widget({ className: "time" });
         this.picture = new g.Widget({ className: "picture" });
-        this.username = new g.Widget({ className: "username" });
+        this.nameField = new g.Widget({ className: "name" });
+            this.fullname = new g.Widget({ className: "fullname" }, "span");
+            this.username = new g.Widget({ className: "username" }, "a");
+            this.nameField.append( this.fullname ).append( this.username );
         this.content = new g.Widget({ className: "content" });
         this.actionBar = new g.Widget({ className: "action-bar" });
         this.createActionBar();
         
-        this.content.insert( this.username );
+        this.content.insert( this.nameField );
         this.append( this.time ).append( this.picture ).append( this.content ).append( this.actionBar );
     };
     PostWidget.prototype.createActionBar = function() {
@@ -64,8 +67,13 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
         this.picture.element.style.backgroundImage = "url(" + values.API.baseUrl + imageUrl + ")";
         return this;
     };
+    PostWidget.prototype.setFullName = function(name) {
+        this.fullname.setText( name );
+        return this;
+    };
     PostWidget.prototype.setUsername = function(username) {
         this.username.setText( username );
+        this.username.element.href = "#/" + username;
         return this;
     };
     PostWidget.prototype.setContent = function(content) {
@@ -108,13 +116,13 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
     };
     
     var newPost = function(data) {
-        console.log(data);
         var user = data.user;
         var time = new Date(data.timestamp);
         var post = new PostWidget({
                 className: "post"
             })
             .setPictureUrl( data.imageurl )
+            .setFullName( user.fullname || user.firstname + " " + user.lastname )
             .setUsername( user.username )
             .setContent( data.content )
             .setTime( time.getHours() + ":" + time.getMinutes() )

@@ -10,21 +10,17 @@ html, body                          { margin: 0; padding: 0; width: 100%; height
 #login-page .box .second-button     { position: absolute; right: 0; top: 100%; color: #e58546; background: none; border: none; padding: 0; }
 
 #app                                { min-height: 100%; padding-right: 240px; }
-#contacts                           { z-index: 10; position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; transition: 0.2s right; }
-#contacts.open                      { right: 220px; }
 
 /* Main */
-#main .inner                        { position: relative; max-width: 820px; min-height: 100%; margin: 0 auto; overflow: hidden; }
+#main .inner                        { position: relative; max-width: 820px; min-height: 100%; margin: 0 auto; overflow: hidden; position: absolute; left: 0; top: 0; right: 220px; }
 #title                              { margin-left: 25%%; margin-bottom: 0; padding-left: 80px; width: 65%; border-bottom: 1px solid #ccc; box-sizing: border-box; }
+#title small                        { margin-left: 0.5em; color: #D57536; }
 #side                               { float: left; width: 25%; padding: 0 9px 12em 0; border-right: 1px solid #ccc; text-align: right; box-sizing: border-box; }
 #feed                               { float: right; width: 65%; padding-left: 10%; }
 #feed .load-more                    { display: block; width: 100%; }
 
 #menu                               { z-index: 11; position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; }
 #menu .second-half                  { position: absolute; left: 0; bottom: 0; right: 0; border-top: 1px solid #ccc; }
-#new-story                          { z-index: 12; position: fixed; left: 220px; bottom: 0; right: 220px; padding: 1em 2em; background: #ccc; }
-#new-story form                     { max-width: 520px; margin: 0 auto; }
-#new-story form *                   { display: block; width: 100%; max-width: 100%; }
 #the-user                           { }
 
 #contacts, 
@@ -47,6 +43,15 @@ img.nofound                         { width: 100%; height: auto; background: #cc
 .contact,
 .post,
 .menu-item                          { position: relative; border-bottom: 1px solid #ccc; }
+
+/* From right coming, under sidebar beign, pull element */
+.right-pull                         { z-index: 10; position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; transition: 0.2s right; }
+.right-pull.open                    { right: 220px; }
+
+/* From bottom, outside of screen coming element */
+.bottom-pull                        { z-index: 12; position: fixed; left: 220px; bottom: 0; right: 220px; padding: 1em 2em; background: #ccc; }
+.bottom-pull form                   { max-width: 520px; margin: 0 auto; }
+.bottom-pull form *                 { display: block; width: 100%; max-width: 100%; }
 
 /* Hoverable elements */
 .contact:hover, 

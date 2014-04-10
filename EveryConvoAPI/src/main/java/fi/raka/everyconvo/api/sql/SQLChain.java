@@ -215,8 +215,12 @@ public class SQLChain {
 			query.append( _where() + column + "='" + value + "'" );
 			return this;
 		}
+		public SelectChain contains(String column, String value) {
+			query.append( _where() + column + " LIKE '%" + value + "%'" );
+			return this;
+		}
 		public SelectChain whereLike(String column, String value) {
-			query.append( _where() + column + "LIKE '%" + value + "%'" );
+			query.append( _where() + column + " LIKE '" + value + "'" );
 			return this;
 		}
 		public SelectChain or() {

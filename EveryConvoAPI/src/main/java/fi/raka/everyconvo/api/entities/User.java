@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.google.gson.annotations.Expose;
 
 import fi.raka.everyconvo.api.sql.SQLChain;
@@ -47,6 +49,10 @@ public class User {
 	public User(Integer userId, String userName, String description, String websiteUrl, String location, Integer visibility) {
 		this(userName, description, websiteUrl, location, visibility);
 		setUserId(userId);
+	}
+	public User(String userName, String description, String websiteUrl, String location, Integer visibility, String imageUrl) {
+		this(userName, description, websiteUrl, location, visibility);
+		setImageUrl(imageUrl);
 	}
 	public User(Integer userId, String userName, String description, String websiteUrl, String location, Integer visibility, String imageUrl) {
 		this(userId, userName, description, websiteUrl, location, visibility);
@@ -114,6 +120,21 @@ public class User {
 	}
 	public boolean isMe() {
 		return me;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public String getWebsiteUrl() {
+		return websiteurl;
+	}
+	public String getLocation() {
+		return location;
+	}
+	public String getImageUrl() {
+		return imageurl;
+	}
+	public Integer getVisibility() {
+		return visibility;
 	}
 	
 	/**
@@ -231,13 +252,13 @@ public class User {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static ArrayList<User> loadAll(HttpServletRequest req) 
+	public static ArrayList<User> loadAll(HttpServletRequest req, String userName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		User sessionUser = User.getSessionUser( req );
 		ArrayList<User> users = new ArrayList<User>();
 		Chain chain = new SQLChain().open(DATABASE_URL);
-		ResultSet rs = loadAllResultSet( chain );
+		ResultSet rs = loadAllResultSet( chain, userName );
 		rs.beforeFirst();
 		
 		while( rs.next() ) {
@@ -259,13 +280,21 @@ public class User {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	private static ResultSet loadAllResultSet(Chain chain) 
+	private static ResultSet loadAllResultSet(Chain chain, String userName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		return chain
+		SelectChain sel = chain
 			.select(PROJECTION)
-			.from(FROM)
-			.exec();
+			.from(FROM);
+		
+		if( userName != null ) {
+			sel
+			.whereLike(COL_USERNAME, userName)
+			.or()
+			.whereLike(COL_USERNAME, userName);
+		}
+		
+		return sel.exec();
 	}
 	
 	/**
@@ -340,12 +369,12 @@ public class User {
 		ResultSet rs = chain
 			.select(PROJECTION)
 			.from(FROM)
-			.whereIs(COL_USERNAME, userName)
+			.whereLike(COL_USERNAME, userName)
 			.exec();
 
 		User user = null;
 		if( rs.first() ) {
-			 user = new User( rs );
+			user = new User( rs );
 			if( sessionUser != null && user != null && sessionUser.userid == user.userid ) user.setIsMe( true );
 		}
 		rs.close();

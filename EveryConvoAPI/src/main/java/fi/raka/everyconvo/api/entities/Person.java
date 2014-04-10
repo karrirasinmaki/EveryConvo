@@ -12,37 +12,38 @@ import fi.raka.everyconvo.api.sql.SQLChain;
 import fi.raka.everyconvo.api.sql.SQLChain.Chain;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
-public class Group extends User {
+public class Person extends User {
 	
-	private static String a = TABLE_GROUPS+".";
-	public static String FROM = TABLE_GROUPS;
+	private static String a = TABLE_PERSONS+".";
+	public static String FROM = TABLE_PERSONS;
 	public static String FK_USERID = a+COL_USERID;
-	public static String[] OWN_PROJECTION = {FK_USERID, a+COL_FULLNAME};
+	public static String[] OWN_PROJECTION = {FK_USERID, a+COL_FIRSTNAME, a+COL_LASTNAME};
 	public static String[] PROJECTION = ArrayUtils.addAll( OWN_PROJECTION, User.PROJECTION );
 
-	private String fullname;
+	private String firstname;
+	private String lastname;
 	
-	public Group(String fullName, String userName, String description, String websiteUrl, String location, Integer visibility) {
+	public Person(String firstName, String lastName, String userName, String description, String websiteUrl, String location, Integer visibility) {
 		super( userName, description, websiteUrl, location, visibility );
-		this.fullname = fullName;
+		this.firstname = firstName;
+		this.lastname = lastName;
 	}
-	public Group(String fullName) {
-		super(fullName.toLowerCase().trim(), "", "", "", 1);
-		this.fullname = fullName;
-	}
-	public Group(ResultSet rs) throws SQLException {
+	public Person(ResultSet rs) throws SQLException {
 		super(rs);
-		fullname = rs.getString( COL_FULLNAME );
+		firstname = rs.getString( COL_FIRSTNAME );
+		lastname = rs.getString( COL_LASTNAME );
 	}
-	public Group(ResultSet rs, User u) throws SQLException {
+	public Person(ResultSet rs, User u) throws SQLException {
 		super( u.getUserName(), u.getDescription(), u.getWebsiteUrl(), u.getLocation(), u.getVisibility(), u.getImageUrl() );
 		setIsMe(u.isMe());
-		fullname = rs.getString( COL_FULLNAME );
+		firstname = rs.getString( COL_FIRSTNAME );
+		lastname = rs.getString( COL_LASTNAME );
 	}
-	Group(String fullName, User u) {
+	public Person(String firstName, String lastName, User u) {
 		super( u.getUserName(), u.getDescription(), u.getWebsiteUrl(), u.getLocation(), u.getVisibility(), u.getImageUrl() );
 		setIsMe(u.isMe());
-		this.fullname = fullName;
+		this.firstname = firstName;
+		this.lastname = lastName;
 	}
 	
 	/**
@@ -52,33 +53,26 @@ public class Group extends User {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	private void addGroupRow() 
+	private void addPersonRow() 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		new SQLChain().open(DATABASE_URL)
-			.insertInto(FROM, COL_USERID, COL_FULLNAME)
-			.values(""+getUserId(), fullname)
+			.insertInto(FROM, COL_USERID, COL_FIRSTNAME, COL_LASTNAME)
+			.values(""+getUserId(), firstname, lastname)
 			.update();
-	}
-	
-	@Override
-	public void add() 
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		super.add();
-		addGroupRow();
 	}
 	
 	@Override
 	public void register(String password) throws SQLException,
 			InstantiationException, IllegalAccessException, ClassNotFoundException {
 		super.register(password);
-		addGroupRow();
+		addPersonRow();
 	}
 	
-	public static ArrayList<Group> loadGroups(HttpServletRequest req) 
+	public static ArrayList<Person> loadPersons(HttpServletRequest req) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		ArrayList<Group> groups = new ArrayList<Group>();
+		ArrayList<Person> persons = new ArrayList<Person>();
 		Chain chain = new SQLChain().open(DATABASE_URL);
 		ResultSet rs = chain
 			.select(PROJECTION)
@@ -89,14 +83,15 @@ public class Group extends User {
 		
 		rs.beforeFirst();
 		while( rs.next() ) {
-			groups.add( new Group(rs) );
+			persons.add( new Person(rs) );
 		}
 		rs.close();
 		chain.close();
-		return groups;
+		return persons;
 	}
 	
-	public static Group loadGroup(String userName, HttpServletRequest req) 
+
+	public static Person loadPerson(String userName, HttpServletRequest req) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		User u = getSessionUser(req);
@@ -106,7 +101,7 @@ public class Group extends User {
 		u = User.loadUser(userName, req);
 		if( u == null ) return null;
 		
-		Group group = null;
+		Person person = null;
 		Chain chain = new SQLChain().open(DATABASE_URL);
 		ResultSet rs = chain
 			.select(OWN_PROJECTION)
@@ -115,12 +110,12 @@ public class Group extends User {
 			.exec();
 		
 		if( rs.next() ) {
-			group = new Group( rs, u );
+			person = new Person( rs, u );
 		}
 		rs.close();
 		chain.close();
 		
-		return group;
+		return person;
 	}
 	
 }

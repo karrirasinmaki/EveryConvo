@@ -21,6 +21,11 @@ public class ServeletUtils {
 	    }
 	}
 	
+	public static String getBaseURL(HttpServletRequest req) {
+		String url = req.getRequestURL().toString();
+		return url.substring(0, url.length() - req.getRequestURI().length()) + req.getContextPath();
+	}
+	
 	public static String getCallString(HttpServletRequest req) {
 		return req.getServletPath().substring(1);
 	}
@@ -37,6 +42,13 @@ public class ServeletUtils {
 			writeJSONStatusResponse( resp, StatusMessage.authError() );
 		}
 		return user;
+	}
+	
+	public static String getRequestUserName (HttpServletRequest req) {
+		String[] urlPathParts = Utils.getPathParts( req.getPathInfo() );
+		String requestUserName = urlPathParts[0];
+		if( requestUserName == null || requestUserName.length() == 0 ) requestUserName = null;
+		return requestUserName;
 	}
 	
 }

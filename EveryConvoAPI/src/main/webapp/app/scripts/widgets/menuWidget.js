@@ -17,15 +17,17 @@ define(["../lib/guda", "./contactWidget"], function(g, contactWidget) {
     menu.profile = new MenuElement().setText( "Profile" );
     menu.messages = new MenuElement().setText( "Messages" );
     menu.people = new MenuElement().setText( "People" );
+    menu.groups = new MenuElement().setText( "Groups" );
     menu.feed = new MenuElement().setText( "Feed" );
+    menu.newGroup = new MenuElement().setText( "Add group" );
     menu.post = new MenuElement().setText( "Post" );
     menu.settings = new MenuElement().setText( "Settings" );
     menu.logout = new MenuElement().setText( "Log out" );
     
     var menuFirstHalf = new g.Widget({ className: "first-half" });
     var menuSecondHalf = new g.Widget({ className: "second-half" });
-    menuFirstHalf.append( menu.profile ).append( menu.feed ).append( menu.messages ).append( menu.people );
-    menuSecondHalf.append( menu.post ).append( menu.settings ).append( menu.logout );
+    menuFirstHalf.append( menu.profile ).append( menu.feed ).append( menu.messages ).append( menu.people ).append( menu.groups );
+    menuSecondHalf.append( menu.newGroup ).append( menu.post ).append( menu.settings ).append( menu.logout );
 
     menu.append( menu.user ).append( menuFirstHalf ).append( menuSecondHalf );
     

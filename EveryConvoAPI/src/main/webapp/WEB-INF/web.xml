@@ -50,6 +50,10 @@
       <servlet-class>fi.raka.everyconvo.api.servelets.UserServelet</servlet-class>
   </servlet>
   <servlet>
+      <servlet-name>People</servlet-name>
+      <servlet-class>fi.raka.everyconvo.api.servelets.PeopleServelet</servlet-class>
+  </servlet>
+  <servlet>
       <servlet-name>Group</servlet-name>
       <servlet-class>fi.raka.everyconvo.api.servelets.GroupServelet</servlet-class>
   </servlet>
@@ -100,6 +104,24 @@
       <url-pattern>/stories</url-pattern>
   </servlet-mapping>
   
+  <!-- People -->
+  <servlet-mapping>
+      <servlet-name>People</servlet-name>
+      <url-pattern>/people</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>People</servlet-name>
+      <url-pattern>/persons</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>People</servlet-name>
+      <url-pattern>/create-person</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>People</servlet-name>
+      <url-pattern>/person/*</url-pattern>
+  </servlet-mapping>
+  
   <!-- Group -->
   <servlet-mapping>
       <servlet-name>Group</servlet-name>
@@ -109,11 +131,19 @@
       <servlet-name>Group</servlet-name>
       <url-pattern>/create-group</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>Group</servlet-name>
+      <url-pattern>/group/*</url-pattern>
+  </servlet-mapping>
   
   <!-- User -->
   <servlet-mapping>
       <servlet-name>User</servlet-name>
       <url-pattern>/users</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>User</servlet-name>
+      <url-pattern>/users/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
       <servlet-name>User</servlet-name>

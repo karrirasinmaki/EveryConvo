@@ -116,6 +116,11 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
             element.insertBefore( elementToInsert, element.childNodes[0] );
             
             if( this.extendsDom ) return this;
+        },
+        empty: function(element) {
+            if( this.extendsDom ) element = this.element;
+            element.innerHTML = "";
+            if( this.extendsDom ) return this;
         }
     };
     
@@ -140,7 +145,7 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
     Widget.prototype.hide = function(animation) {
         var _this = this;
         var el = this.element;
-        if( this._display == undefined ) this._display = el.style.display;
+        if( this._display == undefined ) this._display = el.style.display || "block";
         if( animation ) this.animate( animation, function() { _this.hide() } );
         else el.style.display = "none";
         return this;
@@ -157,6 +162,11 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
     };
     Widget.prototype.setText = function(text) {
         this.text.textContent = text;
+        return this;
+    };
+    Widget.prototype.setHTML = function(html) {
+        log(html);
+        this.element.innerHTML = html;
         return this;
     };
     Widget.prototype.getText = function(text) {
@@ -178,6 +188,18 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
         for(var k in params) {
             this.element[k] = params[k];
         }
+    };
+    
+    var Group = function(params) {
+        this.init( params );
+        this.addClass( "group" );
+    };
+    Group.prototype = new Widget;
+    Group.prototype.append = function(element, percentage) {
+        var el = new Widget({ }, "span").append( element );
+        if( percentage ) el.element.style.width = percentage + "%";
+        dom.append( el, this.element );
+        return this;
     };
     
     var View = function(params) {
@@ -281,6 +303,7 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
         serialize: serialize,
         dom: dom,
         Widget: Widget,
+        Group: Group,
         View: View,
         Form: Form,
         TextArea: TextArea,

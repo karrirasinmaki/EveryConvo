@@ -13,7 +13,7 @@ define(["lib/guda", "lib/values"], function(g, values) {
             method: "post",
             action: values.API.login,
             afterSubmit: function(data) { 
-                data = JSON.parse( data );
+                data = JSON.parse( data ).data;
                 if( data.status && data.status == values.API.status.error ) {
                     var message = new g.Widget({ className: "error" }).setText( values.TEXT.loginError );
                     loginForm.append( message );
@@ -28,9 +28,9 @@ define(["lib/guda", "lib/values"], function(g, values) {
             id: "register",
             className: "box",
             method: "post",
-            action: values.API.createUser,
+            action: values.API.createPerson,
             afterSubmit: function(data) { 
-                data = JSON.parse( data );
+                data = JSON.parse( data ).data;
                 if( data.status && data.status == values.API.status.error ) {
                     var message = new g.Widget({ className: "error" }).setText( values.TEXT.registerError );
                     registerForm.append( message );

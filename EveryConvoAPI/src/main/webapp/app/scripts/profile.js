@@ -46,16 +46,21 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
     };
     ProfileView.prototype.fillInfo = function(user) {
         var _this = this;
-        this.title.setText( user.username );
+        var fullName = user.fullname || user.firstname + " " + user.lastname;
+        this.title.setHTML( fullName + "<small>" + user.username + "</small>" );
         
+        var imageUrl = user.imageurl;
+        if( !imageUrl ) imageUrl = "/u/default-profile-pic.png";
         this.picture = new g.MediaWidget({
             className: "picture",
-            mediaURL: values.API.baseUrl + user.imageurl || "/default-profile-pic.png"
+            mediaURL: values.API.baseUrl + imageUrl
         });
         this.location = new EditableWidget({ className: "location", name: "location" }).setText( user.location );
         this.websiteurl = new EditableWidget({ className: "websiteurl", name: "websiteurl", href: user.websiteurl }, "a").setText( user.websiteurl );
         this.websiteurl.element.style.display = "block";
         this.description = new EditableWidget({ className: "description", name: "description" }).setText( user.description );
+        
+        this.sideView.append( this.picture );
         
         if( user.me ) {
             this.pictureForm = 
@@ -77,8 +82,8 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
                         };
                         reader.readAsDataURL( file );
                         g.AJAXSubmit( _this.pictureForm.element ).done(function(data) {
-                            g.log( data );
                             var data = JSON.parse( data );
+                            _this.picture.setMediaURL( values.API.baseUrl + data.fileurl );
                             _this.sideView.append( 
                                 new g.Input({
                                     type: "hidden",
@@ -108,19 +113,25 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
                 .setText( values.TEXT.save )
                 .hide();
             
-            this.sideView.append( this.picture ).append( this.pictureForm ).append( this.editButton ).append( this.saveButton );
+            this.sideView.append( this.pictureForm ).append( this.editButton ).append( this.saveButton );
         }
         
         this.sideView.append( this.location ).append( this.websiteurl )
             .append( this.description );
     };
-    ProfileView.prototype.load = function(userName) {
+    ProfileView.prototype.load = function(userName, userType) {
         this._load( userName, true );
         var _this = this;
-        g.getAjax( values.API.user +"/"+ userName ).done(function(data) {
+        g.getAjax( values.API[userType] +"/"+ userName ).done(function(data) {
             _this.user = JSON.parse(data).data;
             _this.fillInfo( _this.user );
         });
+    };
+    ProfileView.prototype.loadPerson = function(userName) {
+        this.load( userName, "person" );
+    };
+    ProfileView.prototype.loadGroup = function(userName) {
+        this.load( userName, "group" );
     };
     
     return {

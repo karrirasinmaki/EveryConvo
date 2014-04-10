@@ -44,4 +44,8 @@ public class StatusMessage {
 	public static StatusMessage generalError(Exception e) {
 		return generateError(STATUS_ERROR, "Something went wrong.", e);
 	}
+	
+	public static StatusMessage notFound(String field) {
+		return generateError(STATUS_ERROR, field + " not found.");
+	}
 }

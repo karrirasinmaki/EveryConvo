@@ -9,7 +9,6 @@ define(["../lib/values", "../lib/guda"], function(values, g) {
         this.error = function(fn) { errorFn = fn; return this; }
             
         g.getAjax(values.API.user).done(function(data) {
-            console.log(data);
             data = JSON.parse( data ).data;
             if( data.userid ) {
                 user = data;
@@ -23,8 +22,18 @@ define(["../lib/values", "../lib/guda"], function(values, g) {
         return this;
     };
     
-    var loadAllUsers = function(callback) {
-        g.getAjax(values.API.users).done(function(data) {
+    var loadAllUsers = function(callback, query) {
+        var q = values.API.people;
+        if( query ) q += "/%25" + query + "%25";
+        g.getAjax(q).done(function(data) {
+            if( callback ) callback( JSON.parse(data).data );
+        });
+    };
+    
+    var loadAllGroups = function(callback, query) {
+        var q = values.API.groups;
+        if( query ) q += "/%25" + query + "%25";
+        g.getAjax(q).done(function(data) {
             if( callback ) callback( JSON.parse(data).data );
         });
     };
@@ -32,7 +41,8 @@ define(["../lib/values", "../lib/guda"], function(values, g) {
     return {
         user: user,
         login: login,
-        loadAllUsers: loadAllUsers
+        loadAllUsers: loadAllUsers,
+        loadAllGroups: loadAllGroups
     }
     
 });

@@ -38,7 +38,8 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
     
 
     var newStory = new g.Widget({ 
-        id: "new-story"
+        id: "new-story",
+        className: "bottom-pull"
     });
     newStory.append( new NewStoryForm() );
     newStory.hide();

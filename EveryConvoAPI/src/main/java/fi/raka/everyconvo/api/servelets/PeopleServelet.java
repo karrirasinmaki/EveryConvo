@@ -17,23 +17,24 @@ import fi.raka.everyconvo.api.utils.Utils;
 import static fi.raka.everyconvo.api.json.JSONUtils.*;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
-public class GroupServelet extends HttpServlet {
+public class PeopleServelet extends HttpServlet {
 
 	private static final long serialVersionUID = 986315230553966286L;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		
+
 		String requestUserName = ServeletUtils.getRequestUserName( req );
 		
 		try {
 			switch( ServeletUtils.getCallString(req) ) {
-			case "groups":
-				writeJSONResponse( resp, Group.loadGroups(req) );
+			case "persons":
+			case "people":
+				writeJSONResponse( resp, Person.loadPersons(req) );
 				break;
-			case "group":
-				printGroup( req, resp, requestUserName );
+			case "person":
+				printPerson( req, resp, requestUserName );
 			}
 		} catch (InstantiationException | IllegalAccessException
 				| ClassNotFoundException | SQLException e) {
@@ -48,23 +49,23 @@ public class GroupServelet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		switch( ServeletUtils.getCallString(req) ) {
-		case "create-group":
-			createGroup(req, resp);
+		case "create-person":
+			createPerson(req, resp);
 			break;
 		}
 		
 		
 	}
 	
-	private void printGroup(HttpServletRequest req, HttpServletResponse resp, String userName) 
+	private void printPerson(HttpServletRequest req, HttpServletResponse resp, String userName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		Group group = Group.loadGroup( userName, req );
-		if( group == null ) writeJSONStatusResponse( resp, StatusMessage.notFound("group") );
-		else writeJSONResponse( resp, group );
+		Person person = Person.loadPerson( userName, req );
+		if( person == null ) writeJSONStatusResponse( resp, StatusMessage.notFound("person") );
+		else writeJSONResponse( resp, person );
 	}
 	
-	private void createGroup(HttpServletRequest req, HttpServletResponse resp) {
+	private void createPerson(HttpServletRequest req, HttpServletResponse resp) {
 		
 		String
 		userName = req.getParameter( COL_USERNAME ),
@@ -73,21 +74,22 @@ public class GroupServelet extends HttpServlet {
 		location = req.getParameter( COL_LOCATION ),
 		password = req.getParameter( "password" ),
 		
-		fullName = req.getParameter( COL_FULLNAME );
+		firstName = req.getParameter( COL_FIRSTNAME ),
+		lastName = req.getParameter( COL_LASTNAME );
 		
 		Integer 
 		visibility = Utils.parseInteger( req.getParameter( COL_VISIBILITY ) );
 		
-		Group group = new Group(fullName, userName, description, websiteUrl, location, visibility);
+		Person person = new Person(firstName, lastName, userName, description, websiteUrl, location, visibility);
 
 		try {
-			if( password == null ) {
-				group.add();
+			if( password == null || userName == null ) {
+				writeJSONStatusResponse( resp, new StatusMessage(StatusMessage.STATUS_ERROR, "Username or password missing.") );
 			}
 			else {
-				group.register( password );
+				person.register( password );
 			}
-			writeJSONStatusResponse( resp, new StatusMessage( StatusMessage.STATUS_OK, "Group created with id " + group.getUserId() ) );
+			writeJSONStatusResponse( resp, new StatusMessage( StatusMessage.STATUS_OK, "Person created with id " + person.getUserId() ) );
 		} catch (InstantiationException | IllegalAccessException
 				| ClassNotFoundException | SQLException e) {
 			e.printStackTrace();

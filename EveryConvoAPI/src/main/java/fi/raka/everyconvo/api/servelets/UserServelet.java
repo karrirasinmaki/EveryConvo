@@ -22,18 +22,18 @@ public class UserServelet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-			
+
+		String requestUserName = ServeletUtils.getRequestUserName( req );
+		
 		try {
 						
-			switch( req.getServletPath().substring(1) ) {
+			switch( ServeletUtils.getCallString(req) ) {
 			case "user":
 			case "login":
-				String[] urlPathParts = Utils.getPathParts( req.getPathInfo() );
-				String requestUserName = urlPathParts[0];
 				printUser( req, resp, requestUserName );
 				break;
 			case "users":
-				printAllUsers( req, resp );
+				printAllUsers( req, resp, requestUserName );
 				break;
 			}
 			
@@ -88,7 +88,7 @@ public class UserServelet extends HttpServlet {
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		User user = User.loadUser( userName, req );
-		if( user == null ) writeJSONStatusResponse( resp, StatusMessage.sessionError() );
+		if( user == null ) writeJSONStatusResponse( resp, StatusMessage.notFound("user") );
 		else writeJSONResponse( resp, user );
 	}
 	
@@ -101,9 +101,9 @@ public class UserServelet extends HttpServlet {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	private void printAllUsers(HttpServletRequest req, HttpServletResponse resp) 
+	private void printAllUsers(HttpServletRequest req, HttpServletResponse resp, String userName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		writeJSONResponse( resp, User.loadAll(req) );
+		writeJSONResponse( resp, User.loadAll(req, userName) );
 	}
 
 	/**
