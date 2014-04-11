@@ -45,7 +45,9 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         });
     };
     ProfileView.prototype.fillInfo = function(user) {
+        this.user = user;
         var _this = this;
+        
         var fullName = user.fullname || user.firstname + " " + user.lastname;
         this.title.setHTML( fullName + "<small>" + user.username + "</small>" );
         
@@ -55,10 +57,27 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
             className: "picture",
             mediaURL: values.API.baseUrl + imageUrl
         });
+        
         this.location = new EditableWidget({ className: "location", name: "location" }).setText( user.location );
         this.websiteurl = new EditableWidget({ className: "websiteurl", name: "websiteurl", href: user.websiteurl }, "a").setText( user.websiteurl );
         this.websiteurl.element.style.display = "block";
         this.description = new EditableWidget({ className: "description", name: "description" }).setText( user.description );
+        
+        this.followButton = new g.Button({
+            className: "follow",
+            onclick: function() {
+                g.postAjax( _this.followButton.followAction ).done(function(data) {
+                    _this.followButton.setFollow( !user.follows );
+                });
+            }
+        });
+        this.followButton.followAction = values.API.follow(_this.user.username);
+        this.followButton.setFollow = function(follow) {
+            var text = follow ? values.TEXT.unfollow : values.TEXT.follow;
+            this.setText( text );
+            this.followAction = values.API[text](_this.user.username);
+        };
+        this.followButton.setFollow( user.follows );
         
         this.sideView.append( this.picture );
         
@@ -117,7 +136,7 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         }
         
         this.sideView.append( this.location ).append( this.websiteurl )
-            .append( this.description );
+            .append( this.description ).append( this.followButton );
     };
     ProfileView.prototype.load = function(userName, userType) {
         this._load( userName, true );

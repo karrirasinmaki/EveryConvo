@@ -9,9 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fi.raka.everyconvo.api.entities.Group;
-import fi.raka.everyconvo.api.entities.Person;
 import fi.raka.everyconvo.api.entities.StatusMessage;
-import fi.raka.everyconvo.api.entities.User;
 import fi.raka.everyconvo.api.utils.ServeletUtils;
 import fi.raka.everyconvo.api.utils.Utils;
 import static fi.raka.everyconvo.api.json.JSONUtils.*;

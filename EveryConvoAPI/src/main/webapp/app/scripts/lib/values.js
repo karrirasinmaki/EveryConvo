@@ -25,6 +25,8 @@ define(function() {
         }
     };
     API.deleteStory = API.del + "?type=story&id=";
+    API.follow = function(userName) { return API.user + "/" + userName + "?follow"; }
+    API.unfollow = function(userName) { return API.user + "/" + userName + "?unfollow"; }
     
     var VIEW = {
         feed: "feed"
@@ -42,6 +44,8 @@ define(function() {
         like: "like",
         likes: "likes",
         liked: "liked",
+        follow: "follow",
+        unfollow: "unfollow",
         loadMore: "load more",
         wannaDelete: "Do you really want to delete that item?",
         loginError: "Error with login. Make sure you used correct pair of username and password",

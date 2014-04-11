@@ -2,8 +2,6 @@ package fi.raka.everyconvo.api.servelets;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.NumberFormat;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

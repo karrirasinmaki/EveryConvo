@@ -34,7 +34,7 @@ public class UserServelet extends HttpServlet {
 				break;
 			case "users":
 				printAllUsers( req, resp, requestUserName );
-				break;
+				break;				
 			}
 			
 		} catch (SQLException e) {
@@ -52,6 +52,8 @@ public class UserServelet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		
+		String requestUserName = ServeletUtils.getRequestUserName( req );
 
 		try {
 			
@@ -60,7 +62,11 @@ public class UserServelet extends HttpServlet {
 				login(req, resp);
 				break;
 			case "user":
-				writeJSONStatusResponse( resp, User.updateCurrentUser( req ) );
+				if( requestUserName != null ) {
+					if( req.getParameter("follow") != null ) followUser(req, requestUserName);
+					if( req.getParameter("unfollow") != null ) unFollowUser(req, requestUserName);
+				}
+				else writeJSONStatusResponse( resp, User.updateCurrentUser( req ) );
 				break;
 			case "create-user":
 				createUser(req, resp);
@@ -71,6 +77,19 @@ public class UserServelet extends HttpServlet {
 				| ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
+		
+	}
+	
+	private void followUser(HttpServletRequest req, String userName) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		User.followUser( userName, req );
+		
+	}
+	private void unFollowUser(HttpServletRequest req, String userName) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		User.unFollowUser( userName, req );
 		
 	}
 	
@@ -122,8 +141,7 @@ public class UserServelet extends HttpServlet {
 		userName = req.getParameter( COL_USERNAME ),
 		password = req.getParameter( "password" );
 		
-		User user = new User();
-		writeJSONStatusResponse( resp, user.login(userName, password, req) );
+		writeJSONStatusResponse( resp, User.login(userName, password, req) );
 	}
 	
 	/**

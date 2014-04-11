@@ -65,6 +65,7 @@ public class SQLUtils {
 		TABLE_MESSAGES = "messages",
 		TABLE_STORIES = "stories",
 		TABLE_LIKES = "likes",
+		TABLE_FOLLOWS = "follows",
 		
 		COL_PASSHASH = "passhash",
 		COL_SALT = "salt",

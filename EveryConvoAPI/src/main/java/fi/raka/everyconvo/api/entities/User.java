@@ -11,10 +11,6 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.ArrayUtils;
-
-import com.google.gson.annotations.Expose;
-
 import fi.raka.everyconvo.api.sql.SQLChain;
 import fi.raka.everyconvo.api.sql.SQLChain.Chain;
 import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
@@ -40,6 +36,7 @@ public class User {
 	private Integer userid;
 	private int visibility;
 	private boolean me = false;
+	private Boolean follows;
 	
 	public User() {
 	}
@@ -54,9 +51,18 @@ public class User {
 		this(userName, description, websiteUrl, location, visibility);
 		setImageUrl(imageUrl);
 	}
+	public User(String userName, String description, String websiteUrl, String location, Integer visibility, String imageUrl, Boolean follows) {
+		this(userName, description, websiteUrl, location, visibility, imageUrl);
+		setFollows(follows);
+	}
+	
 	public User(Integer userId, String userName, String description, String websiteUrl, String location, Integer visibility, String imageUrl) {
 		this(userId, userName, description, websiteUrl, location, visibility);
 		setImageUrl(imageUrl);
+	}
+	public User(Integer userId, String userName, String description, String websiteUrl, String location, Integer visibility, String imageUrl, Boolean follows) {
+		this(userId, userName, description, websiteUrl, location, visibility, imageUrl);
+		setFollows(follows);
 	}
 	public User(ResultSet rs) throws SQLException {
 		this(
@@ -66,9 +72,18 @@ public class User {
 			rs.getString(COL_WEBSITEURL), 
 			rs.getString(COL_LOCATION), 
 			rs.getInt(COL_VISIBILITY),
-			rs.getString(COL_IMAGEURL)
+			rs.getString(COL_IMAGEURL),
+			getFollowFromRS( rs )
 			);
-	}	
+	}
+	
+	private static Boolean getFollowFromRS(ResultSet rs) {
+		try {
+			return rs.getBoolean("follows");
+		} catch (SQLException e) {
+			return null;
+		}
+	}
 	
 	public User setUserName(String userName) {
 		this.username = userName;
@@ -92,6 +107,10 @@ public class User {
 	}
 	public User setImageUrl(String imageUrl) {
 		this.imageurl = imageUrl;
+		return this;
+	}
+	public User setFollows(Boolean follows) {
+		this.follows = follows;
 		return this;
 	}
 	/**
@@ -135,6 +154,9 @@ public class User {
 	}
 	public Integer getVisibility() {
 		return visibility;
+	}
+	public Boolean getFollows() {
+		return follows;
 	}
 	
 	/**
@@ -357,7 +379,7 @@ public class User {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static User loadUser(String userName, HttpServletRequest req, Chain chain) 
+	public static User loadUser(String userName, HttpServletRequest req, Chain ch) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 				
 		User sessionUser = getSessionUser(req);
@@ -366,8 +388,21 @@ public class User {
 			userName = sessionUser.getUserName();
 		}
 		
+		SelectChain chain = ch
+			.select(PROJECTION);
+		
+		if( sessionUser != null ) {
+			String q = new SQLChain().builder()
+					.select(COL_USERID)
+					.from(TABLE_FOLLOWS)
+					.whereIs(COL_USERID, ""+sessionUser.getUserId(), false)
+					.whereIs(COL_TOID, PK_USERID, false)
+					.limit(1)
+					.getQuery();
+			chain.q( ", (SELECT EXISTS(" + q + ")) as follows");
+		}
+		
 		ResultSet rs = chain
-			.select(PROJECTION)
 			.from(FROM)
 			.whereLike(COL_USERNAME, userName)
 			.exec();
@@ -420,6 +455,66 @@ public class User {
 			return StatusMessage.updateCompleted();
 		}
 		return StatusMessage.sessionError();
+	}
+	
+	public static StatusMessage followUser(String userName, HttpServletRequest req) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		User sessionUser = User.getSessionUser(req);
+		if( sessionUser == null ) return StatusMessage.authError();
+		
+		Chain chain = new SQLChain().open(DATABASE_URL);
+		ResultSet rs = chain
+			.insertInto(TABLE_FOLLOWS, COL_USERID, COL_TOID)
+			.values( 
+				""+sessionUser.getUserId(), 
+				"'+("+
+					new SQLChain().builder()
+						.select(COL_USERID)
+						.from(TABLE_USERS)
+						.whereIs(COL_USERNAME, userName)
+						.limit(1)
+						.getQuery()
+				+ ")+'"
+				)
+			.update();
+		
+		boolean doesAnything = rs.first();
+		rs.close();
+		chain.close();
+		
+		if( doesAnything ) return StatusMessage.notFound("user " + userName + " ");
+		return new StatusMessage(StatusMessage.STATUS_OK, "You now follow user " + userName);
+	}
+	
+	public static StatusMessage unFollowUser(String userName, HttpServletRequest req) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		User sessionUser = User.getSessionUser(req);
+		if( sessionUser == null ) return StatusMessage.authError();
+		
+		Chain chain = new SQLChain().open(DATABASE_URL);
+		ResultSet rs = chain		
+			.delete()
+			.from(TABLE_FOLLOWS)
+			.whereIs(COL_USERID, ""+sessionUser.getUserId())
+			.whereIs(COL_TOID, 
+				"("+
+					new SQLChain().builder()
+						.select(COL_USERID)
+						.from(TABLE_USERS)
+						.whereIs(COL_USERNAME, userName)
+						.limit(1)
+						.getQuery()
+				+ ")", false)
+			.update();
+		
+		boolean doesAnything = rs.first();
+		rs.close();
+		chain.close();
+		
+		if( doesAnything ) return StatusMessage.notFound("user " + userName + " ");
+		return new StatusMessage(StatusMessage.STATUS_OK, "You no longer follow user " + userName);
 	}
 	
 	/**

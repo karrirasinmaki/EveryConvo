@@ -67,6 +67,10 @@ public class SQLChain {
 		return new Chain();
 	}
 	
+	public Chain builder() {
+		return new Chain();
+	}
+	
 	public Connection getConnection() {
 		return conn;
 	}
@@ -211,9 +215,13 @@ public class SQLChain {
 			query.append( _where() + column + " IN ('" + StringUtils.join(values, "','") + "')" );
 			return this;
 		}
-		public SelectChain whereIs(String column, String value) {
-			query.append( _where() + column + "='" + value + "'" );
+		public SelectChain whereIs(String column, String value, boolean autoStringify) {
+			char c = autoStringify ? '\'' : ' ';
+			query.append( _where() + column + "=" +c+ value +c );
 			return this;
+		}
+		public SelectChain whereIs(String column, String value) {
+			return whereIs( column, value, true );
 		}
 		public SelectChain contains(String column, String value) {
 			query.append( _where() + column + " LIKE '%" + value + "%'" );
@@ -358,12 +366,9 @@ public class SQLChain {
 	
 	public class AlterChain extends Chain {
 		
-		private String table;
-		
 		public AlterChain() {}
 		
 		public AlterChain alter(String table) {
-			this.table = table;
 			query.append( " ALTER TABLE " + table );
 			return this;
 		}

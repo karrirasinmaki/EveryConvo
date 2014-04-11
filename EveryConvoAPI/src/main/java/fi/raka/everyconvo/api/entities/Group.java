@@ -35,12 +35,12 @@ public class Group extends User {
 		fullname = rs.getString( COL_FULLNAME );
 	}
 	public Group(ResultSet rs, User u) throws SQLException {
-		super( u.getUserName(), u.getDescription(), u.getWebsiteUrl(), u.getLocation(), u.getVisibility(), u.getImageUrl() );
+		super( u.getUserName(), u.getDescription(), u.getWebsiteUrl(), u.getLocation(), u.getVisibility(), u.getImageUrl(), u.getFollows() );
 		setIsMe(u.isMe());
 		fullname = rs.getString( COL_FULLNAME );
 	}
 	Group(String fullName, User u) {
-		super( u.getUserName(), u.getDescription(), u.getWebsiteUrl(), u.getLocation(), u.getVisibility(), u.getImageUrl() );
+		super( u.getUserName(), u.getDescription(), u.getWebsiteUrl(), u.getLocation(), u.getVisibility(), u.getImageUrl(), u.getFollows() );
 		setIsMe(u.isMe());
 		this.fullname = fullName;
 	}

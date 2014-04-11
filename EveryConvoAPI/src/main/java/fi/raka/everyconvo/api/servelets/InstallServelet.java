@@ -30,8 +30,6 @@ public class InstallServelet extends HttpServlet {
 		String dbUser = req.getParameter("username");
 		String dbPass = req.getParameter("password");
 		
-		System.out.println(dbUser + "::::" + dbPass);
-		
 		if( dbUser == null && dbPass == null ) {
 			File settingsFile = new File(Values.CONFIG_FILE_PATH);
 			if( settingsFile.exists() ) {
@@ -169,6 +167,15 @@ public class InstallServelet extends HttpServlet {
 						getPrimaryKeyClause(COL_STORYID, COL_USERID),
 						getForeignKeyClause(COL_STORYID, TABLE_STORIES),
 						getForeignKeyClause(COL_USERID, TABLE_USERS)
+						).exe()
+						
+				.alterOrCreate()
+				.table(TABLE_FOLLOWS, CreateChain.IF_NOT_EXISTS, 
+						COL_USERID + INT_NOT_NULL,
+						COL_TOID + INT_NOT_NULL,
+						getPrimaryKeyClause(COL_USERID, COL_TOID),
+						getForeignKeyClause(COL_USERID, TABLE_USERS),
+						getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
 						).exe()
 					    
 				.commit()
