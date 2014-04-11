@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,9 +21,11 @@ public class SQLChain {
 	
 	private Connection conn = null;
 	private StringBuilder query;
+	private LinkedList<Object> params;
 	
 	public SQLChain() {
 		query = new StringBuilder();
+		params = new LinkedList<Object>();
 	}
 	
 	public Chain open(String url, String username, String password) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
@@ -77,7 +81,8 @@ public class SQLChain {
 	
 	public class Chain {
 		
-		public Chain() {}
+		
+		public Chain() { }
 		
 		/**
 		 * Get current query as string
@@ -142,8 +147,9 @@ public class SQLChain {
 			query.append( "SELECT " + StringUtils.join(columns, ",") );
 			return new SelectChain();
 		}
-		public InsertChain insertInto(String table, String ... columns) {
-			query.append( "INSERT INTO " + table + " (" + StringUtils.join(columns, ",") + ")"  );
+		public InsertChain insertInto(String table, Object ... columns) {
+			params.add( columns );
+			query.append( "INSERT INTO " + table + " (" + generateQuestionMarks(columns.length) + ")"  );
 			return new InsertChain();
 		}
 		public UpdateChain update(String table) {
@@ -178,10 +184,53 @@ public class SQLChain {
 			String q = getQuery();
 			System.out.println("query\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n"));
 			query.setLength(0);
-			PreparedStatement stmt;
-			stmt = conn.prepareStatement( q, Statement.RETURN_GENERATED_KEYS );
+			PreparedStatement stmt = conn.prepareStatement( q, Statement.RETURN_GENERATED_KEYS );
+			handleParams( stmt );
 			stmt.executeUpdate();
 			return stmt.getGeneratedKeys();
+		}
+		
+		private int handleArray(PreparedStatement stmt, Object[] objs, int i) 
+				throws ArrayIndexOutOfBoundsException, IllegalArgumentException, SQLException {
+			
+			for( int index=0, l=objs.length; index<l; ++index ) {
+				stmt.setString( i, (String) objs[index] );
+				i++;
+			}
+			return i;
+		}
+		
+		private int handleParams(PreparedStatement stmt, Object obj, int i) throws SQLException {
+			Iterator<Object> iterator = params.iterator();
+			while( iterator.hasNext() ) {
+				Object o = iterator.next();
+				if( o.getClass().isArray() ) {
+					i = handleArray( stmt, (Object[]) o, i );
+				}
+				else {
+					stmt.setObject( i, o );
+					i++;
+				}
+			}
+			return i;
+		}
+		public void handleParams(PreparedStatement stmt) {
+			try {
+				handleParams( stmt, params, 1 );
+			} catch (SQLException e) {
+				System.out.println("Error handling params.");
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		
+		public String generateQuestionMarks(int number) {
+			StringBuffer b = new StringBuffer( number*2 - 1 );
+			for(int i=0; i<number; ++i) {
+				if( i > 0 ) b.append(',');
+				b.append('?');
+			}
+			return b.toString();
 		}
 	}
 	
@@ -198,8 +247,8 @@ public class SQLChain {
 			String q = getQuery();
 			System.out.println("query\n" + q);
 			query.setLength(0);
-			PreparedStatement stmt;
-			stmt = conn.prepareStatement( q );
+			PreparedStatement stmt = conn.prepareStatement( q );
+			handleParams( stmt );
 			return stmt.executeQuery();
 		}
 		@Override
@@ -211,24 +260,24 @@ public class SQLChain {
 			query.append( " FROM " + StringUtils.join(tables, ",") );
 			return this;
 		}
-		public SelectChain whereIn(String column, String ... values) {
-			query.append( _where() + column + " IN ('" + StringUtils.join(values, "','") + "')" );
+		public SelectChain whereIn(String column, Object ... values) {
+			params.add( values );
+			query.append( _where() + column + " IN ('" + generateQuestionMarks(values.length) + "')" );
 			return this;
 		}
-		public SelectChain whereIs(String column, String value, boolean autoStringify) {
-			char c = autoStringify ? '\'' : ' ';
-			query.append( _where() + column + "=" +c+ value +c );
+		public SelectChain whereIs(String column, Object value) {
+			params.add( value );
+			query.append( _where() + column + "=" + generateQuestionMarks(1) );
 			return this;
 		}
-		public SelectChain whereIs(String column, String value) {
-			return whereIs( column, value, true );
-		}
-		public SelectChain contains(String column, String value) {
-			query.append( _where() + column + " LIKE '%" + value + "%'" );
+		public SelectChain contains(String column, Object value) {
+			params.add( value );
+			query.append( _where() + column + " LIKE '%" + generateQuestionMarks(1) + "%'" );
 			return this;
 		}
-		public SelectChain whereLike(String column, String value) {
-			query.append( _where() + column + " LIKE '" + value + "'" );
+		public SelectChain whereLike(String column, Object value) {
+			params.add( value );
+			query.append( _where() + column + " LIKE " + generateQuestionMarks(1) );
 			return this;
 		}
 		public SelectChain or() {
@@ -243,12 +292,12 @@ public class SQLChain {
 			query.append( " INNER JOIN " + table );
 			return new JoinChain( this );
 		}
-		public SelectChain asc(String ... columns) {
+		public SelectChain asc(Object ... columns) {
 			orderBy(columns);
 			query.append( " ASC" );
 			return this;
 		}
-		public SelectChain desc(String ... columns) {
+		public SelectChain desc(Object ... columns) {
 			orderBy(columns);
 			query.append( " DESC" );
 			return this;
@@ -276,25 +325,30 @@ public class SQLChain {
 			query.append( " END " );
 			return this;
 		}
-		public SelectChain limit(int limit) {
-			query.append( " LIMIT " + limit );
+		public SelectChain limit(Object limit) {
+			params.add( limit );
+			query.append( " LIMIT " + generateQuestionMarks(1) );
 			return this;
 		}
-		public SelectChain offset(int offset) {
-			query.append( " OFFSET " + offset );
+		public SelectChain offset(Object offset) {
+			params.add( offset );
+			query.append( " OFFSET " + generateQuestionMarks(1) );
 			return this;
 		}
-		public SelectChain gte(String column, long value) {
-			query.append( _where() + column + ">" + value + "" );
+		public SelectChain gte(String column, Object value) {
+			params.add( value );
+			query.append( _where() + column + ">" + generateQuestionMarks(1) );
 			return this;
 		}
-		public SelectChain lte(String column, long value) {
-			query.append( _where() + column + "<" + value + "" );
+		public SelectChain lte(String column, Object value) {
+			params.add( value );
+			query.append( _where() + column + "<" + generateQuestionMarks(1) );
 			return this;
 		}
 		
-		private SelectChain orderBy(String ... columns) {
-			query.append( " ORDER BY " + StringUtils.join(columns, ",") );
+		private SelectChain orderBy(Object ... columns) {
+			params.add( columns );
+			query.append( " ORDER BY " + generateQuestionMarks(columns.length) );
 			return this;
 		}
 		private String _where() {
@@ -316,8 +370,10 @@ public class SQLChain {
 			this.previousChain = previousChain;
 		}
 		
-		public SelectChain on(String column, String value) {
-			query.append( " ON " + column + "=" + value );
+		public SelectChain on(Object column, Object value) {
+			params.add( column );
+			params.add( value );
+			query.append( " ON " + generateQuestionMarks(1) + "=" + generateQuestionMarks(1) );
 			return previousChain;
 		}
 		
@@ -332,8 +388,9 @@ public class SQLChain {
 			super.q(q);
 			return this;
 		}
-		public InsertChain values(String ... values) {
-			query.append( " VALUES ('" + StringUtils.join(values, "','") + "')" );
+		public InsertChain values(Object ... values) {
+			params.add( values );
+			query.append( " VALUES (" + generateQuestionMarks(values.length) + ")" );
 			return this;
 		}
 		
@@ -355,9 +412,11 @@ public class SQLChain {
 			return new SelectChain();
 		}
 		
-		public UpdateChain set(String column, String value) {
+		public UpdateChain set(Object column, Object value) {
+			params.add( column );
+			params.add( value );
 			query.append( firstSet ? " SET " : "," );
-			query.append( column + "='" + value + "'" );
+			query.append( generateQuestionMarks(1) + "=" + generateQuestionMarks(1) + "" );
 			firstSet = false;
 			return this;
 		}

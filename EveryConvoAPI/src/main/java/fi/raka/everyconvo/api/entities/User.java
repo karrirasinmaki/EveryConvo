@@ -395,8 +395,8 @@ public class User {
 			String q = new SQLChain().builder()
 					.select(COL_USERID)
 					.from(TABLE_FOLLOWS)
-					.whereIs(COL_USERID, ""+sessionUser.getUserId(), false)
-					.whereIs(COL_TOID, PK_USERID, false)
+					.whereIs(COL_USERID, ""+sessionUser.getUserId())
+					.whereIs(COL_TOID, PK_USERID)
 					.limit(1)
 					.getQuery();
 			chain.q( ", (SELECT EXISTS(" + q + ")) as follows");
@@ -506,7 +506,7 @@ public class User {
 						.whereIs(COL_USERNAME, userName)
 						.limit(1)
 						.getQuery()
-				+ ")", false)
+				+ ")")
 			.update();
 		
 		boolean doesAnything = rs.first();
