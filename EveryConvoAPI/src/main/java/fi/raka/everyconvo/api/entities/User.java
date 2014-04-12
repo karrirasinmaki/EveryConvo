@@ -392,14 +392,15 @@ public class User {
 			.select(PROJECTION);
 		
 		if( sessionUser != null ) {
-			String q = new SQLChain().builder()
-					.select(COL_USERID)
-					.from(TABLE_FOLLOWS)
-					.whereIs(COL_USERID, ""+sessionUser.getUserId())
-					.whereIs(COL_TOID, PK_USERID)
-					.limit(1)
-					.getQuery();
-			chain.q( ", (SELECT EXISTS(" + q + ")) as follows");
+			chain.q( ", (SELECT EXISTS(" );
+			chain
+				.select(COL_USERID)
+				.from(TABLE_FOLLOWS)
+				.whereIs(COL_USERID, ""+sessionUser.getUserId())
+				.whereIs(COL_TOID, PK_USERID)
+				.limit(1)
+				.getQuery();
+			chain.q( ")) as follows" );
 		}
 		
 		ResultSet rs = chain
@@ -467,15 +468,13 @@ public class User {
 		ResultSet rs = chain
 			.insertInto(TABLE_FOLLOWS, COL_USERID, COL_TOID)
 			.values( 
-				""+sessionUser.getUserId(), 
-				"'+("+
-					new SQLChain().builder()
-						.select(COL_USERID)
-						.from(TABLE_USERS)
-						.whereIs(COL_USERNAME, userName)
-						.limit(1)
-						.getQuery()
-				+ ")+'"
+				sessionUser.getUserId(), 
+				chain.innerChain()
+					.select(COL_USERID)
+					.from(TABLE_USERS)
+					.whereIs(COL_USERNAME, userName)
+					.limit(1)
+					.endInnerChain()
 				)
 			.update();
 		
