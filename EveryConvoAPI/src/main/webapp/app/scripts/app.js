@@ -1,22 +1,30 @@
 define(
-["lib/values", "lib/guda", "widgets/userWidget", "widgets/contactWidget", "widgets/menuWidget", "widgets/newStoryWidget", "widgets/newGroupWidget", "feed", "profile"], 
-function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, newGroupWidget, feed, profile) {
+["lib/values", "lib/guda", "widgets/userWidget", "widgets/contactWidget", "widgets/menuWidget", "widgets/newStoryWidget", "widgets/newGroupWidget", "feed", "profile", "messages"], 
+function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, newGroupWidget, feed, profile, messages) {
+    
+    window.EveryConvo = {};
     
     var user = {};
     
     var main = new g.Widget({ id: "main" });
     var feedView = new feed.FeedView();
     var profileView = new profile.ProfileView();
+    var messagesView = new messages.MessagesView();
     profileView.currentProfilePath = undefined;
     
     var changeView = function() {
-        var path = location.hash.substr(2);
+        var pathParts = location.hash.substring( 2 ).split("/");
+        var path = pathParts[0];
         switch(path) {
             case "":
             case values.VIEW.feed:
-                g.log(feedView);
                 profileView.hide( g.Widget.ANIM.fadeOut );
                 feedView.show( g.Widget.ANIM.fadeIn );
+                break;
+            case values.VIEW.messages:
+                profileView.hide( g.Widget.ANIM.fadeOut );
+                feedView.show( g.Widget.ANIM.fadeOut );
+                messagesView.openConversation( pathParts[1] );
                 break;
             default:
                 feedView.hide( g.Widget.ANIM.fadeOut );
@@ -36,6 +44,7 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, newGr
         location.hash = "/" + view;
         changeView();
     };
+    window.EveryConvo.setView = setView;
     
     var init = function(userData) {
         
@@ -173,7 +182,8 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, newGr
     };
     
     return {
-        init: init
+        init: init,
+        setView: setView
     };
     
 });

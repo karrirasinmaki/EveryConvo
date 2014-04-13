@@ -34,13 +34,13 @@ public class Person extends User {
 		lastname = rs.getString( COL_LASTNAME );
 	}
 	public Person(ResultSet rs, User u) throws SQLException {
-		super( u.getUserName(), u.getDescription(), u.getWebsiteUrl(), u.getLocation(), u.getVisibility(), u.getImageUrl(), u.getFollows() );
+		super( u );
 		setIsMe(u.isMe());
 		firstname = rs.getString( COL_FIRSTNAME );
 		lastname = rs.getString( COL_LASTNAME );
 	}
 	public Person(String firstName, String lastName, User u) {
-		super( u.getUserName(), u.getDescription(), u.getWebsiteUrl(), u.getLocation(), u.getVisibility(), u.getImageUrl(), u.getFollows() );
+		super( u );
 		setIsMe(u.isMe());
 		this.firstname = firstName;
 		this.lastname = lastName;

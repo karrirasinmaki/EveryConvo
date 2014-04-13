@@ -46,16 +46,7 @@ public class User {
 	public User(Integer userId, String userName, String description, String websiteUrl, String location, Integer visibility) {
 		this(userName, description, websiteUrl, location, visibility);
 		setUserId(userId);
-	}
-	public User(String userName, String description, String websiteUrl, String location, Integer visibility, String imageUrl) {
-		this(userName, description, websiteUrl, location, visibility);
-		setImageUrl(imageUrl);
-	}
-	public User(String userName, String description, String websiteUrl, String location, Integer visibility, String imageUrl, Boolean follows) {
-		this(userName, description, websiteUrl, location, visibility, imageUrl);
-		setFollows(follows);
-	}
-	
+	}	
 	public User(Integer userId, String userName, String description, String websiteUrl, String location, Integer visibility, String imageUrl) {
 		this(userId, userName, description, websiteUrl, location, visibility);
 		setImageUrl(imageUrl);
@@ -63,6 +54,16 @@ public class User {
 	public User(Integer userId, String userName, String description, String websiteUrl, String location, Integer visibility, String imageUrl, Boolean follows) {
 		this(userId, userName, description, websiteUrl, location, visibility, imageUrl);
 		setFollows(follows);
+	}
+	public User(User u) {
+		setUserId( u.getUserId() );
+		setUserName( u.getUserName() );
+		setDescription( u.getDescription() );
+		setWebsiteUrl( u.getWebsiteUrl() );
+		setLocation( u.getLocation() );
+		setVisibility( u.getVisibility() );
+		setImageUrl( u.getImageUrl() );
+		setFollows( u.getFollows() );
 	}
 	public User(ResultSet rs) throws SQLException {
 		this(
@@ -418,6 +419,7 @@ public class User {
 				.select(COL_USERID)
 				.from(TABLE_FOLLOWS)
 				.whereIs(COL_USERID, ""+sessionUser.getUserId())
+				.and()
 				.whereIsCol(COL_TOID, PK_USERID)
 				.limit(1)
 				.getQuery();
@@ -450,7 +452,6 @@ public class User {
 				.whereLike(COL_USERNAME, value)
 				.or()
 				.whereLike(COL_USERID, value)
-				.and()
 			.q(")");
 	}
 	

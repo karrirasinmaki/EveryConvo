@@ -13,6 +13,8 @@ define(function() {
         people: baseUrl + slash + "people",
         group: baseUrl + slash + "group",
         groups: baseUrl + slash + "groups",
+        message: baseUrl + slash + "message",
+        messages: baseUrl + slash + "messages",
         login: baseUrl + slash + "login",
         logout: baseUrl + slash + "logout",
         createUser: baseUrl + slash + "create-user",
@@ -29,7 +31,8 @@ define(function() {
     API.unfollow = function(userName) { return API.user + "/" + userName + "?unfollow"; }
     
     var VIEW = {
-        feed: "feed"
+        feed: "feed",
+        messages: "messages"
     };
     
     var CLASS = {
@@ -46,6 +49,7 @@ define(function() {
         liked: "liked",
         follow: "follow",
         unfollow: "unfollow",
+        message: "message",
         loadMore: "load more",
         wannaDelete: "Do you really want to delete that item?",
         loginError: "Error with login. Make sure you used correct pair of username and password",

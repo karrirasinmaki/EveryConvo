@@ -91,7 +91,7 @@
   </servlet-mapping>
   <servlet-mapping>
       <servlet-name>Message</servlet-name>
-      <url-pattern>/messages</url-pattern>
+      <url-pattern>/messages/*</url-pattern>
   </servlet-mapping>
   
   <!-- Story -->

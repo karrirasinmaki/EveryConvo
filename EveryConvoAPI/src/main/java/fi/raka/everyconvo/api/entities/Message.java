@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import fi.raka.everyconvo.api.sql.SQLChain;
 import fi.raka.everyconvo.api.sql.SQLChain.Chain;
+import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
 
 public class Message {
 
@@ -36,17 +37,17 @@ public class Message {
 		new SQLChain()
 			.open(DATABASE_URL)
 			.insertInto(TABLE_MESSAGES, COL_FROMID, COL_TOID, COL_CONTENT)
-			.values(""+fromid, ""+toid, content)
+			.values(fromid, toid, content)
 			.exec()
 			.close();
 	}
 	
-	public static ArrayList<Message> loadMessages(int userId) 
+	public static ArrayList<Message> loadMessages(int userId, Integer user2Id) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		ArrayList<Message> messages = new ArrayList<Message>();
 		Chain chain = new SQLChain().open(DATABASE_URL);
-		ResultSet rs = loadMessagesResultSet( userId, chain );
+		ResultSet rs = loadMessagesResultSet( userId, user2Id, chain );
 		
 		rs.beforeFirst();
 		while( rs.next() ) {
@@ -58,16 +59,27 @@ public class Message {
 		return messages;
 	}
 	
-	public static ResultSet loadMessagesResultSet(int userId, Chain chain) 
+	public static ResultSet loadMessagesResultSet(int userId, Integer user2Id, Chain chain) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
-		return chain
+		SelectChain sel = chain
 			.select(COL_MESSAGEID, COL_FROMID, COL_TOID, COL_CONTENT, COL_TIMESTAMP)
 			.from(TABLE_MESSAGES)
-			.whereIs(COL_TOID, ""+userId)
+			.whereIs(COL_FROMID, userId)
 			.or()
-			.whereIs(COL_FROMID, ""+userId)
-			.exec();
+			.whereIs(COL_TOID, userId);
+		
+			if( user2Id != null ) {
+				sel
+				.and()
+				.q("(")
+					.whereIs(COL_FROMID, user2Id)
+					.or()
+					.whereIs(COL_TOID, user2Id)
+				.q(")");
+			}
+			
+		return sel.exec();
 	}
 	
 }

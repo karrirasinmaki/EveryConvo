@@ -20,13 +20,11 @@ import fi.raka.everyconvo.api.utils.Values;
 public class SQLChain {
 	
 	private Connection conn = null;
-	private StringBuilder query;
-	private LinkedList<Object> params;
+	private StringBuilder query = new StringBuilder();
+	private LinkedList<Object> params = new LinkedList<Object>();
 	private Chain parentChain;
 	
 	public SQLChain() {
-		query = new StringBuilder();
-		params = new LinkedList<Object>();
 	}
 	public SQLChain(Connection conn) {
 		super();
@@ -203,14 +201,17 @@ public class SQLChain {
 		}
 		public String endInnerChain() {
 			parentChain.addParam( params.toArray() );
-			return "' + (" + getQuery() + ") + '";
+			return getInnerChainQuery();
+		}
+		public String getInnerChainQuery() {
+			return " (" + getQuery() + ") ";
 		}
 		
 		private ResultSet executeUpdate() throws SQLException {
 			String q = getQuery();
-			System.out.println("\nPreparedStatement query:\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n") + "\n");
 			PreparedStatement stmt = conn.prepareStatement( q, Statement.RETURN_GENERATED_KEYS );
 			handleParams( stmt );
+			System.out.println("\nPreparedStatement query:\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n") + "\n");
 			System.out.println( stmt );
 			stmt.executeUpdate();
 			emptyQuery();
@@ -219,9 +220,9 @@ public class SQLChain {
 		
 		private ResultSet executeQuery() throws SQLException {
 			String q = getQuery();
-			System.out.println("\nPreparedStatement query:\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n") + "\n");
 			PreparedStatement stmt = conn.prepareStatement( q );
 			handleParams( stmt );
+			System.out.println("\nPreparedStatement query:\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n") + "\n");
 			System.out.println( stmt );
 			emptyQuery();
 			return stmt.executeQuery();
@@ -274,7 +275,6 @@ public class SQLChain {
 	public class SelectChain extends Chain {
 		
 		private boolean whereUsed = false;
-		private boolean orFlag = false;
 		private boolean caseChain = false;
 		
 		public SelectChain() {}
@@ -313,11 +313,11 @@ public class SQLChain {
 			return this;
 		}
 		public SelectChain or() {
-			orFlag = true;
+			query.append( " OR " );
 			return this;
 		}
 		public SelectChain and() {
-			orFlag = false;
+			query.append( " AND " );
 			return this;
 		}
 		public JoinChain innerJoin(String table) {
@@ -384,13 +384,11 @@ public class SQLChain {
 			return this;
 		}
 		private String _where() {
-			if( whereUsed ) {
-				return (orFlag ? " OR " : " AND ");
-			}
-			else {
+			if( !whereUsed ) {
 				whereUsed = true;
 				return caseChain ? "" : " WHERE ";
 			}
+			return "";
 		}
 	}
 	

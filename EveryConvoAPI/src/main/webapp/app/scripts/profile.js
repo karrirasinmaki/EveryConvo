@@ -1,4 +1,4 @@
-define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
+define(["lib/guda", "lib/values", "feed", "app"], function(g, values, feed, app) {
     
     var EditableWidget = function(params, tagName) {
         this.init( params, tagName );
@@ -79,6 +79,13 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         };
         this.followButton.setFollow( user.follows );
         
+        this.messageButton = new g.Button({
+            onclick: function() {
+                g.log( _this.user );
+                EveryConvo.setView( values.VIEW.messages + "/" + _this.user.userid );
+            }
+        }).setText( values.TEXT.message );
+        
         this.sideView.append( this.picture );
         
         if( user.me ) {
@@ -136,7 +143,7 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         }
         
         this.sideView.append( this.location ).append( this.websiteurl )
-            .append( this.description ).append( this.followButton );
+            .append( this.description ).append( this.followButton ).append( this.messageButton );
     };
     ProfileView.prototype.load = function(userName, userType) {
         this._load( userName, true );

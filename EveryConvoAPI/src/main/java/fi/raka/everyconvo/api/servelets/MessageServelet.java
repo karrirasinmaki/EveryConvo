@@ -24,13 +24,17 @@ public class MessageServelet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		User user = ServeletUtils.getSessionUser( req, resp );
-		if( user != null ) {
+		if( user == null ) {
+			writeJSONStatusResponse( resp, StatusMessage.authError() );
+		}
+		else {
 			try {
-				writeJSONResponse( resp, Message.loadMessages(user.getUserId()) );
+				Integer participantUserId = Utils.parseInteger( ServeletUtils.getRequestUserName( req ) );
+				writeJSONResponse( resp, Message.loadMessages(user.getUserId(), participantUserId) );
 			} catch (InstantiationException | IllegalAccessException
 					| ClassNotFoundException | SQLException e) {
 				e.printStackTrace();
-				writeJSONStatusResponse( resp, StatusMessage.generalError(e ));
+				writeJSONStatusResponse( resp, StatusMessage.generalError(e) );
 			}
 		}
 	}
@@ -40,13 +44,18 @@ public class MessageServelet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		User user = ServeletUtils.getSessionUser( req, resp );
-		if( user != null ) {
+		if( user == null ) {
+			writeJSONStatusResponse( resp, StatusMessage.authError() );
+		}
+		else {
 			Integer toid = Utils.parseInteger( req.getParameter("to") );
 			Message message = new Message( user.getUserId(), toid, req.getParameter("content") );
 			try {
 				message.send();
 			} catch (InstantiationException | IllegalAccessException
 					| ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+				writeJSONStatusResponse( resp, StatusMessage.generalError(e) );
 			}
 		}
 		

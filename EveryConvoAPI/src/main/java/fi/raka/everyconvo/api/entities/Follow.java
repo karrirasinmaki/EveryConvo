@@ -102,7 +102,8 @@ public class Follow {
 			.delete()
 			.from(TABLE_FOLLOWS)
 			.whereIs(COL_USERID, ""+sessionUser.getUserId())
-			.whereIs(
+			.and()
+			.whereIsCol(
 				COL_TOID, 
 				chain.innerChain()
 					.select(COL_USERID)

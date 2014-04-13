@@ -54,6 +54,7 @@ public class Like {
 			.delete()
 			.from(TABLE_LIKES)
 			.whereIs(COL_USERID, ""+getUserId())
+			.and()
 			.whereIs(COL_STORYID, ""+getStoryId())
 			.update()
 			.close();
@@ -88,7 +89,10 @@ public class Like {
 			.select(COL_USERID, COL_STORYID)
 			.from(TABLE_LIKES);
 		
-			if( storyIds != null ) chain.whereIn(COL_STORYID, storyIds);
+			if( storyIds != null ) {
+				chain.whereIn(COL_STORYID, storyIds);
+				if( userIds != null ) chain.and();
+			}
 			if( userIds != null ) chain.whereIn(COL_USERID, userIds);
 		
 		return chain.exec();
