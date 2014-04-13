@@ -86,7 +86,7 @@ public class InstallServelet extends HttpServlet {
 				.open(DATABASE_BASE_URL)
 				.create()
 				.database(DATABASE_NAME, SQLChain.CreateChain.IF_NOT_EXISTS)
-				.exec()
+				.upd()
 				.close();
 			
 			chain.open(DATABASE_URL)
@@ -103,14 +103,14 @@ public class InstallServelet extends HttpServlet {
 					    COL_IMAGEURL + TEXT,
 					    getPrimaryKeyClause(COL_USERID),
 					    unique(COL_USERNAME)
-						).exe()
+						).upd()
 						
 				.alterOrCreate()
 				.table(TABLE_LOGIN, CreateChain.IF_NOT_EXISTS, 
 						COL_USERID + INT_NOT_NULL,
 						COL_PASSHASH + varchar(128),
 						getForeignKeyClause(COL_USERID, TABLE_USERS)
-					    ).exe()
+					    ).upd()
 					    
 				.alterOrCreate()
 				.table(TABLE_PERSONS, CreateChain.IF_NOT_EXISTS, 
@@ -118,14 +118,14 @@ public class InstallServelet extends HttpServlet {
 					    COL_FIRSTNAME + varchar(60),
 					    COL_LASTNAME + varchar(60),
 					    getForeignKeyClause(COL_USERID, TABLE_USERS)
-					    ).exe()
+					    ).upd()
 					    
 				.alterOrCreate()
 				.table(TABLE_GROUPS, CreateChain.IF_NOT_EXISTS, 
 						COL_FULLNAME + TEXT + NOT_NULL,
 						COL_USERID + INT_NOT_NULL,
 						getForeignKeyClause(COL_USERID, TABLE_USERS)
-					    ).exe()
+					    ).upd()
 					    
 				.alterOrCreate()
 				.table(TABLE_GROUPSUSERS, CreateChain.IF_NOT_EXISTS, 
@@ -133,7 +133,7 @@ public class InstallServelet extends HttpServlet {
 					    COL_USERID + INT_NOT_NULL,
 					    getForeignKeyClause(COL_GROUPID, TABLE_GROUPS, COL_USERID),
 					    getForeignKeyClause(COL_USERID, TABLE_USERS)
-					    ).exe()
+					    ).upd()
 					    
 				.alterOrCreate()
 				.table(TABLE_MESSAGES, CreateChain.IF_NOT_EXISTS, 
@@ -145,7 +145,7 @@ public class InstallServelet extends HttpServlet {
 					    getPrimaryKeyClause(COL_MESSAGEID),
 					    getForeignKeyClause(COL_FROMID, TABLE_USERS, COL_USERID),
 					    getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
-					    ).exe()
+					    ).upd()
 					    
 				.alterOrCreate()
 				.table(TABLE_STORIES, CreateChain.IF_NOT_EXISTS, 
@@ -158,7 +158,7 @@ public class InstallServelet extends HttpServlet {
 					    getPrimaryKeyClause(COL_STORYID),
 					    getForeignKeyClause(COL_FROMID, TABLE_USERS, COL_USERID),
 					    getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
-					    ).exe()
+					    ).upd()
 					    
 				.alterOrCreate()
 				.table(TABLE_LIKES, CreateChain.IF_NOT_EXISTS, 
@@ -167,7 +167,7 @@ public class InstallServelet extends HttpServlet {
 						getPrimaryKeyClause(COL_STORYID, COL_USERID),
 						getForeignKeyClause(COL_STORYID, TABLE_STORIES),
 						getForeignKeyClause(COL_USERID, TABLE_USERS)
-						).exe()
+						).upd()
 						
 				.alterOrCreate()
 				.table(TABLE_FOLLOWS, CreateChain.IF_NOT_EXISTS, 
@@ -176,7 +176,7 @@ public class InstallServelet extends HttpServlet {
 						getPrimaryKeyClause(COL_USERID, COL_TOID),
 						getForeignKeyClause(COL_USERID, TABLE_USERS),
 						getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
-						).exe()
+						).upd()
 					    
 				.commit()
 				.setAutoCommit( true )

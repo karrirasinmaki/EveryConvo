@@ -152,6 +152,15 @@ public class SQLChain {
 		public ResultSet update() throws SQLException {
 			return executeUpdate();
 		}
+		/**
+		 * Executes SQL chain update.
+		 * @return Chain
+		 * @throws SQLException
+		 */
+		public Chain upd() throws SQLException {
+			executeUpdate();
+			return this;
+		}
 		
 		/**
 		 * Adds free text to SQL query
@@ -184,6 +193,10 @@ public class SQLChain {
 		public CreateChain alterOrCreate() {
 			return new CreateChain(true);
 		}
+		public AlterChain alter(String table) {
+			query.append( " ALTER TABLE " + table );
+			return new AlterChain();
+		}
 		public Chain dropTable(String table) {
 			query.append( "DROP TABLE " + table );
 			return this;
@@ -208,6 +221,7 @@ public class SQLChain {
 		}
 		
 		private ResultSet executeUpdate() throws SQLException {
+			query.append(';');
 			String q = getQuery();
 			PreparedStatement stmt = conn.prepareStatement( q, Statement.RETURN_GENERATED_KEYS );
 			handleParams( stmt );
@@ -219,6 +233,7 @@ public class SQLChain {
 		}
 		
 		private ResultSet executeQuery() throws SQLException {
+			query.append(';');
 			String q = getQuery();
 			PreparedStatement stmt = conn.prepareStatement( q );
 			handleParams( stmt );
@@ -454,10 +469,6 @@ public class SQLChain {
 		
 		public AlterChain() {}
 		
-		public AlterChain alter(String table) {
-			query.append( " ALTER TABLE " + table );
-			return this;
-		}
 		public AlterChain add(String ... clauses) {
 			query.append( " ADD " + StringUtils.join(clauses, ",") );
 			return this;
@@ -490,20 +501,19 @@ public class SQLChain {
 			if(condition == null) condition = "";
 			else condition += " ";
 			
-			if( force ) alterOneByOne( table, clauses );
+			if( force ) alterOneByOne( conn, table, clauses );
 			query.append( "CREATE TABLE " + condition + table + " (" + StringUtils.join(clauses, ",") + ")" );
 			return this;
 		}
 		
-		private CreateChain alterOneByOne(String table, String ... clauses) {
+		private CreateChain alterOneByOne(Connection conn, String table, String ... clauses) {
 			for( String clause : clauses ) {
 				try {
-					new AlterChain().alter( table ).add( clause ).update();
+					new SQLChain(conn).startChain().alter( table ).add( clause ).update();
 				} catch (SQLException e) {
 					try {
-						new AlterChain().alter( table ).modify( clause ).update();
+						new SQLChain(conn).startChain().alter( table ).modify( clause ).update();
 					} catch (SQLException e2) {
-						e2.printStackTrace();
 					}
 				}
 			}
