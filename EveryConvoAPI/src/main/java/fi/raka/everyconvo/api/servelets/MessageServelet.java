@@ -43,13 +43,18 @@ public class MessageServelet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
+		Integer toid = Utils.parseInteger( req.getParameter("to") );
+		String content = req.getParameter("content");
+		
 		User user = ServeletUtils.getSessionUser( req, resp );
 		if( user == null ) {
 			writeJSONStatusResponse( resp, StatusMessage.authError() );
 		}
+		else if( toid == null || content == null ) {
+			writeJSONStatusResponse( resp, new StatusMessage(StatusMessage.STATUS_ERROR, "Please pass all required parameters (to, content"));
+		}
 		else {
-			Integer toid = Utils.parseInteger( req.getParameter("to") );
-			Message message = new Message( user.getUserId(), toid, req.getParameter("content") );
+			Message message = new Message( user.getUserId(), toid, content );
 			try {
 				message.send();
 			} catch (InstantiationException | IllegalAccessException

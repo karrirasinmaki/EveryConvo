@@ -38,7 +38,7 @@ public class Message {
 			.open(DATABASE_URL)
 			.insertInto(TABLE_MESSAGES, COL_FROMID, COL_TOID, COL_CONTENT)
 			.values(fromid, toid, content)
-			.exec()
+			.update()
 			.close();
 	}
 	

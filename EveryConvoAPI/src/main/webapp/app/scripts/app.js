@@ -19,15 +19,18 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, newGr
             case "":
             case values.VIEW.feed:
                 profileView.hide( g.Widget.ANIM.fadeOut );
+                messagesView.hide( g.Widget.ANIM.fadeOut );
                 feedView.show( g.Widget.ANIM.fadeIn );
                 break;
             case values.VIEW.messages:
                 profileView.hide( g.Widget.ANIM.fadeOut );
-                feedView.show( g.Widget.ANIM.fadeOut );
+                feedView.hide( g.Widget.ANIM.fadeOut );
                 messagesView.openConversation( pathParts[1] );
+                messagesView.show( g.Widget.ANIM.fadeIn );
                 break;
             default:
                 feedView.hide( g.Widget.ANIM.fadeOut );
+                messagesView.hide( g.Widget.ANIM.fadeOut );
                 if( profileView.currentProfilePath != path ) {
                     if( path.substring(0,2) == "g/" )
                         profileView.loadGroup( path.substr(2) );
@@ -49,6 +52,7 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, newGr
     var init = function(userData) {
         
         user = userData;
+        window.EveryConvo.user = user;
         
         var page = new g.View({
             id: "app"
@@ -167,7 +171,7 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, newGr
         feedView.load( null, true );
         feedView.title.setText( "Feed" );
         
-        main.append( feedView ).append( profileView );
+        main.append( feedView ).append( profileView ).append( messagesView );
 
         page.append( contacts );
         page.append( groups );
