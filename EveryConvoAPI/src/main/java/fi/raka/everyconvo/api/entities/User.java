@@ -274,13 +274,11 @@ public class User {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static ArrayList<User> loadAll(HttpServletRequest req, String userName) 
+	public static ArrayList<User> resultSetToArrayList(HttpServletRequest req, String userName, ResultSet rs) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		User sessionUser = User.getSessionUser( req );
 		ArrayList<User> users = new ArrayList<User>();
-		Chain chain = new SQLChain().open(DATABASE_URL);
-		ResultSet rs = loadAllResultSet( chain, userName );
 		rs.beforeFirst();
 		
 		while( rs.next() ) {
@@ -289,9 +287,28 @@ public class User {
 			users.add( user );
 		}
 		
+		return users;
+	}
+	public static ArrayList<User> loadAll(HttpServletRequest req, String userName) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+
+		Chain chain = new SQLChain().open(DATABASE_URL);
+		ResultSet rs = loadAllResultSet( req, chain, userName );
+		ArrayList<User> users = resultSetToArrayList( req, userName, rs );
 		rs.close();
 		chain.close();
 		return users;
+	}
+	
+	public static SelectChain loadAllChain(HttpServletRequest req, Chain chain, String userName) {
+		SelectChain sel = chain
+			.select(PROJECTION);
+			follows( getSessionUser(req), chain );
+			sel.from(FROM);
+		if( userName != null ) {
+			whereUserNameOrId(sel, userName);
+		}
+		return sel;
 	}
 	
 	/**
@@ -302,21 +319,9 @@ public class User {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	private static ResultSet loadAllResultSet(Chain chain, String userName) 
+	private static ResultSet loadAllResultSet(HttpServletRequest req, Chain chain, String userName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-
-		SelectChain sel = chain
-			.select(PROJECTION)
-			.from(FROM);
-		
-		if( userName != null ) {
-			sel
-			.whereLike(COL_USERNAME, userName)
-			.or()
-			.whereLike(COL_USERNAME, userName);
-		}
-		
-		return sel.exec();
+		return loadAllChain( req, chain, userName ).exec();
 	}
 	
 	/**
@@ -390,18 +395,7 @@ public class User {
 		
 		SelectChain chain = ch
 			.select(PROJECTION);
-		
-		if( sessionUser != null ) {
-			chain.q( ", (SELECT EXISTS(" );
-			chain
-				.select(COL_USERID)
-				.from(TABLE_FOLLOWS)
-				.whereIs(COL_USERID, ""+sessionUser.getUserId())
-				.whereIs(COL_TOID, PK_USERID)
-				.limit(1)
-				.getQuery();
-			chain.q( ")) as follows" );
-		}
+			follows( sessionUser, chain );
 		
 		ResultSet rs = chain
 			.from(FROM)
@@ -415,6 +409,20 @@ public class User {
 		}
 		rs.close();
 		return user;
+	}
+	
+	private static void follows(User sessionUser, Chain chain) {
+		if( sessionUser != null ) {
+			chain.q( ", (SELECT EXISTS(" );
+			chain
+				.select(COL_USERID)
+				.from(TABLE_FOLLOWS)
+				.whereIs(COL_USERID, ""+sessionUser.getUserId())
+				.whereIsCol(COL_TOID, PK_USERID)
+				.limit(1)
+				.getQuery();
+			chain.q( ")) as follows" );
+		}
 	}
 	
 	/**
@@ -434,6 +442,16 @@ public class User {
 		User user = User.loadUser( userName, req, chain );
 		chain.close();
 		return user;
+	}
+	
+	public static Chain whereUserNameOrId(SelectChain chain, String value) {
+		return chain
+			.q("(")
+				.whereLike(COL_USERNAME, value)
+				.or()
+				.whereLike(COL_USERID, value)
+				.and()
+			.q(")");
 	}
 	
 	public static StatusMessage updateCurrentUser(HttpServletRequest req) 
@@ -456,64 +474,6 @@ public class User {
 			return StatusMessage.updateCompleted();
 		}
 		return StatusMessage.sessionError();
-	}
-	
-	public static StatusMessage followUser(String userName, HttpServletRequest req) 
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		
-		User sessionUser = User.getSessionUser(req);
-		if( sessionUser == null ) return StatusMessage.authError();
-		
-		Chain chain = new SQLChain().open(DATABASE_URL);
-		ResultSet rs = chain
-			.insertInto(TABLE_FOLLOWS, COL_USERID, COL_TOID)
-			.values( 
-				sessionUser.getUserId(), 
-				chain.innerChain()
-					.select(COL_USERID)
-					.from(TABLE_USERS)
-					.whereIs(COL_USERNAME, userName)
-					.limit(1)
-					.endInnerChain()
-				)
-			.update();
-		
-		boolean doesAnything = rs.first();
-		rs.close();
-		chain.close();
-		
-		if( doesAnything ) return StatusMessage.notFound("user " + userName + " ");
-		return new StatusMessage(StatusMessage.STATUS_OK, "You now follow user " + userName);
-	}
-	
-	public static StatusMessage unFollowUser(String userName, HttpServletRequest req) 
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		
-		User sessionUser = User.getSessionUser(req);
-		if( sessionUser == null ) return StatusMessage.authError();
-		
-		Chain chain = new SQLChain().open(DATABASE_URL);
-		ResultSet rs = chain		
-			.delete()
-			.from(TABLE_FOLLOWS)
-			.whereIs(COL_USERID, ""+sessionUser.getUserId())
-			.whereIs(COL_TOID, 
-				"("+
-					new SQLChain().builder()
-						.select(COL_USERID)
-						.from(TABLE_USERS)
-						.whereIs(COL_USERNAME, userName)
-						.limit(1)
-						.getQuery()
-				+ ")")
-			.update();
-		
-		boolean doesAnything = rs.first();
-		rs.close();
-		chain.close();
-		
-		if( doesAnything ) return StatusMessage.notFound("user " + userName + " ");
-		return new StatusMessage(StatusMessage.STATUS_OK, "You no longer follow user " + userName);
 	}
 	
 	/**

@@ -2,12 +2,14 @@ package fi.raka.everyconvo.api.servelets;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fi.raka.everyconvo.api.entities.Follow;
 import fi.raka.everyconvo.api.entities.StatusMessage;
 import fi.raka.everyconvo.api.entities.User;
 import fi.raka.everyconvo.api.utils.ServeletUtils;
@@ -30,7 +32,14 @@ public class UserServelet extends HttpServlet {
 			switch( ServeletUtils.getCallString(req) ) {
 			case "user":
 			case "login":
-				printUser( req, resp, requestUserName );
+				String extraPathParam = ServeletUtils.getExtraPathParam( req );
+				if( extraPathParam != null && extraPathParam.equalsIgnoreCase("followers") ) {
+					printFollowers( req, resp, requestUserName );
+				}
+				if( extraPathParam != null && extraPathParam.equalsIgnoreCase("follows") ) {
+					printFollows( req, resp, requestUserName );
+				}
+				else printUser( req, resp, requestUserName );
 				break;
 			case "users":
 				printAllUsers( req, resp, requestUserName );
@@ -82,15 +91,11 @@ public class UserServelet extends HttpServlet {
 	
 	private void followUser(HttpServletRequest req, String userName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		
-		User.followUser( userName, req );
-		
+		Follow.followUser( req, userName );
 	}
 	private void unFollowUser(HttpServletRequest req, String userName) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		
-		User.unFollowUser( userName, req );
-		
+		Follow.unFollowUser( req, userName );
 	}
 	
 	/**
@@ -109,6 +114,22 @@ public class UserServelet extends HttpServlet {
 		User user = User.loadUser( userName, req );
 		if( user == null ) writeJSONStatusResponse( resp, StatusMessage.notFound("user") );
 		else writeJSONResponse( resp, user );
+	}
+	
+	private void printFollowers(HttpServletRequest req, HttpServletResponse resp, String userName) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		ArrayList<User> users = Follow.getFollowers( req, userName );
+		if( users == null ) writeJSONStatusResponse( resp, StatusMessage.notFound("user") );
+		else writeJSONResponse( resp, users );
+	}
+	
+	private void printFollows(HttpServletRequest req, HttpServletResponse resp, String userName) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		ArrayList<User> users = Follow.getFollows( req, userName );
+		if( users == null ) writeJSONStatusResponse( resp, StatusMessage.notFound("user") );
+		else writeJSONResponse( resp, users );
 	}
 	
 	/**

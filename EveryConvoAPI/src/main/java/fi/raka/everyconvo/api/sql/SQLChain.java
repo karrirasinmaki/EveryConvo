@@ -135,7 +135,7 @@ public class SQLChain {
 		 * @throws SQLException
 		 */
 		public ResultSet exec() throws SQLException {
-			return executeUpdate();
+			return executeQuery();
 		}
 		/**
 		 * Executes SQL chain
@@ -217,6 +217,16 @@ public class SQLChain {
 			return stmt.getGeneratedKeys();
 		}
 		
+		private ResultSet executeQuery() throws SQLException {
+			String q = getQuery();
+			System.out.println("\nPreparedStatement query:\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n") + "\n");
+			PreparedStatement stmt = conn.prepareStatement( q );
+			handleParams( stmt );
+			System.out.println( stmt );
+			emptyQuery();
+			return stmt.executeQuery();
+		}
+		
 		private int handleArray(PreparedStatement stmt, Object[] objs, int i) 
 				throws ArrayIndexOutOfBoundsException, IllegalArgumentException, SQLException {
 			
@@ -270,16 +280,6 @@ public class SQLChain {
 		public SelectChain() {}
 		
 		@Override
-		public ResultSet exec() throws SQLException {
-			String q = getQuery();
-			System.out.println("\nPreparedStatement query:\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n") + "\n");
-			PreparedStatement stmt = conn.prepareStatement( q );
-			handleParams( stmt );
-			System.out.println( stmt );
-			emptyQuery();
-			return stmt.executeQuery();
-		}
-		@Override
 		public SelectChain q(String q) {
 			super.q(q);
 			return this;
@@ -296,6 +296,10 @@ public class SQLChain {
 		public SelectChain whereIs(String column, Object value) {
 			params.add( value );
 			query.append( _where() + column + "=" + generateQuestionMarks(1) );
+			return this;
+		}
+		public SelectChain whereIsCol(String column, String column2) {
+			query.append( _where() + column + "=" + column2 );
 			return this;
 		}
 		public SelectChain contains(String column, Object value) {

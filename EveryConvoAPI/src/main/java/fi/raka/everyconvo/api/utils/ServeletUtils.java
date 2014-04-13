@@ -51,4 +51,14 @@ public class ServeletUtils {
 		return requestUserName;
 	}
 	
+	public static String getExtraPathParam (HttpServletRequest req) {
+		String[] urlPathParts = Utils.getPathParts( req.getPathInfo() );
+		if( urlPathParts.length > 1 ) {
+			String extra = urlPathParts[1];
+			if( extra == null || extra.length() == 0 ) extra = null;
+			return extra;
+		}
+		return null;
+	}
+	
 }
