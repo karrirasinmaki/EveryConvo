@@ -30,7 +30,7 @@ public class DestroyServelet extends HttpServlet {
 			
 			chain.open(DATABASE_URL, dbUser, dbPass)
 				.dropDatabase( DATABASE_NAME )
-				.exec();
+				.update();
 			
 			statusMessage = new StatusMessage(StatusMessage.STATUS_OK, "Database destroyed");
 			
