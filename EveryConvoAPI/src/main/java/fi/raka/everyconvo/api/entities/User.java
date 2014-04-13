@@ -170,7 +170,7 @@ public class User {
 				.setAutoCommit(false)
 				.insertInto(TABLE_USERS, COL_USERNAME, COL_DESCRIPTION, COL_WEBSITEURL, COL_LOCATION, COL_VISIBILITY)
 				.values(getUserName(), description, websiteurl, location, ""+visibility)
-				.exec();
+				.update();
 			
 		// Get generated userid
 		generatedKeys.first();
@@ -261,7 +261,7 @@ public class User {
 			chain
 				.insertInto(TABLE_LOGIN, COL_USERID, COL_PASSHASH)
 				.values("" + getUserId(), passhash)
-				.exec();
+				.update();
 			chain.commit().setAutoCommit( true );
 			chain.close();
 		}
