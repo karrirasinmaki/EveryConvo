@@ -29,8 +29,13 @@ public class MessageServelet extends HttpServlet {
 		}
 		else {
 			try {
+				
 				Integer participantUserId = Utils.parseInteger( ServeletUtils.getRequestUserName( req ) );
-				writeJSONResponse( resp, Message.loadMessages(user.getUserId(), participantUserId) );
+				Long from = Utils.parseLong( req.getParameter("from") );
+				Long to = Utils.parseLong( req.getParameter("to") );
+				
+				writeJSONResponse( resp, Message.loadMessages(user.getUserId(), participantUserId, from, to) );
+				
 			} catch (InstantiationException | IllegalAccessException
 					| ClassNotFoundException | SQLException e) {
 				e.printStackTrace();

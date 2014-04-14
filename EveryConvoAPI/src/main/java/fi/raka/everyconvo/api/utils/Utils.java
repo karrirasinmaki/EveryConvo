@@ -33,4 +33,18 @@ public class Utils {
 		}
 	}
 	
+	/**
+	 * Parse String to Long
+	 * @param s
+	 * @return Long, null if String can't be parsed
+	 */
+	public static Long parseLong(String s) {
+		try {
+			return Long.parseLong( s );
+		}
+		catch(NumberFormatException e) {
+			return null;
+		}
+	}
+	
 }

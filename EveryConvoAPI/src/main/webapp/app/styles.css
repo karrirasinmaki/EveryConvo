@@ -16,7 +16,7 @@ html, body                          { margin: 0; padding: 0; width: 100%; height
 #title                              { margin-left: 25%%; margin-bottom: 0; padding-left: 80px; width: 65%; border-bottom: 1px solid #ccc; box-sizing: border-box; }
 #title small                        { margin-left: 0.5em; color: #D57536; }
 #side                               { float: left; width: 25%; padding: 0 9px 12em 0; border-right: 1px solid #ccc; text-align: right; box-sizing: border-box; }
-#feed                               { float: right; width: 65%; padding-left: 10%; }
+#feed                               { position: relative; float: right; width: 65%; min-height: 600px; margin-left: 10%; }
 #feed .load-more                    { display: block; width: 100%; }
 
 #menu                               { z-index: 11; position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; }
@@ -103,7 +103,10 @@ img.nofound                         { width: 100%; height: auto; background: #cc
 .post iframe                        { height: 285px; }
 
 /* Messages */
-.message                            { width: 80%; }
+#messages                           { position: absolute; left: 0; right: 0; bottom: 2em; top: 0; overflow-y: scroll; }
+#new-message                        { position: absolute; left: 0; right: 0; bottom: 0; }
+.messages-inner                     { overflow: hidden; }
+.message                            { width: 80%; float: left; }
 .message .content                   { border: 1px solid #f0f0f0; padding: 0.2em 0.3em; margin: 0.2em 0; border-radius: 3px; }
 .message.from-me                    { float: right; }
 .message.from-me .content           { float: right; background: #e6c7b2; }

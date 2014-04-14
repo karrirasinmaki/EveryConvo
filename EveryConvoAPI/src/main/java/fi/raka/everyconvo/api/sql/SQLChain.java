@@ -310,20 +310,21 @@ public class SQLChain {
 			return this;
 		}
 		public SelectChain whereIs(String column, Object value) {
-			params.add( value );
 			where();
-			query.append( column + "=" + generateQuestionMarks(1) );
+			q( column );
+			is( value );
 			return this;
 		}
 		public SelectChain whereIsCol(String column, String column2) {
 			where();
-			query.append( column + "=" + column2 );
+			q( column );
+			isCol( column2 );
 			return this;
 		}
 		public SelectChain contains(String column, Object value) {
-			params.add( value );
 			where();
-			query.append(  column + " LIKE '%" + generateQuestionMarks(1) + "%'" );
+			q( column );
+			like("%" + value + "%");
 			return this;
 		}
 		public SelectChain whereLike(String column, Object value) {
@@ -342,6 +343,15 @@ public class SQLChain {
 		public SelectChain like(Object value) {
 			params.add( value );
 			query.append( " LIKE " + generateQuestionMarks(1) );
+			return this;
+		}
+		public SelectChain is(Object value) {
+			params.add( value );
+			query.append( " = " + generateQuestionMarks(1) );
+			return this;
+		}
+		public SelectChain isCol(String column) {
+			query.append( " = " + column );
 			return this;
 		}
 		public SelectChain or() {

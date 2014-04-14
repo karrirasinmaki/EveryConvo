@@ -17,12 +17,17 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         this.create();
         
     };
+    MessagesView.UPDATE_INTERVAL = 3000;
     MessagesView.prototype = new feed.FeedView;
     MessagesView.prototype.create = function() {
         var _this = this;
         this._create();
         
-        this.messages = new g.Widget({ id: "messages" });
+        this.from = "&limit=20";
+        
+        this.messagesArea = new g.Widget({ id: "messages" });
+        this.messages = new g.Widget({ className: "messages-inner" });
+        this.messagesArea.append( this.messages );
         
         this.newMessageForm = new g.Form({
             id: "new-message",
@@ -31,7 +36,6 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
             method: "post",
             afterSubmit: function() {
                 this.reset();
-                _this.messages.empty();
                 _this.loadMessages();
             }
         });
@@ -44,8 +48,9 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
             new g.Input({ name: "content", className: "w-all", placeholder: "Type here..." }, "span")
         ).append( this.toidHiddenInput );
         
+        this.feed.append( this.messagesArea ).append( this.newMessageForm );
         
-        this.feed.append( this.messages ).append( this.newMessageForm );
+        setInterval( function() { _this.loadMessages() }, MessagesView.UPDATE_INTERVAL );
     };
     MessagesView.prototype.openConversation = function(userId) {
         currentUser = window.EveryConvo.user;
@@ -57,17 +62,25 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
     };
     MessagesView.prototype.loadMessages = function() {
         var _this = this;
-        g.getAjax( values.API.messages + "/" + this.userId ).done( function(data) {
+        g.getAjax( values.API.messages + "/" + this.toid + "?from=" + this.from ).done( function(data) {
             _this.drawMessages( JSON.parse(data).data );
         });
+        this.from = new Date().getTime();
     };
     MessagesView.prototype.drawMessages = function(data) {
-        g.log( data );
+        if( data.length <= 0 ) return;
+        var scrollToBottom = false;
+        if( this.messagesArea.element.scrollTop + this.messagesArea.element.offsetHeight > this.messages.element.offsetHeight - 60 )
+            scrollToBottom = true;
+        
         var d = document.createDocumentFragment();
         for( var i=0, l=data.length; i<l; ++i ) {
-            d.appendChild( new MessageWidget(data[i]).element );
+            d.appendChild( new MessageWidget(data[i]).show( g.Widget.ANIM.zoomIn ).element );
+            
         }
         this.messages.append( d );
+        
+        if( scrollToBottom ) this.messagesArea.element.scrollTop = this.messages.element.offsetHeight;
     };
     
     return {
