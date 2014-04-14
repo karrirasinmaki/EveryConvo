@@ -117,7 +117,7 @@ public class Group extends User {
 		Group group = null;
 		Chain chain = new SQLChain().open(DATABASE_URL);
 		ResultSet rs = chain
-			.select(OWN_PROJECTION)
+			.select(PROJECTION)
 			.from(FROM)
 			.whereIs(FK_USERID, ""+u.getUserId())
 			.exec();
