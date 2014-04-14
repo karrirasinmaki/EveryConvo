@@ -29,7 +29,7 @@ public class PeopleServelet extends HttpServlet {
 			switch( ServeletUtils.getCallString(req) ) {
 			case "persons":
 			case "people":
-				writeJSONResponse( resp, Person.loadPersons(req) );
+				writeJSONResponse( resp, Person.loadPersons(req, requestUserName) );
 				break;
 			case "person":
 				printPerson( req, resp, requestUserName );

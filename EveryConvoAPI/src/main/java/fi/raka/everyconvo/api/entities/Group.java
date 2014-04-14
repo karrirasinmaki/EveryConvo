@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import fi.raka.everyconvo.api.sql.SQLChain;
 import fi.raka.everyconvo.api.sql.SQLChain.Chain;
+import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
 public class Group extends User {
@@ -17,8 +18,7 @@ public class Group extends User {
 	private static String a = TABLE_GROUPS+".";
 	public static String FROM = TABLE_GROUPS;
 	public static String FK_USERID = a+COL_USERID;
-	public static String[] OWN_PROJECTION = {FK_USERID, a+COL_FULLNAME};
-	public static String[] PROJECTION = ArrayUtils.addAll( OWN_PROJECTION, User.PROJECTION );
+	public static String[] PROJECTION = {FK_USERID, a+COL_FULLNAME};
 
 	private String fullname;
 	
@@ -75,17 +75,16 @@ public class Group extends User {
 		addGroupRow();
 	}
 	
-	public static ArrayList<Group> loadGroups(HttpServletRequest req) 
+	public static ArrayList<Group> loadGroups(HttpServletRequest req, String query) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		ArrayList<Group> groups = new ArrayList<Group>();
 		Chain chain = new SQLChain().open(DATABASE_URL);
-		ResultSet rs = chain
-			.select(PROJECTION)
-			.from(FROM)
-			.innerJoin(User.FROM)
-			.on(FK_USERID, User.PK_USERID)
-			.exec();
+		SelectChain sel = User.loadAllSelect( req, chain, PROJECTION )
+			.innerJoin(FROM)
+			.on(FK_USERID, User.PK_USERID);
+			whereLike( sel, query );
+		ResultSet rs = sel.exec();
 		
 		rs.beforeFirst();
 		while( rs.next() ) {
@@ -94,6 +93,15 @@ public class Group extends User {
 		rs.close();
 		chain.close();
 		return groups;
+	}
+	
+	private static SelectChain whereLike(SelectChain chain, String query) {
+		if( query != null ) {
+			User.loadAllWhere(chain, query)
+			.or()
+			.whereLike(a+COL_FULLNAME, query);
+		}
+		return chain;
 	}
 	
 	public static Group loadGroup(String userName, HttpServletRequest req) 

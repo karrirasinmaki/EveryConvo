@@ -6,10 +6,9 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import fi.raka.everyconvo.api.sql.SQLChain;
 import fi.raka.everyconvo.api.sql.SQLChain.Chain;
+import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
 import static fi.raka.everyconvo.api.sql.SQLUtils.Values.*;
 
 public class Person extends User {
@@ -17,8 +16,7 @@ public class Person extends User {
 	private static String a = TABLE_PERSONS+".";
 	public static String FROM = TABLE_PERSONS;
 	public static String FK_USERID = a+COL_USERID;
-	public static String[] OWN_PROJECTION = {FK_USERID, a+COL_FIRSTNAME, a+COL_LASTNAME};
-	public static String[] PROJECTION = ArrayUtils.addAll( OWN_PROJECTION, User.PROJECTION );
+	public static String[] PROJECTION = {FK_USERID, a+COL_FIRSTNAME, a+COL_LASTNAME};
 
 	private String firstname;
 	private String lastname;
@@ -69,17 +67,16 @@ public class Person extends User {
 		addPersonRow();
 	}
 	
-	public static ArrayList<Person> loadPersons(HttpServletRequest req) 
+	public static ArrayList<Person> loadPersons(HttpServletRequest req, String query) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		ArrayList<Person> persons = new ArrayList<Person>();
 		Chain chain = new SQLChain().open(DATABASE_URL);
-		ResultSet rs = chain
-			.select(PROJECTION)
-			.from(FROM)
-			.innerJoin(User.FROM)
-			.on(FK_USERID, User.PK_USERID)
-			.exec();
+		SelectChain sel = User.loadAllSelect( req, chain, PROJECTION )
+			.innerJoin(FROM)
+			.on(FK_USERID, User.PK_USERID);
+			whereLike( sel, query );
+		ResultSet rs = sel.exec();
 		
 		rs.beforeFirst();
 		while( rs.next() ) {
@@ -88,6 +85,17 @@ public class Person extends User {
 		rs.close();
 		chain.close();
 		return persons;
+	}
+	
+	private static SelectChain whereLike(SelectChain chain, String query) {
+		if( query != null ) {
+			User.loadAllWhere(chain, query)
+			.or()
+			.where()
+			.concat( a+COL_FIRSTNAME, a+COL_LASTNAME )
+			.like(query);
+		}
+		return chain;
 	}
 	
 
@@ -104,7 +112,7 @@ public class Person extends User {
 		Person person = null;
 		Chain chain = new SQLChain().open(DATABASE_URL);
 		ResultSet rs = chain
-			.select(OWN_PROJECTION)
+			.select(PROJECTION)
 			.from(FROM)
 			.whereIs(FK_USERID, ""+u.getUserId())
 			.exec();

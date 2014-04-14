@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import fi.raka.everyconvo.api.sql.SQLChain;
 import fi.raka.everyconvo.api.sql.SQLChain.Chain;
 import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
@@ -312,6 +314,20 @@ public class User {
 		return sel;
 	}
 	
+	public static SelectChain loadAllSelect(HttpServletRequest req, Chain chain, String[] projection) {
+		SelectChain sel = chain
+			.select( ArrayUtils.addAll(PROJECTION, projection) );
+			follows( getSessionUser(req), chain );
+			sel.from( FROM );
+		return sel;
+	}
+	public static SelectChain loadAllWhere(SelectChain chain, String userName) {
+		if( userName != null ) {
+			whereUserNameOrId(chain, userName);
+		}
+		return chain;
+	}
+	
 	/**
 	 * Get all users as ResultSet
 	 * @return ResultSet of all users, user per row, including columns [userid, username, description, websiteurl, location, visibility]
@@ -448,11 +464,9 @@ public class User {
 	
 	public static Chain whereUserNameOrId(SelectChain chain, String value) {
 		return chain
-			.q("(")
-				.whereLike(COL_USERNAME, value)
-				.or()
-				.whereLike(COL_USERID, value)
-			.q(")");
+			.whereLike(a+COL_USERNAME, value)
+			.or()
+			.whereLike(PK_USERID, value);
 	}
 	
 	public static StatusMessage updateCurrentUser(HttpServletRequest req) 

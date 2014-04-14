@@ -107,11 +107,11 @@
   <!-- People -->
   <servlet-mapping>
       <servlet-name>People</servlet-name>
-      <url-pattern>/people</url-pattern>
+      <url-pattern>/people/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
       <servlet-name>People</servlet-name>
-      <url-pattern>/persons</url-pattern>
+      <url-pattern>/persons/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
       <servlet-name>People</servlet-name>
@@ -125,7 +125,7 @@
   <!-- Group -->
   <servlet-mapping>
       <servlet-name>Group</servlet-name>
-      <url-pattern>/groups</url-pattern>
+      <url-pattern>/groups/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
       <servlet-name>Group</servlet-name>

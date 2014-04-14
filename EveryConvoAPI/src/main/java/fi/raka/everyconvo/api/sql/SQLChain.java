@@ -305,26 +305,43 @@ public class SQLChain {
 		}
 		public SelectChain whereIn(String column, Object ... values) {
 			params.add( values );
-			query.append( _where() + column + " IN (" + generateQuestionMarks(values.length) + ")" );
+			where();
+			query.append( column + " IN (" + generateQuestionMarks(values.length) + ")" );
 			return this;
 		}
 		public SelectChain whereIs(String column, Object value) {
 			params.add( value );
-			query.append( _where() + column + "=" + generateQuestionMarks(1) );
+			where();
+			query.append( column + "=" + generateQuestionMarks(1) );
 			return this;
 		}
 		public SelectChain whereIsCol(String column, String column2) {
-			query.append( _where() + column + "=" + column2 );
+			where();
+			query.append( column + "=" + column2 );
 			return this;
 		}
 		public SelectChain contains(String column, Object value) {
 			params.add( value );
-			query.append( _where() + column + " LIKE '%" + generateQuestionMarks(1) + "%'" );
+			where();
+			query.append(  column + " LIKE '%" + generateQuestionMarks(1) + "%'" );
 			return this;
 		}
 		public SelectChain whereLike(String column, Object value) {
+			where();
+			q( column );
+			like(value);
+			return this;
+		}
+		public SelectChain where() {
+			if( !whereUsed ) {
+				whereUsed = true;
+				if( !caseChain ) query.append( " WHERE " );
+			}
+			return this;
+		}
+		public SelectChain like(Object value) {
 			params.add( value );
-			query.append( _where() + column + " LIKE " + generateQuestionMarks(1) );
+			query.append( " LIKE " + generateQuestionMarks(1) );
 			return this;
 		}
 		public SelectChain or() {
@@ -384,12 +401,18 @@ public class SQLChain {
 		}
 		public SelectChain gte(String column, Object value) {
 			params.add( value );
-			query.append( _where() + column + ">" + generateQuestionMarks(1) );
+			where();
+			query.append( column + ">" + generateQuestionMarks(1) );
 			return this;
 		}
 		public SelectChain lte(String column, Object value) {
 			params.add( value );
-			query.append( _where() + column + "<" + generateQuestionMarks(1) );
+			where();
+			query.append( column + "<" + generateQuestionMarks(1) );
+			return this;
+		}
+		public SelectChain concat(String ... columns) {
+			query.append( " CONCAT( " + StringUtils.join(columns, ",") + " ) " );
 			return this;
 		}
 		
@@ -397,13 +420,6 @@ public class SQLChain {
 			params.add( columns );
 			query.append( " ORDER BY " + generateQuestionMarks(columns.length) );
 			return this;
-		}
-		private String _where() {
-			if( !whereUsed ) {
-				whereUsed = true;
-				return caseChain ? "" : " WHERE ";
-			}
-			return "";
 		}
 	}
 	

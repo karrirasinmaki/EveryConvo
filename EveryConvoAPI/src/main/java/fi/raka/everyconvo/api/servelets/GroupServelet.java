@@ -28,7 +28,7 @@ public class GroupServelet extends HttpServlet {
 		try {
 			switch( ServeletUtils.getCallString(req) ) {
 			case "groups":
-				writeJSONResponse( resp, Group.loadGroups(req) );
+				writeJSONResponse( resp, Group.loadGroups(req, requestUserName) );
 				break;
 			case "group":
 				printGroup( req, resp, requestUserName );
