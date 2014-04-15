@@ -7,38 +7,42 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, newGr
     var user = {};
     
     var main = new g.Widget({ id: "main" });
-    var feedView = new feed.FeedView();
-    var profileView = new profile.ProfileView();
-    var messagesView = new messages.MessagesView();
-    profileView.currentProfilePath = undefined;
+    var views = {
+        feedView: new feed.FeedView(),
+        profileView: new profile.ProfileView(),
+        messagesView: new messages.MessagesView()
+    };
+    views.profileView.currentProfilePath = undefined;
     
+    var showView = function(view) {
+        for( var k in views ) {
+            if( !views.hasOwnProperty(k) ) continue;
+            var v = views[k];
+            if( k !== view ) v.hide( g.Widget.ANIM.fadeOut );
+            else v.show( g.Widget.ANIM.fadeIn );
+        }
+    };
     var changeView = function() {
         var pathParts = location.hash.substring( 2 ).split("/");
         var path = pathParts[0];
         switch(path) {
             case "":
             case values.VIEW.feed:
-                profileView.hide( g.Widget.ANIM.fadeOut );
-                messagesView.hide( g.Widget.ANIM.fadeOut );
-                feedView.show( g.Widget.ANIM.fadeIn );
+                showView( "feedView" );
                 break;
             case values.VIEW.messages:
-                profileView.hide( g.Widget.ANIM.fadeOut );
-                feedView.hide( g.Widget.ANIM.fadeOut );
-                messagesView.openConversation( pathParts[1] );
-                messagesView.show( g.Widget.ANIM.fadeIn );
+                showView( "messagesView" );
+                views.messagesView.openConversation( pathParts[1] );
                 break;
             default:
-                feedView.hide( g.Widget.ANIM.fadeOut );
-                messagesView.hide( g.Widget.ANIM.fadeOut );
-                if( profileView.currentProfilePath != path ) {
+                showView( "profileView" );
+                if( views.profileView.currentProfilePath != path ) {
                     if( path.substring(0,2) == "g/" )
-                        profileView.loadGroup( path.substr(2) );
+                        views.profileView.loadGroup( path.substr(2) );
                     else 
-                        profileView.loadPerson( path );
-                    profileView.currentProfilePath = path;
+                        views.profileView.loadPerson( path );
+                    views.profileView.currentProfilePath = path;
                 }
-                profileView.show( g.Widget.ANIM.fadeIn );
                 break;
         }
     };
@@ -168,10 +172,10 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, newGr
             });
         };
         
-        feedView.load( null, true );
-        feedView.title.setText( "Feed" );
+        views.feedView.load( null, true );
+        views.feedView.title.setText( "Feed" );
         
-        main.append( feedView ).append( profileView ).append( messagesView );
+        main.append( views.feedView ).append( views.profileView ).append( views.messagesView );
 
         page.append( contacts );
         page.append( groups );

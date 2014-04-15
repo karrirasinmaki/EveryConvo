@@ -15,6 +15,7 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         
         this.init({ className: "inner" });
         this.create();
+        this.intervalId = null;
         
     };
     MessagesView.UPDATE_INTERVAL = 3000;
@@ -49,8 +50,6 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         ).append( this.toidHiddenInput );
         
         this.feed.append( this.messagesArea ).append( this.newMessageForm );
-        
-        setInterval( function() { _this.loadMessages() }, MessagesView.UPDATE_INTERVAL );
     };
     MessagesView.prototype.openConversation = function(userId) {
         currentUser = window.EveryConvo.user;
@@ -60,12 +59,24 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         this.title.setHTML( "Conversation with: " + "<small>" + userId + "</small>" );
         this.loadMessages();
     };
+    MessagesView.prototype.closeConversation = function() {
+        clearInterval( this.intervalId );
+        this.intervalId = null;
+    };
+    MessagesView.prototype.hide = function(param) {
+        this._hide( param );
+        this.closeConversation();
+    };
     MessagesView.prototype.loadMessages = function() {
         var _this = this;
         g.getAjax( values.API.messages + "/" + this.toid + "?from=" + this.from ).done( function(data) {
             _this.drawMessages( JSON.parse(data).data );
         });
         this.from = new Date().getTime();
+        
+        if( this.intervalId == null ) {
+            this.intervalId = setInterval( function() { _this.loadMessages() }, MessagesView.UPDATE_INTERVAL );
+        }
     };
     MessagesView.prototype.drawMessages = function(data) {
         if( data.length <= 0 ) return;

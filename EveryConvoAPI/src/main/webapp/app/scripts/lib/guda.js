@@ -142,7 +142,7 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
             if( callback ) callback();
         }, 500 );
     };
-    Widget.prototype.hide = function(animation) {
+    Widget.prototype._hide = Widget.prototype.hide = function(animation) {
         var _this = this;
         var el = this.element;
         if( this._display == undefined ) this._display = el.style.display || "block";
