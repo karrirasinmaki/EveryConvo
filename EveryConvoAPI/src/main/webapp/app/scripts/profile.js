@@ -42,6 +42,8 @@ define(["lib/guda", "lib/values", "feed", "app", "messages"], function(g, values
     ProfileView.prototype.save = function() {
         var serialized = g.serialize( this.sideView.element );
         g.postAjax(values.API[this.user.type] +"?"+ serialized).done(function(data) {
+            console.log(data);
+            debugger;
             data = JSON.parse(data).data;
             if( data.status == values.STATUS.error ) {
                 alert( data.message );
@@ -123,7 +125,7 @@ define(["lib/guda", "lib/values", "feed", "app", "messages"], function(g, values
         
         
         this.messageView = new messages.MessagesView();
-        this.messageView.openConversation( this.user.userid );
+        this.messageView.openConversation( this.user.userid, "Private chat" );
         this.sideView.append( this.messageView );
     };
     ProfileView.prototype.createEdit = function() {

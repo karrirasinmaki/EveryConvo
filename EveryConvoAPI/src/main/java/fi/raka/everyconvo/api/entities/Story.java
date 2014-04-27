@@ -72,7 +72,7 @@ public class Story {
 			story.mediaurl = rs.getString(COL_MEDIAURL);
 			story.timestamp = rs.getTimestamp(COL_TIMESTAMP);
 			
-			story.user = User.createUser( rs );
+			story.user = User.createUser( rs, req );
 			
 			story.likes = Like.loadAllLikes( ""+story.storyid, null );
 			if( sessionUser != null ) {

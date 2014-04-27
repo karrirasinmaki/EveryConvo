@@ -13,19 +13,21 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
     
     var MessagesView = function() {
         
-        this.init({ className: "inner" });
+        this.init({ className: "messagebox-wrapper" });
         this.create();
         this.intervalId = null;
         
     };
     MessagesView.UPDATE_INTERVAL = 3000;
-    MessagesView.prototype = new feed.FeedView;
+    MessagesView.prototype = new g.Widget;
     MessagesView.prototype.create = function() {
         var _this = this;
-        this._create();
         
         this.from = "&limit=20";
         
+        this.title = new g.Widget({ className: "title" });
+        
+        this.messageBox = new g.Widget({ className: "messagebox" });
         this.messagesArea = new g.Widget({ id: "messages" });
         this.messages = new g.Widget({ className: "messages-inner" });
         this.messagesArea.append( this.messages );
@@ -49,14 +51,16 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
             new g.Input({ name: "content", className: "w-all", placeholder: "Type here..." }, "span")
         ).append( this.toidHiddenInput );
         
-        this.feed.append( this.messagesArea ).append( this.newMessageForm );
+        this.messageBox.append( this.messagesArea ).append( this.newMessageForm );
+        this.append( this.title ).append( this.messageBox );
     };
-    MessagesView.prototype.openConversation = function(userId) {
+    MessagesView.prototype.openConversation = function(userId, conversationTitle) {
+        conversationTitle = conversationTitle || "Private chat with: " + "<small>" + userId + "</small>";
         currentUser = window.EveryConvo.user;
         this.toid = userId;
         this.toidHiddenInput.element.value = userId;
         
-        this.title.setHTML( "Conversation with: " + "<small>" + userId + "</small>" );
+        this.title.setHTML( conversationTitle );
         this.loadMessages();
     };
     MessagesView.prototype.closeConversation = function() {

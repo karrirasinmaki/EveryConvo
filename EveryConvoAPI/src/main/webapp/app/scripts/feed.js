@@ -10,7 +10,7 @@ define(["lib/guda", "lib/values", "widgets/postWidget"], function(g, values, pos
     FeedView.prototype._create = FeedView.prototype.create = function() {
         var _this = this;
         
-        this.title = new g.Widget({ id: "title" }, "h1");
+        this.title = new g.Widget({ className: "title" });
         this.sideView = new g.Widget({ id: "side" });
         this.feed = new g.Widget({
             id: "feed"

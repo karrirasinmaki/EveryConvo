@@ -121,7 +121,7 @@ define(["../lib/guda", "../lib/values"], function(g, values) {
         var post = new PostWidget({
                 className: "post"
             })
-            .setPictureUrl( data.imageurl )
+            .setPictureUrl( user.imageurl )
             .setFullName( user.fullname || user.firstname + " " + user.lastname )
             .setUsername( user.username )
             .setContent( data.content )

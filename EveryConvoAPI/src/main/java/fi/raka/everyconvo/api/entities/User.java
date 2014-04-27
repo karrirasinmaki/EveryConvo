@@ -83,16 +83,21 @@ public class User {
 			);
 	}
 	
-	public static User createUser(ResultSet rs) throws SQLException {
+	public static User createUser(ResultSet rs, HttpServletRequest req) throws SQLException {
 		User user = null;
 		switch( rs.getInt(COL_TYPE) ) {
 		case 1:
-			return new Person(rs);
+			user = new Person(rs);
 		case 2:
-			return new Group(rs);
+			user = new Group(rs);
 		default:
-			return new User(rs);
+			user = new User(rs);
 		}
+		
+		User sessionUser = getSessionUser(req);
+		if( sessionUser != null && user != null && sessionUser.userid == user.userid ) user.setIsMe( true );
+		
+		return user;
 	}
 	
 	private static Boolean getFollowFromRS(ResultSet rs) {
@@ -440,8 +445,7 @@ public class User {
 
 		User user = null;
 		if( rs.first() ) {
-			user = User.createUser( rs ); //new User( rs );
-			if( sessionUser != null && user != null && sessionUser.userid == user.userid ) user.setIsMe( true );
+			user = User.createUser( rs, req ); //new User( rs );
 		}
 		rs.close();
 		return user;
@@ -517,7 +521,7 @@ public class User {
 		
 		User sessionUser = User.getSessionUser( req );
 		if( sessionUser != null ) {
-			User user = new User(sessionUser.getUserId(), userName, description, websiteUrl, location, visibility);
+			User user = new User(sessionUser.getUserId(), userName, description, websiteUrl, location, visibility, imageUrl);
 			return user;
 		}
 		return null;
