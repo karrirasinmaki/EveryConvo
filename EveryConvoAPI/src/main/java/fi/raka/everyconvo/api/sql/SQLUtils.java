@@ -62,11 +62,13 @@ public class SQLUtils {
 		TABLE_PERSONS = "persons",
 		TABLE_GROUPS = "groups",
 		TABLE_GROUPSUSERS = "groupsusers",
+		TABLE_CONVERSATIONS = "conversations",
 		TABLE_MESSAGES = "messages",
 		TABLE_STORIES = "stories",
 		TABLE_LIKES = "likes",
 		TABLE_FOLLOWS = "follows",
 		
+		COL_TYPE = "type",
 		COL_PASSHASH = "passhash",
 		COL_SALT = "salt",
 		COL_USERID = "userid",
@@ -79,6 +81,7 @@ public class SQLUtils {
 		COL_FIRSTNAME = "firstname",
 		COL_LASTNAME = "lastname",
 		COL_GROUPID = "groupid",
+		COL_CONVERSATION = "conversation",
 		COL_MESSAGEID = "messageid",
 		COL_CONTENT = "content",
 		COL_FROMID = "fromid",
@@ -95,7 +98,10 @@ public class SQLUtils {
 		NOT_NULL = " NOT NULL",
 		INT_NOT_NULL = " INT NOT NULL",
 		INT_NOT_NULL_AUTO_INCREMENT = " INT NOT NULL AUTO_INCREMENT",
-		TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP = " TIMESTAMP DEFAULT CURRENT_TIMESTAMP";
+		TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP = " TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+		
+		DEFAULT_TYPE_PERSON = " TINYINT DEFAULT 1",
+		DEFAULT_TYPE_GROUP = " TINYINT DEFAULT 2";
 		
 	}
 	

@@ -1,4 +1,4 @@
-define(["lib/guda", "lib/values", "feed", "app"], function(g, values, feed, app) {
+define(["lib/guda", "lib/values", "feed", "app", "messages"], function(g, values, feed, app, messages) {
     
     var EditableWidget = function(params, tagName) {
         this.init( params, tagName );
@@ -13,6 +13,7 @@ define(["lib/guda", "lib/values", "feed", "app"], function(g, values, feed, app)
     };
     
     var ProfileView = function() {
+        this.editableWidgets = [];
         this.init({ className: "inner" });
         this.create();
         this.sideView.addClass( "user-info" );
@@ -32,16 +33,22 @@ define(["lib/guda", "lib/values", "feed", "app"], function(g, values, feed, app)
             this.pictureInput.show();
         }
         
-        this.websiteurl.setEditMode( !editMode, true );
-        this.location.setEditMode( !editMode, true );
-        this.description.setEditMode( !editMode, true );
+        for( var i=0, l=this.editableWidgets.length; i<l; ++i ) {
+            this.editableWidgets[i].setEditMode( !editMode, true );
+        }
         
         this.sideView.toggleClass( values.CLASS.editing );
     };
     ProfileView.prototype.save = function() {
         var serialized = g.serialize( this.sideView.element );
-        g.postAjax(values.API.user +"?"+ serialized).done(function() {
-            location.reload();
+        g.postAjax(values.API[this.user.type] +"?"+ serialized).done(function(data) {
+            data = JSON.parse(data).data;
+            if( data.status == values.STATUS.error ) {
+                alert( data.message );
+            }
+            else {
+                location.reload();
+            }
         });
     };
     ProfileView.prototype.fillInfo = function(user) {
@@ -58,10 +65,32 @@ define(["lib/guda", "lib/values", "feed", "app"], function(g, values, feed, app)
             mediaURL: values.API.baseUrl + imageUrl
         });
         
+        this.nameWidget = new g.Widget({ className: "names" });
+        this.usernameWidget = new EditableWidget({ className: "username", name: "username" }).setText( user.username );
+        this.nameWidget.append( this.usernameWidget );
+        this.editableWidgets.push( this.usernameWidget );
+        if( user.fullname ) {
+            this.fullname = new EditableWidget({ className: "fullname", name: "fullname" }).setText( user.fullname );
+            this.nameWidget.append( this.fullname );
+            this.editableWidgets.push( this.fullname );
+        }
+        else {
+            this.firstname = new EditableWidget({ className: "firstname", name: "firstname" }).setText( user.firstname );
+            this.lastname = new EditableWidget({ className: "lastname", name: "lastname" }).setText( user.lastname );
+            this.nameWidget.append( this.firstname ).append( this.lastname );
+            this.editableWidgets.push( this.firstname );
+            this.editableWidgets.push( this.lastname );
+        }
+            
         this.location = new EditableWidget({ className: "location", name: "location" }).setText( user.location );
         this.websiteurl = new EditableWidget({ className: "websiteurl", name: "websiteurl", href: user.websiteurl }, "a").setText( user.websiteurl );
         this.websiteurl.element.style.display = "block";
         this.description = new EditableWidget({ className: "description", name: "description" }).setText( user.description );
+        
+        
+        this.editableWidgets.push( this.location );
+        this.editableWidgets.push( this.websiteurl );
+        this.editableWidgets.push( this.description );
         
         this.followButton = new g.Button({
             className: "follow",
@@ -81,14 +110,25 @@ define(["lib/guda", "lib/values", "feed", "app"], function(g, values, feed, app)
         
         this.messageButton = new g.Button({
             onclick: function() {
-                g.log( _this.user );
                 EveryConvo.setView( values.VIEW.messages + "/" + _this.user.userid );
             }
         }).setText( values.TEXT.message );
         
         this.sideView.append( this.picture );
         
-        if( user.me ) {
+        this.createEdit();
+        
+        this.sideView.append( this.nameWidget ).append( this.location ).append( this.websiteurl )
+            .append( this.description ).append( this.followButton ).append( this.messageButton );
+        
+        
+        this.messageView = new messages.MessagesView();
+        this.messageView.openConversation( this.user.userid );
+        this.sideView.append( this.messageView );
+    };
+    ProfileView.prototype.createEdit = function() {
+        var _this = this;
+        if( this.user.me ) {
             this.pictureForm = 
                 new g.Form({
                     method: "post",
@@ -132,7 +172,8 @@ define(["lib/guda", "lib/values", "feed", "app"], function(g, values, feed, app)
             this.saveButton = 
                 new g.Widget({ 
                     className: "edit-button",
-                    onclick: function() {
+                    onclick: function(e) {
+                        e.preventDefault();
                         _this.save();
                     }
                 }, "button")
@@ -141,9 +182,6 @@ define(["lib/guda", "lib/values", "feed", "app"], function(g, values, feed, app)
             
             this.sideView.append( this.pictureForm ).append( this.editButton ).append( this.saveButton );
         }
-        
-        this.sideView.append( this.location ).append( this.websiteurl )
-            .append( this.description ).append( this.followButton ).append( this.messageButton );
     };
     ProfileView.prototype.load = function(userName, userType) {
         this._load( userName, true );
@@ -157,6 +195,7 @@ define(["lib/guda", "lib/values", "feed", "app"], function(g, values, feed, app)
         this.load( userName, "person" );
     };
     ProfileView.prototype.loadGroup = function(userName) {
+        console.log("loading group");
         this.load( userName, "group" );
     };
     

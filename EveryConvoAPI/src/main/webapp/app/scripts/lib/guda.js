@@ -13,9 +13,13 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
             return;
         }
         var i, j, q = [];
+        var tryPush = function(item) {
+            if( item ) q.push( item );
+        };
         for (i = form.children.length - 1; i >= 0; i = i - 1) {
             var formEl = form.children[i];
             if (!formEl.name || formEl.name === "") {
+                    tryPush(serialize(formEl));
                     continue;
             }
             var added = false;
@@ -46,6 +50,7 @@ define(["lib/AJAXSubmit"], function(AJAXSubmit) {
                 var value = formEl.value || formEl.textContent;
                 q.push(formEl.name + "=" + encodeURIComponent(value));
             }
+            tryPush(serialize(formEl));
         }
         return q.join("&");
     };

@@ -85,6 +85,7 @@ public class UserServelet extends HttpServlet {
 		} catch (InstantiationException | IllegalAccessException
 				| ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
+			writeJSONStatusResponse( resp, StatusMessage.generalError(e) );
 		}
 		
 	}

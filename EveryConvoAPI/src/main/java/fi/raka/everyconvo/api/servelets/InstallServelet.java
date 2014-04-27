@@ -117,6 +117,7 @@ public class InstallServelet extends HttpServlet {
 						COL_USERID + INT_NOT_NULL,
 					    COL_FIRSTNAME + varchar(60),
 					    COL_LASTNAME + varchar(60),
+					    COL_TYPE + DEFAULT_TYPE_PERSON,
 					    getForeignKeyClause(COL_USERID, TABLE_USERS)
 					    ).upd()
 					    
@@ -124,6 +125,7 @@ public class InstallServelet extends HttpServlet {
 				.table(TABLE_GROUPS, CreateChain.IF_NOT_EXISTS, 
 						COL_FULLNAME + TEXT + NOT_NULL,
 						COL_USERID + INT_NOT_NULL,
+					    COL_TYPE + DEFAULT_TYPE_GROUP,
 						getForeignKeyClause(COL_USERID, TABLE_USERS)
 					    ).upd()
 					    
@@ -136,15 +138,23 @@ public class InstallServelet extends HttpServlet {
 					    ).upd()
 					    
 				.alterOrCreate()
+				.table(TABLE_CONVERSATIONS, CreateChain.IF_NOT_EXISTS,
+						COL_CONVERSATION + varchar(255) + NOT_NULL,
+						getPrimaryKeyClause(COL_CONVERSATION)
+						).upd()
+					    
+				.alterOrCreate()
 				.table(TABLE_MESSAGES, CreateChain.IF_NOT_EXISTS, 
 						COL_MESSAGEID + INT_NOT_NULL_AUTO_INCREMENT,
 					    COL_FROMID + INT_NOT_NULL,
 					    COL_TOID + INT_NOT_NULL,
+						COL_CONVERSATION + varchar(255) + NOT_NULL,
 					    COL_CONTENT + TEXT + NOT_NULL,
 					    COL_TIMESTAMP + TIMESTAMP_DEFAULT_CURRENT_TIMESTAMP,
 					    getPrimaryKeyClause(COL_MESSAGEID),
 					    getForeignKeyClause(COL_FROMID, TABLE_USERS, COL_USERID),
-					    getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID)
+					    getForeignKeyClause(COL_TOID, TABLE_USERS, COL_USERID),
+					    getForeignKeyClause(COL_CONVERSATION, TABLE_CONVERSATIONS)
 					    ).upd()
 					    
 				.alterOrCreate()

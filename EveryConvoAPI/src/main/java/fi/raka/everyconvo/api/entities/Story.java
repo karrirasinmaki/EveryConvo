@@ -6,16 +6,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import fi.raka.everyconvo.api.sql.SQLChain;
 import fi.raka.everyconvo.api.sql.SQLChain.Chain;
 import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
 
 public class Story {
-
+	
+	public static String FROM = TABLE_STORIES;
+	public static String a = TABLE_STORIES+".";
+	public static String FK_FROMID = a+COL_FROMID;
+	public static String TIMESTAMP = a+COL_TIMESTAMP;
+	public static String[] OWN_PROJECTION = { a+COL_STORYID, a+COL_FROMID, a+COL_TOID, a+COL_CONTENT, a+COL_MEDIAURL, a+COL_TIMESTAMP };
+	public static String[] PROJECTION = ArrayUtils.addAll( OWN_PROJECTION, User.FULL_PROJECTION );
+	
 	private int storyid;
 	private int fromid;
 	private int toid;
@@ -40,9 +48,9 @@ public class Story {
 		
 		new SQLChain()
 			.open(DATABASE_URL)
-			.insertInto(TABLE_STORIES, COL_FROMID, COL_TOID, COL_CONTENT, COL_MEDIAURL)
+			.insertInto(FROM, COL_FROMID, COL_TOID, COL_CONTENT, COL_MEDIAURL)
 			.values(""+fromid, ""+toid, content, mediaurl)
-			.exec()
+			.update()
 			.close();
 	}
 	
@@ -64,9 +72,7 @@ public class Story {
 			story.mediaurl = rs.getString(COL_MEDIAURL);
 			story.timestamp = rs.getTimestamp(COL_TIMESTAMP);
 			
-			story.user = new User();
-			story.user.setUserName( rs.getString(COL_USERNAME) );
-			story.user.setIsMe( rs.getBoolean("me") );
+			story.user = User.createUser( rs );
 			
 			story.likes = Like.loadAllLikes( ""+story.storyid, null );
 			if( sessionUser != null ) {
@@ -95,31 +101,32 @@ public class Story {
 		Integer currentUserId = user != null ? user.getUserId() : null;
 		
 		SelectChain chain = ch
-			.select("a."+COL_STORYID, "a."+COL_FROMID, "a."+COL_TOID, "a."+COL_CONTENT, "a."+COL_MEDIAURL, "a."+COL_TIMESTAMP, 
-					"b."+COL_USERNAME, "b."+COL_IMAGEURL)
+			.select(PROJECTION)
 		
 			.q(",")
 			.Case()
 				.when()
-				.whereIs("a."+COL_FROMID, ""+currentUserId)
+				.whereIs(FK_FROMID, ""+currentUserId)
 				.then("true")
 			.end().as( "me" )
 			
-			.from(TABLE_STORIES+" a")
-			.innerJoin(TABLE_USERS+" b")
-			.on("a."+COL_FROMID, "b."+COL_USERID);
+			.from(FROM)
+			.innerJoin(User.FROM)
+			.on(FK_FROMID, User.PK_USERID);
+			
+			User.leftJoinPersonOrGroup( chain );
 		
 			if( users != null ) {
 				chain
-				.whereIn("a."+COL_FROMID, users)
+				.whereIn(FK_FROMID, users)
 				.or()
-				.whereIn("b."+COL_USERNAME, users)
+				.whereIn(User.PK_USERNAME, users)
 				.and();
 			}
 
 			chain
-			.gte("a."+COL_TIMESTAMP, startTimeMillis)
-			.desc("a."+COL_TIMESTAMP)
+			.gte(TIMESTAMP, startTimeMillis)
+			.desc(TIMESTAMP)
 			.limit(limit)
 			.offset(offset);
 			

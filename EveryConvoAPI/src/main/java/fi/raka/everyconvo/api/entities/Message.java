@@ -19,6 +19,10 @@ public class Message {
 	private String content;
 	private long timestamp;
 	
+	public Message(int fromid, int toid) {
+		this.fromid = fromid;
+		this.toid = toid;
+	}
 	public Message(int fromid, int toid, String content) {
 		this.fromid = fromid;
 		this.toid = toid;
@@ -32,13 +36,17 @@ public class Message {
 		content = rs.getString(COL_CONTENT);
 	}
 	
+	private String getConversationName() {
+		return "u" + Math.min(fromid, toid) + "-u" + Math.max(fromid, toid);
+	}
+	
 	public void send() 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		new SQLChain()
 			.open(DATABASE_URL)
-			.insertInto(TABLE_MESSAGES, COL_FROMID, COL_TOID, COL_CONTENT)
-			.values(fromid, toid, content)
+			.insertInto(TABLE_MESSAGES, COL_FROMID, COL_TOID, COL_CONTENT, COL_CONVERSATION)
+			.values(fromid, toid, content, getConversationName())
 			.update()
 			.close();
 	}
@@ -67,26 +75,13 @@ public class Message {
 	public static SelectChain loadMessagesSelectChain(int userId, Integer user2Id, Chain chain) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
+		Message dumbMessage = new Message(userId, user2Id);
+		
 		SelectChain sel = chain
 			.select(COL_MESSAGEID, COL_FROMID, COL_TOID, COL_CONTENT, COL_TIMESTAMP)
 			.from(TABLE_MESSAGES);
-				sel
-				.where()
-				.q(" ( ")
-					.q(COL_FROMID).is(userId)
-					.or()
-					.q(COL_TOID).is(userId)
-				.q(" ) ");
-		
-			if( user2Id != null ) {
-				sel
-				.and()
-				.q("(")
-					.whereIs(COL_FROMID, user2Id)
-					.or()
-					.whereIs(COL_TOID, user2Id)
-				.q(")");
-			}
+			sel
+			.whereIs(COL_CONVERSATION, dumbMessage.getConversationName());
 			
 		return sel;
 	}

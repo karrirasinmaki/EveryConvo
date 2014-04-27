@@ -56,10 +56,15 @@ define(function() {
         registerError: "Error with registration. Make sure you fill every field or try with another username"
     };
     
+    var STATUS = {
+        error: "error"
+    };
+    
     return {
         API: API,
         VIEW: VIEW,
         CLASS: CLASS,
-        TEXT: TEXT
+        TEXT: TEXT,
+        STATUS: STATUS
     };
 });

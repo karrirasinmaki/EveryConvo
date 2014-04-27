@@ -16,9 +16,11 @@ public class Group extends User {
 	private static String a = TABLE_GROUPS+".";
 	public static String FROM = TABLE_GROUPS;
 	public static String FK_USERID = a+COL_USERID;
-	public static String[] PROJECTION = {FK_USERID, a+COL_FULLNAME};
+	public static String[] PROJECTION = {FK_USERID, a+COL_FULLNAME, a+COL_TYPE};
 
 	private String fullname;
+	private boolean group = true;
+	private String type = "group";
 	
 	public Group(String fullName, String userName, String description, String websiteUrl, String location, Integer visibility) {
 		super( userName, description, websiteUrl, location, visibility );

@@ -28,7 +28,6 @@ define(["lib/guda", "lib/values", "widgets/postWidget"], function(g, values, pos
         this.append( this.title ).append( this.sideView ).append( this.feed );
     };
     FeedView.prototype.setNextCursor = function(nextCursor) {
-        g.log(nextCursor);
         if( nextCursor ) {
             this.loadMoreButton.show();
         }

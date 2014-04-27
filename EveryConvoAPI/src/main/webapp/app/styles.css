@@ -12,11 +12,12 @@ html, body                          { margin: 0; padding: 0; width: 100%; height
 #app                                { min-height: 100%; padding-right: 240px; }
 
 /* Main */
-#main .inner                        { position: relative; max-width: 820px; min-height: 100%; margin: 0 auto; overflow: hidden; position: absolute; left: 0; top: 0; right: 220px; }
-#title                              { margin-left: 25%%; margin-bottom: 0; padding-left: 80px; width: 65%; border-bottom: 1px solid #ccc; box-sizing: border-box; }
+#main .inner                        { position: relative; min-height: 100%; margin: 0 auto; overflow: hidden; position: absolute; left: 0; top: 0; right: 240px; }
+#title                              { margin-left: 35%%; margin-bottom: 0; padding-left: 80px; width: 55%; border-bottom: 1px solid #ccc; box-sizing: border-box; }
 #title small                        { margin-left: 0.5em; color: #D57536; }
-#side                               { float: left; width: 25%; padding: 0 9px 12em 0; border-right: 1px solid #ccc; text-align: right; box-sizing: border-box; }
-#feed                               { position: relative; float: right; width: 65%; min-height: 600px; margin-left: 10%; }
+#side                               { float: left; width: 35%; padding: 0 9px 12em 0; border-right: 1px solid #ccc; text-align: right; box-sizing: border-box; }
+#side .inner                        { position: static; }
+#feed                               { position: relative; float: right; width: 55%; min-height: 600px; margin-left: 10%; }
 #feed .load-more                    { display: block; width: 100%; }
 
 #menu                               { z-index: 11; position: fixed; right: 0; top: 0; bottom: 0; width: 220px; background-color: #f9f9f9; overflow-y: scroll; }
@@ -75,15 +76,29 @@ img.nofound                         { width: 100%; height: auto; background: #cc
 .user-info .websiteurl              {  }
 .user-info .description             { margin-top: 1em; }
 
+.names                              { margin-bottom: 1em; }
+
 /* Elements under edit */
+.editing .username,
+.editing .firstname,
+.editing .lastname,
+.editing .fullname,
 .editing .location,
 .editing .websiteurl,
 .editing .description               { position: relative; }
 
+.editing .username:after,
+.editing .firstname:after,
+.editing .lastname:after,
+.editing .fullname:after,
 .editing .location:after,
 .editing .websiteurl:after,
 .editing .description:after         { z-index: 1; position: absolute; left: 102%; top: -0.2em; padding: 0.2em 0.4em; background: #101010; color: #ccc; border-radius: 3px; white-space: nowrap; }
 
+.editing .username:after            { content: "Username"; }
+.editing .firstname:after           { content: "Firstname"; }
+.editing .lastname:after            { content: "Lastname"; }
+.editing .fullname:after            { content: "Full name"; }
 .editing .location:after            { content: "Location"; }
 .editing .websiteurl:after          { content: "Website url"; }
 .editing .description:after         { content: "Description"; }

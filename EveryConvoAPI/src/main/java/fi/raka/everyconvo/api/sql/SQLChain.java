@@ -223,9 +223,9 @@ public class SQLChain {
 		private ResultSet executeUpdate() throws SQLException {
 			query.append(';');
 			String q = getQuery();
+			System.out.println("\nPreparedStatement query:\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n") + "\n");
 			PreparedStatement stmt = conn.prepareStatement( q, Statement.RETURN_GENERATED_KEYS );
 			handleParams( stmt );
-			System.out.println("\nPreparedStatement query:\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n") + "\n");
 			System.out.println( stmt );
 			stmt.executeUpdate();
 			emptyQuery();
@@ -235,9 +235,9 @@ public class SQLChain {
 		private ResultSet executeQuery() throws SQLException {
 			query.append(';');
 			String q = getQuery();
+			System.out.println("\nPreparedStatement query:\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n") + "\n");
 			PreparedStatement stmt = conn.prepareStatement( q );
 			handleParams( stmt );
-			System.out.println("\nPreparedStatement query:\n" + q.replaceAll(",", ",\n").replaceAll(";", ";\n\n") + "\n");
 			System.out.println( stmt );
 			emptyQuery();
 			return stmt.executeQuery();
@@ -366,12 +366,16 @@ public class SQLChain {
 			query.append( " INNER JOIN " + table );
 			return new JoinChain( this );
 		}
-		public SelectChain asc(Object ... columns) {
+		public JoinChain leftJoin(String table) {
+			query.append( " LEFT JOIN " + table );
+			return new JoinChain( this );
+		}
+		public SelectChain asc(String ... columns) {
 			orderBy(columns);
 			query.append( " ASC" );
 			return this;
 		}
-		public SelectChain desc(Object ... columns) {
+		public SelectChain desc(String ... columns) {
 			orderBy(columns);
 			query.append( " DESC" );
 			return this;
@@ -426,9 +430,8 @@ public class SQLChain {
 			return this;
 		}
 		
-		private SelectChain orderBy(Object ... columns) {
-			params.add( columns );
-			query.append( " ORDER BY " + generateQuestionMarks(columns.length) );
+		private SelectChain orderBy(String ... columns) {
+			query.append( " ORDER BY " + StringUtils.join(columns, ",") );
 			return this;
 		}
 	}

@@ -50,6 +50,15 @@ public class PeopleServelet extends HttpServlet {
 		case "create-person":
 			createPerson(req, resp);
 			break;
+		case "person":
+			try {
+				writeJSONResponse( resp, Person.updateCurrentPerson(req) );
+			} catch (InstantiationException | IllegalAccessException
+					| ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+				writeJSONStatusResponse( resp, StatusMessage.generalError(e) );
+			}
+			break;
 		}
 		
 		

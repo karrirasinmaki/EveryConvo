@@ -23,25 +23,22 @@ function(values, g, userWidget, contactWidget, menuWidget, newStoryWidget, newGr
         }
     };
     var changeView = function() {
-        var pathParts = location.hash.substring( 2 ).split("/");
+        var originalPath = location.hash.substring( 2 );
+        var pathParts = originalPath.split("/");
         var path = pathParts[0];
         switch(path) {
             case "":
             case values.VIEW.feed:
                 showView( "feedView" );
                 break;
-            case values.VIEW.messages:
-                showView( "messagesView" );
-                views.messagesView.openConversation( pathParts[1] );
-                break;
             default:
                 showView( "profileView" );
-                if( views.profileView.currentProfilePath != path ) {
-                    if( path.substring(0,2) == "g/" )
-                        views.profileView.loadGroup( path.substr(2) );
+                if( views.profileView.currentProfilePath != originalPath ) {
+                    if( path == "g" )
+                        views.profileView.loadGroup( pathParts[1] );
                     else 
                         views.profileView.loadPerson( path );
-                    views.profileView.currentProfilePath = path;
+                    views.profileView.currentProfilePath = originalPath;
                 }
                 break;
         }

@@ -18,6 +18,7 @@ import fi.raka.everyconvo.api.sql.SQLChain.Chain;
 import fi.raka.everyconvo.api.sql.SQLChain.SelectChain;
 import fi.raka.everyconvo.api.sql.SQLChain.UpdateChain;
 import fi.raka.everyconvo.api.utils.PasswordHash;
+import fi.raka.everyconvo.api.utils.Utils;
 import fi.raka.everyconvo.api.entities.StatusMessage;
 
 public class User {
@@ -27,7 +28,9 @@ public class User {
 	private static String a = TABLE_USERS+".";
 	public static String FROM = TABLE_USERS;
 	public static String PK_USERID = a+COL_USERID;
+	public static String PK_USERNAME = a+COL_USERNAME;
 	public static String[] PROJECTION = {PK_USERID, a+COL_USERNAME, a+COL_DESCRIPTION, a+COL_WEBSITEURL, a+COL_LOCATION, a+COL_IMAGEURL, a+COL_VISIBILITY};
+	public static String[] FULL_PROJECTION = ArrayUtils.addAll( ArrayUtils.addAll(PROJECTION, Person.PROJECTION), Group.PROJECTION );
 	
 	private String 
 		username,
@@ -78,6 +81,18 @@ public class User {
 			rs.getString(COL_IMAGEURL),
 			getFollowFromRS( rs )
 			);
+	}
+	
+	public static User createUser(ResultSet rs) throws SQLException {
+		User user = null;
+		switch( rs.getInt(COL_TYPE) ) {
+		case 1:
+			return new Person(rs);
+		case 2:
+			return new Group(rs);
+		default:
+			return new User(rs);
+		}
 	}
 	
 	private static Boolean getFollowFromRS(ResultSet rs) {
@@ -232,7 +247,8 @@ public class User {
 		UpdateChain chain = new SQLChain()
 			.open( DATABASE_URL )
 			.update(TABLE_USERS);
-		
+
+			if( username != null ) chain.set(COL_USERNAME, username);
 			if( location != null ) chain.set(COL_LOCATION, location);
 			if( websiteurl != null ) chain.set(COL_WEBSITEURL, websiteurl);
 			if( description != null ) chain.set(COL_DESCRIPTION, description);
@@ -240,7 +256,7 @@ public class User {
 		
 			chain
 			.doneSet()
-			.whereIs(COL_USERID, ""+userid)
+			.whereIs(COL_USERID, userid)
 			.update()
 			.close();
 	}
@@ -355,6 +371,10 @@ public class User {
 	public static StatusMessage login(String userName, String password, HttpServletRequest req) 
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
+		if( password == null || userName == null ) {
+			return StatusMessage.authError();
+		}
+		
 		Chain chain = new SQLChain().open(DATABASE_URL);
 		User user = User.loadUser( userName, req, chain );
 		
@@ -363,7 +383,7 @@ public class User {
 		ResultSet rs = chain
 			.select(COL_USERID, COL_PASSHASH)
 			.from(TABLE_LOGIN)
-			.whereIs(COL_USERID, ""+user.getUserId())
+			.whereIs(COL_USERID, user.getUserId())
 			.exec();
 		
 		rs.first();
@@ -409,23 +429,39 @@ public class User {
 			if( sessionUser == null ) return null;
 			userName = sessionUser.getUserName();
 		}
-		
 		SelectChain chain = ch
-			.select(PROJECTION);
+			.select( FULL_PROJECTION );
 			follows( sessionUser, chain );
 		
-		ResultSet rs = chain
-			.from(FROM)
-			.whereLike(COL_USERNAME, userName)
+		chain
+			.from(FROM);
+		ResultSet rs = leftJoinPersonOrGroup(chain, userName)
 			.exec();
 
 		User user = null;
 		if( rs.first() ) {
-			user = new User( rs );
+			user = User.createUser( rs ); //new User( rs );
 			if( sessionUser != null && user != null && sessionUser.userid == user.userid ) user.setIsMe( true );
 		}
 		rs.close();
 		return user;
+	}
+	
+	public static SelectChain leftJoinPersonOrGroup(SelectChain chain, String userName) {
+		chain
+		.leftJoin(Person.FROM)
+		.on(User.PK_USERID, Person.FK_USERID)
+		.leftJoin(Group.FROM)
+		.on(User.PK_USERID, Group.FK_USERID);
+		
+		if( userName != null ) {
+			chain.whereLike(a+COL_USERNAME, userName);
+		}
+		
+		return chain;
+	}
+	public static SelectChain leftJoinPersonOrGroup(SelectChain chain) {
+		return leftJoinPersonOrGroup(chain, null);
 	}
 	
 	private static void follows(User sessionUser, Chain chain) {
@@ -469,23 +505,30 @@ public class User {
 			.whereLike(PK_USERID, value);
 	}
 	
-	public static StatusMessage updateCurrentUser(HttpServletRequest req) 
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-		
+	public static User getCurrentUser(HttpServletRequest req) {
 		String
 		userName = req.getParameter( COL_USERNAME ),
 		description = req.getParameter( COL_DESCRIPTION ),
 		websiteUrl = req.getParameter( COL_WEBSITEURL ),
 		location = req.getParameter( COL_LOCATION ),
 		imageUrl = req.getParameter( COL_IMAGEURL );
+		Integer
+		visibility = Utils.parseInteger( req.getParameter( COL_VISIBILITY ) );
 		
-		User user = User.getSessionUser( req );
+		User sessionUser = User.getSessionUser( req );
+		if( sessionUser != null ) {
+			User user = new User(sessionUser.getUserId(), userName, description, websiteUrl, location, visibility);
+			return user;
+		}
+		return null;
+	}
+	
+	public static StatusMessage updateCurrentUser(HttpServletRequest req) 
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		
+		User user = User.getCurrentUser( req );
 		if( user != null ) {
-			user.setDescription(description)
-				.setWebsiteUrl(websiteUrl)
-				.setLocation(location)
-				.setImageUrl(imageUrl)
-				.update();
+			user.update();
 			return StatusMessage.updateCompleted();
 		}
 		return StatusMessage.sessionError();
