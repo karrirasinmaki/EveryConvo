@@ -88,8 +88,10 @@ public class User {
 		switch( rs.getInt(COL_TYPE) ) {
 		case 1:
 			user = new Person(rs);
+			break;
 		case 2:
 			user = new Group(rs);
+			break;
 		default:
 			user = new User(rs);
 		}
