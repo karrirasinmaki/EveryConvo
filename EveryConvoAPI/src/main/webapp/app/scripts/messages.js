@@ -75,11 +75,12 @@ define(["lib/guda", "lib/values", "feed"], function(g, values, feed) {
         var _this = this;
         g.getAjax( values.API.messages + "/" + this.toid + "?from=" + this.from ).done( function(data) {
             _this.drawMessages( JSON.parse(data).data );
+            _this.from = new Date().getTime();
         });
-        this.from = new Date().getTime();
         
         if( this.intervalId == null ) {
             this.intervalId = setInterval( function() { _this.loadMessages() }, MessagesView.UPDATE_INTERVAL );
+            _this.from = new Date().getTime();
         }
     };
     MessagesView.prototype.drawMessages = function(data) {
