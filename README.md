@@ -1,9 +1,9 @@
 EveryConvo
 ==========
 
+This was a university web application development course's training project.
+
 Messaging platform/app with open API  
-Demo at:  
-http://188.226.165.140:8088/EveryConvoAPI/app/
 
 Build
 -----
