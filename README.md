@@ -1,7 +1,7 @@
 EveryConvo
 ==========
 
-This was a university web application development course's training project.
+This was a university web application development -course training project.
 
 Messaging platform/app with open API  
 
